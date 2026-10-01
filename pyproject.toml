@@ -138,7 +138,7 @@ langgraph = [
     "langgraph>=0.2.0,<1.0.0",
 ]
 crewai = [
-    "crewai>=0.80.0,<1.0.0",
+    "crewai>=0.80.0,<2.0.0",
 ]
 llamaindex = [
     "llama-index-core>=0.10.0,<1.0.0",
