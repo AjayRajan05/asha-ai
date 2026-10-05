@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from ..core.policy_config import PolicyConfig, PolicyMode
 from ..core.policy_resolution import policy_from_mode
@@ -36,14 +36,14 @@ _PROCESS_KWARGS = frozenset(
 def _reject_unknown_kwargs(kwargs: dict[str, Any], *, allowed: frozenset[str]) -> None:
     unknown = set(kwargs) - allowed
     if unknown:
-        raise TypeError(
-            f"Unexpected keyword argument(s): {', '.join(sorted(unknown))}"
-        )
+        raise TypeError(f"Unexpected keyword argument(s): {', '.join(sorted(unknown))}")
 
 
-def _effective_policy(mode: str, policy: Optional[PolicyConfig]) -> PolicyConfig:
+def _effective_policy(mode: str, policy: Optional[Any]) -> PolicyConfig:
     if policy is not None:
-        return policy
+        if hasattr(policy, "to_policy_config"):
+            return cast(PolicyConfig, policy.to_policy_config())
+        return cast(PolicyConfig, policy)
     return policy_from_mode(mode)
 
 
@@ -87,9 +87,7 @@ def resolve_process_call(
     ``timeout_seconds``, and ``verbose`` for the processor executor.
     """
     cfg = _effective_policy(mode, policy)
-    effective_mode = (
-        cfg.mode.value if hasattr(cfg.mode, "value") else str(cfg.mode)
-    )
+    effective_mode = cfg.mode.value if hasattr(cfg.mode, "value") else str(cfg.mode)
 
     if profile is not None:
         effective_profile = profile
@@ -145,9 +143,7 @@ def resolve_sanitize_policy(
 ) -> tuple[SafetyMode, bool, str]:
     """Return ``(safety_mode, reversible, pii_mode)`` for sanitize()."""
     cfg = _effective_policy(mode, policy)
-    effective_mode = (
-        cfg.mode.value if hasattr(cfg.mode, "value") else str(cfg.mode)
-    )
+    effective_mode = cfg.mode.value if hasattr(cfg.mode, "value") else str(cfg.mode)
     return (
         safety_mode_from_policy_mode(effective_mode),
         cfg.reversible,

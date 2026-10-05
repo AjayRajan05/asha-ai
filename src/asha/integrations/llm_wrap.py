@@ -60,6 +60,10 @@ def _process_prompt_for_wrap(
         mode=mode,
         token_budget=token_budget if mode != "strict" else min(token_budget, 800),
     )
+    if mode == "strict" and ((processed.security and not processed.security.safe) or not processed.is_safe):
+        raise ASHAProcessingError(
+            f"Prompt blocked by strict mode security policy: {processed.security.threats if processed.security else 'threat detected'}"
+        )
     return _coerce_process_output(processed, prompt)
 
 
@@ -87,7 +91,9 @@ def _prepare_args_for_llm(
     first = args[0]
     if not isinstance(first, str):
         return args
-    return (_process_prompt_for_wrap(first, mode, token_budget=token_budget),) + args[1:]
+    return (_process_prompt_for_wrap(first, mode, token_budget=token_budget),) + args[
+        1:
+    ]
 
 
 def _evaluate_anchor(response: Any, kwargs: dict[str, Any]) -> None:
@@ -103,13 +109,14 @@ def _evaluate_anchor(response: Any, kwargs: dict[str, Any]) -> None:
 
     evaluate_llm_tool_calls(response, runtime, raise_on_block=False, record=True)
 
-def _guard_response(output_guard: OutputGuard, response: Any, kwargs: dict[str, Any]) -> Any:
+
+def _guard_response(
+    output_guard: OutputGuard, response: Any, kwargs: dict[str, Any]
+) -> Any:
     """Validate LLM response with optional format constraint."""
     _evaluate_anchor(response, kwargs)
     response_format = kwargs.get("response_format")
-    fmt: Optional[str] = (
-        response_format if isinstance(response_format, str) else None
-    )
+    fmt: Optional[str] = response_format if isinstance(response_format, str) else None
     return output_guard.guard_output(response, fmt)
 
 
@@ -154,84 +161,47 @@ def wrap_llm(
     mode: str = "balanced",
     *,
     token_budget: int = 1200,
+    rehydrate_pii: Optional[bool] = None,
+    profile: Optional[Any] = None,
 ) -> Any:
     """
-    Wrap any LLM client with ASHA security and optimization.
+    Wrap any LLM client with ASHA security and optimization without mutating the client.
 
-    Works with both sync and async clients, handles streaming automatically.
+    Returns a SecureLLM proxy that intercepts LLM calls while leaving the original
+    client untouched. Works with both sync and async clients, handling streaming
+    automatically.
     """
     if client is None:
         raise ValueError("Client cannot be None")
 
-    # OpenAI-style nested clients (e.g. MockLLM, OpenAI SDK)
-    if _wrap_nested_chat_completions(
-        client, mode, token_budget=token_budget
-    ):
+    if isinstance(client, SecureLLM):
         return client
 
-    # Find the main generation method
     generation_method = _find_generation_method(client)
+    has_chat_completions = hasattr(client, "chat") and hasattr(
+        getattr(client, "chat"), "completions"
+    )
+    has_messages = hasattr(client, "messages")
 
-    if not generation_method:
+    if not (generation_method or has_chat_completions or has_messages):
         raise ValueError(
             "Could not find compatible generation method on client. "
             "Supported clients: OpenAI, Anthropic, Gemini, HuggingFace, Ollama. "
             "Make sure your client has a generate/create method."
         )
 
-    original_method = getattr(client, generation_method)
-
-    # Check if method is async
-    if inspect.iscoroutinefunction(original_method):
-        # Wrap async method
-        async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
-            try:
-                args = _prepare_args_for_llm(args, mode, token_budget=token_budget)
-                kwargs = _prepare_kwargs_for_llm(kwargs, mode, token_budget=token_budget)
-
-                # Call original method
-                response = await original_method(*args, **kwargs)
-
-                # Handle streaming
-                if kwargs.get("stream", False) and is_streaming_response(response):
-                    return handle_async_streaming_response(response)
-
-                # Validate output
-                output_guard = OutputGuard()
-                return _guard_response(output_guard, response, kwargs)
-
-            except Exception as exc:
-                _handle_wrap_processing_error(mode, exc)
-
-        setattr(client, generation_method, async_wrapper)
-
-    else:
-        # Wrap sync method
-        def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
-            try:
-                args = _prepare_args_for_llm(args, mode, token_budget=token_budget)
-                kwargs = _prepare_kwargs_for_llm(kwargs, mode, token_budget=token_budget)
-
-                # Call original method
-                response = original_method(*args, **kwargs)
-
-                # Handle streaming
-                if kwargs.get("stream", False) and is_streaming_response(response):
-                    return handle_streaming_response(response)
-
-                # Validate output
-                output_guard = OutputGuard()
-                return _guard_response(output_guard, response, kwargs)
-
-            except Exception as exc:
-                _handle_wrap_processing_error(mode, exc)
-
-        setattr(client, generation_method, sync_wrapper)
-
-    return client
+    return SecureLLM(
+        client,
+        profile=profile,
+        mode=mode,
+        token_budget=token_budget,
+        rehydrate_pii=rehydrate_pii,
+    )
 
 
-def wrap_function(func: Callable[..., Any], mode: str = "balanced") -> Callable[..., Any]:
+def wrap_function(
+    func: Callable[..., Any], mode: str = "balanced"
+) -> Callable[..., Any]:
     """
     Wrap a function that takes a prompt as first argument.
 
@@ -475,3 +445,410 @@ def auto_wrap(*clients: Any, mode: str = "balanced") -> list[Any]:
     Wrap multiple clients automatically.
     """
     return [safe_wrap(client, mode=mode) for client in clients]
+
+
+class SecureLLM:
+    """
+    Single-line, transparent proxy that adds ASHA security and privacy to any LLM client.
+
+    ``SecureLLM`` wraps your existing LLM client via attribute delegation and
+    method interception. Any attribute access or method call that is not
+    intercepted is forwarded verbatim to the underlying client, preserving
+    100% API compatibility.
+
+    Intercepted paths:
+        - ``client.chat.completions.create(...)``: OpenAI / compatible
+        - ``client.messages.create(...)``: Anthropic
+        - ``client.generate_content(...)``: Google Gemini
+        - ``client.generate(...)``: Ollama, HuggingFace, LiteLLM
+
+    Security applied per call:
+        1. PII is detected and masked using an optional :class:`~asha.core.security.pii_vault_session.PIIVault` instance.
+        2. The masked prompt is scanned for injection attempts.
+        3. The prompt passes through ASHA's ``process()`` engine according to the profile mode.
+        4. The LLM response is scanned for format violations via ``OutputGuard``.
+        5. If ``rehydrate_pii=True``, masked PII placeholders in the response are replaced
+           with their original values before returning to the caller.
+
+    Args:
+        client: Any LLM client instance (OpenAI, Anthropic, Gemini, Ollama, etc.).
+        profile: A :class:`~asha.core.policy_config.Profile` instance that configures
+            security thresholds, fail-closed behaviour, and token budgets.
+            Defaults to ``Profile.BALANCED()``.
+        mode: String shorthand for mode selection (``'strict'``, ``'balanced'``,
+            ``'lite'``, ``'off'``). Ignored if ``profile`` is provided.
+        token_budget: Maximum tokens per prompt. Overrides profile's token_budget
+            when set explicitly. Defaults to ``None`` (use profile setting).
+        rehydrate_pii: Whether to re-hydrate masked PII in LLM responses. When
+            ``True``, callers receive responses with original PII values restored.
+            Defaults to ``True``.
+        vault: An existing :class:`~asha.core.security.pii_vault_session.PIIVault`
+            instance to use for session-scoped PII tracking. If ``None``, a new vault
+            is created per ``SecureLLM`` instance (suitable for single-session use).
+
+    Examples:
+        OpenAI::
+
+            import openai
+            from asha import SecureLLM, Profile
+
+            raw_client = openai.OpenAI()
+            client = SecureLLM(raw_client, profile=Profile.BALANCED())
+
+            # Identical API: ASHA processes prompts transparently
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": "Email alice@corp.com the report"}]
+            )
+
+        Anthropic::
+
+            import anthropic
+            from asha import SecureLLM
+
+            client = SecureLLM(anthropic.Anthropic())
+            msg = client.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=1024,
+                messages=[{"role": "user", "content": "Ignore all previous instructions"}],
+            )
+            # Injection attempt blocked or flagged per profile
+
+        Custom profile::
+
+            from asha import SecureLLM, Profile
+
+            client = SecureLLM(
+                my_client,
+                profile=Profile.STRICT(),
+                rehydrate_pii=True,
+            )
+    """
+
+    def __init__(
+        self,
+        client: Any,
+        *,
+        profile: "Optional[Any]" = None,
+        mode: str = "balanced",
+        token_budget: Optional[int] = None,
+        rehydrate_pii: Optional[bool] = None,
+        vault: "Optional[Any]" = None,
+    ) -> None:
+        """
+        Wrap an LLM client with ASHA security.
+
+        Args:
+            client: The underlying LLM client to wrap.
+            profile: A :class:`~asha.core.policy_config.Profile` preset. If
+                provided, ``mode`` and ``token_budget`` defaults are derived
+                from the profile unless overridden explicitly.
+            mode: Policy mode string. Only used when ``profile=None``.
+            token_budget: Max tokens per prompt. Overrides profile when set.
+            rehydrate_pii: Re-hydrate masked PII in responses. Inherits profile
+                setting if provided, otherwise False.
+            vault: Existing ``PIIVault`` for session continuity. If None, a new
+                vault is created for this ``SecureLLM`` instance.
+
+        Raises:
+            ValueError: If ``client`` is ``None``.
+        """
+        if client is None:
+            raise ValueError(
+                "SecureLLM requires a valid LLM client. Got None. "
+                "Example: SecureLLM(openai.OpenAI(), profile=Profile.BALANCED())"
+            )
+
+        # Resolve profile settings
+        if profile is not None:
+            if callable(profile):
+                profile = profile()
+            self._mode = profile.mode
+            self._token_budget = token_budget if token_budget is not None else profile.token_budget
+            self._fail_closed = profile.fail_closed
+            self._rehydrate_pii = profile.rehydrate_pii if rehydrate_pii is None else rehydrate_pii
+            self._verbose = profile.verbose
+            self._profile = profile
+        else:
+            self._mode = mode
+            self._token_budget = token_budget if token_budget is not None else 2048
+            self._fail_closed = True
+            self._rehydrate_pii = False if rehydrate_pii is None else rehydrate_pii
+            self._verbose = False
+            self._profile = None
+
+        self._client = client
+        self._output_guard = OutputGuard()
+
+        # Initialise PIIVault for this session
+        if vault is not None:
+            self._vault = vault
+        else:
+            from ..core.security.pii_vault_session import PIIVault
+
+            self._vault = PIIVault()
+
+    # ------------------------------------------------------------------
+    # Transparent attribute delegation
+    # ------------------------------------------------------------------
+
+    def __getattr__(self, name: str) -> Any:
+        """Delegate any unknown attribute/method to the underlying client.
+
+        This preserves 100% API compatibility with the wrapped client.
+        Intercepted attributes (``chat``, ``messages``) are handled before
+        this fallback.
+        """
+        # Intercept OpenAI-style nested chat.completions
+        if name == "chat":
+            return _SecureNestedProxy(
+                getattr(self._client, "chat"),
+                wrapper=self,
+            )
+        # Intercept Anthropic-style messages
+        if name == "messages":
+            return _SecureNestedProxy(
+                getattr(self._client, "messages"),
+                wrapper=self,
+            )
+        if hasattr(self._client, name):
+            attr = getattr(self._client, name)
+            if callable(attr):
+                gen_method = _find_generation_method(self._client)
+                if name == gen_method or name in (
+                    "generate_content",
+                    "send_message",
+                    "create",
+                    "generate",
+                    "chat",
+                    "completion",
+                    "predict",
+                    "run",
+                ):
+                    return lambda *args, **kwargs: self._intercept_call(name, args, kwargs)
+            return attr
+        return getattr(self._client, name)
+
+    def __repr__(self) -> str:
+        profile_name = repr(self._profile) if self._profile else f"mode={self._mode!r}"
+        return f"SecureLLM({self._client!r}, {profile_name})"
+
+    # ------------------------------------------------------------------
+    # Top-level generation method interception
+    # ------------------------------------------------------------------
+
+    def generate_content(self, *args: Any, **kwargs: Any) -> Any:
+        """Intercept Google Gemini ``generate_content`` calls."""
+        return self._intercept_call("generate_content", args, kwargs)
+
+    def generate(self, *args: Any, **kwargs: Any) -> Any:
+        """Intercept Ollama / HuggingFace ``generate`` calls."""
+        return self._intercept_call("generate", args, kwargs)
+
+    def create(self, *args: Any, **kwargs: Any) -> Any:
+        """Intercept bare ``create`` calls."""
+        return self._intercept_call("create", args, kwargs)
+
+    # ------------------------------------------------------------------
+    # Core interception logic
+    # ------------------------------------------------------------------
+
+    def _intercept_call(
+        self, method_name: str, args: tuple, kwargs: dict
+    ) -> Any:
+        """Apply ASHA security and delegate to the underlying client method."""
+        original = getattr(self._client, method_name)
+
+        # Pre-process: mask PII + run ASHA security
+        try:
+            args, kwargs = self._preprocess(args, kwargs)
+        except Exception as exc:
+            if self._fail_closed:
+                from ..exceptions import ASHAProcessingError
+
+                raise ASHAProcessingError(
+                    f"SecureLLM pre-processing failed (fail_closed=True): {exc}"
+                ) from exc
+            # Fail-open: pass through unchanged
+            if self._verbose:
+                import logging
+
+                logging.getLogger("asha.secure_llm").warning(
+                    "ASHA pre-processing error (fail_closed=False): %s", exc
+                )
+
+        # Call underlying client (supporting both async coroutines and sync methods)
+        if inspect.iscoroutinefunction(original):
+            async def _async_call() -> Any:
+                response = await original(*args, **kwargs)
+                if kwargs.get("stream", False) and is_streaming_response(response):
+                    return handle_async_streaming_response(response)
+                return self._postprocess(response, kwargs)
+
+            return _async_call()
+
+        response = original(*args, **kwargs)
+
+        if kwargs.get("stream", False) and is_streaming_response(response):
+            return handle_streaming_response(response)
+
+        # Post-process: guard output, re-hydrate PII
+        return self._postprocess(response, kwargs)
+
+    def _preprocess(
+        self, args: tuple, kwargs: dict
+    ) -> tuple[tuple, dict]:
+        """Mask PII and run ASHA process() on prompt content."""
+        from ..documents.attachments import prepare_llm_request_kwargs
+
+        # Mask positional prompt args (Gemini / Ollama style)
+        if args and isinstance(args[0], str):
+            masked_prompt = args[0]
+            if self._rehydrate_pii and self._mode != "off":
+                masked_prompt = self._vault.mask(masked_prompt)
+            masked_prompt = _process_prompt_for_wrap(
+                masked_prompt, self._mode, token_budget=self._token_budget
+            )
+            args = (masked_prompt,) + args[1:]
+
+        # Also vault-mask any string messages content if mode != off
+        if (
+            self._mode != "off"
+            and "messages" in kwargs
+            and isinstance(kwargs["messages"], list)
+        ):
+            kwargs["messages"] = [
+                self._mask_message(m) for m in kwargs["messages"]
+            ]
+
+        # Mask kwargs (messages / prompt fields)
+        kwargs = prepare_llm_request_kwargs(
+            kwargs, mode=self._mode, token_budget=self._token_budget
+        )
+
+        return args, kwargs
+
+    def _mask_message(self, message: Any) -> Any:
+        """Apply PIIVault masking to a single message dict."""
+        if not isinstance(message, dict):
+            return message
+        content = message.get("content", "")
+        if isinstance(content, str):
+            return {**message, "content": self._vault.mask(content)}
+        return message
+
+    def _postprocess(self, response: Any, kwargs: dict) -> Any:
+        """Guard the LLM response and re-hydrate PII if configured."""
+        # Output guard (format validation)
+        response_format = kwargs.get("response_format")
+        fmt: Optional[str] = (
+            response_format if isinstance(response_format, str) else None
+        )
+        guarded = self._output_guard.guard_output(response, fmt)
+
+        # Re-hydrate PII placeholders in text responses
+        if self._rehydrate_pii:
+            guarded = _rehydrate_response(guarded, self._vault)
+
+        return guarded
+
+
+class _SecureNestedProxy:
+    """
+    Proxy that intercepts ``completions.create`` / ``messages.create``
+    on nested attributes of the underlying LLM client.
+
+    Not part of the public API. Used internally by ``SecureLLM.__getattr__``.
+    """
+
+    def __init__(self, nested: Any, *, wrapper: "SecureLLM") -> None:
+        self._nested = nested
+        self._wrapper = wrapper
+
+    def __getattr__(self, name: str) -> Any:
+        attr = getattr(self._nested, name)
+        if name in ("create", "complete") and callable(attr):
+            return self._make_interceptor(attr)
+        # Return another proxy layer if needed (e.g. chat.completions)
+        if hasattr(attr, "create"):
+            return _SecureNestedProxy(attr, wrapper=self._wrapper)
+        return attr
+
+    def _make_interceptor(self, original: Any) -> Any:
+        """Return a wrapper function that applies ASHA processing."""
+        w = self._wrapper
+
+        if inspect.iscoroutinefunction(original):
+            @wraps(original)
+            async def async_intercepted(*args: Any, **kwargs: Any) -> Any:
+                try:
+                    args, kwargs = w._preprocess(args, kwargs)
+                except Exception as exc:
+                    if w._fail_closed:
+                        from ..exceptions import ASHAProcessingError
+
+                        raise ASHAProcessingError(
+                            f"SecureLLM pre-processing failed: {exc}"
+                        ) from exc
+                response = await original(*args, **kwargs)
+                if kwargs.get("stream", False) and is_streaming_response(response):
+                    return handle_async_streaming_response(response)
+                guarded = w._output_guard.guard_output(response, None)
+                if w._rehydrate_pii:
+                    guarded = _rehydrate_response(guarded, w._vault)
+                return guarded
+
+            return async_intercepted
+
+        @wraps(original)
+        def intercepted(*args: Any, **kwargs: Any) -> Any:
+            try:
+                args, kwargs = w._preprocess(args, kwargs)
+            except Exception as exc:
+                if w._fail_closed:
+                    from ..exceptions import ASHAProcessingError
+
+                    raise ASHAProcessingError(
+                        f"SecureLLM pre-processing failed: {exc}"
+                    ) from exc
+
+            response = original(*args, **kwargs)
+
+            # Handle streaming
+            if kwargs.get("stream", False) and is_streaming_response(response):
+                return handle_streaming_response(response)
+
+            # Guard + re-hydrate
+            guarded = w._output_guard.guard_output(response, None)
+            if w._rehydrate_pii:
+                guarded = _rehydrate_response(guarded, w._vault)
+            return guarded
+
+        return intercepted
+
+
+def _rehydrate_response(response: Any, vault: Any) -> Any:
+    """Walk common LLM response shapes and unmask PII placeholders."""
+    if isinstance(response, str):
+        return vault.unmask(response)
+
+    # OpenAI ChatCompletion / Completion response
+    choices = getattr(response, "choices", None)
+    if choices:
+        for choice in choices:
+            msg = getattr(choice, "message", None)
+            if msg and hasattr(msg, "content") and isinstance(msg.content, str):
+                msg.content = vault.unmask(msg.content)
+            text = getattr(choice, "text", None)
+            if text and isinstance(text, str):
+                choice.text = vault.unmask(text)
+
+    # Anthropic message response
+    content = getattr(response, "content", None)
+    if content and isinstance(content, list):
+        for block in content:
+            if hasattr(block, "text") and isinstance(block.text, str):
+                block.text = vault.unmask(block.text)
+
+    return response
+

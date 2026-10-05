@@ -65,7 +65,11 @@ def test_intent_word_customer_support_mode_off():
     prompt = "I need customer support for my billing issue."
     result = process(prompt, mode="off")
     assert isinstance(result, ProcessResult)
-    assert "customer" in result.output or "support" in result.output or "billing" in result.output
+    assert (
+        "customer" in result.output
+        or "support" in result.output
+        or "billing" in result.output
+    )
 
 
 def test_intent_words_survive_sanitize():
@@ -82,7 +86,11 @@ def test_domain_keyword_preserved_mode_off():
     prompt = "Analyze the neural network architecture for image classification."
     result = process(prompt, mode="off")
     assert isinstance(result, ProcessResult)
-    assert "neural" in result.output or "network" in result.output or "classification" in result.output
+    assert (
+        "neural" in result.output
+        or "network" in result.output
+        or "classification" in result.output
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -151,7 +159,11 @@ def test_code_block_keywords_preserved_mode_off():
     )
     result = process(code_prompt, mode="off")
     assert isinstance(result, ProcessResult)
-    assert "Python" in result.output or "function" in result.output or "calculate" in result.output
+    assert (
+        "Python" in result.output
+        or "function" in result.output
+        or "calculate" in result.output
+    )
 
 
 def test_markdown_code_fence_preserved_mode_off():
@@ -159,7 +171,11 @@ def test_markdown_code_fence_preserved_mode_off():
     result = process(prompt, mode="off")
     assert isinstance(result, ProcessResult)
     # The explanation request should survive
-    assert "python" in result.output.lower() or "hello" in result.output or "Explain" in result.output
+    assert (
+        "python" in result.output.lower()
+        or "hello" in result.output
+        or "Explain" in result.output
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -215,3 +231,50 @@ def test_json_with_pii_masks_email_keeps_structure():
     assert "alice@corp.com" not in out
     # The action keyword should still be present
     assert "delete" in out or "action" in out
+
+
+# ---------------------------------------------------------------------------
+# Semantic intent and task preservation across compiler levels
+# ---------------------------------------------------------------------------
+
+
+def test_compile_preserves_task_semantics():
+    from asha.core.engines import compile_prompt
+    raw = "Summarize this article in 3 bullet points: The quick brown fox jumps over the lazy dog."
+    compiled = compile_prompt(raw)
+    assert "Summarize this article in 3 bullet points" in compiled
+    assert "The quick brown fox jumps over the lazy dog" in compiled
+
+
+def test_compile_preserves_code_task():
+    from asha.core.engines import compile_prompt
+    raw = "Fix the bug in this Python code:\ndef calculate_total(items):\n    return sum(items)"
+    compiled = compile_prompt(raw)
+    assert "calculate_total" in compiled
+    assert "def calculate_total" in compiled
+
+
+def test_process_preserves_user_payload_in_balanced_mode():
+    raw = "Contact alice@example.com to discuss the Q3 financial forecast of $1,000,000."
+    res = process(raw, mode="balanced")
+    assert "alice@example.com" not in res.output
+    assert "Q3 financial forecast" in res.output or "financial forecast" in res.output
+    assert "1,000,000" in res.output or "1000000" in res.output or "1" in res.output
+
+
+def test_prompt_compiler_levels():
+    from asha.core.compiler.prompt_compiler import PromptCompiler
+    from asha.core._ir.ir_builder import IRBuilder
+    compiler = PromptCompiler()
+    builder = IRBuilder()
+    raw = "Translate the following document to Spanish: Hello world"
+    ir = builder.parse(raw)
+
+    minimal = compiler.compile(ir, optimization_level="minimal")
+    assert "Translate the following document to Spanish: Hello world" in minimal
+
+    standard = compiler.compile(ir, optimization_level="standard")
+    assert "Translate the following document to Spanish: Hello world" in standard
+
+    comprehensive = compiler.compile(ir, optimization_level="comprehensive")
+    assert "Translate the following document to Spanish: Hello world" in comprehensive

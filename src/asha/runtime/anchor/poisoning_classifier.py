@@ -90,6 +90,10 @@ class PoisoningClassifier:
                     "you are now",
                     "system prompt",
                     "new instructions",
+                    "override agent memory",
+                    "override memory",
+                    "disable security checks",
+                    "disable security",
                 )
             )
         ]
@@ -118,9 +122,7 @@ class PoisoningClassifier:
         if self._clf_ready:
             return
         with self._lock:
-            path = self._classifier_path or _default_model_path(
-                "poisoning_rf.joblib"
-            )
+            path = self._classifier_path or _default_model_path("poisoning_rf.joblib")
             if path is not None and Path(path).is_file():
                 try:
                     from asha.core.ml.calibration import load_calibrator
@@ -195,7 +197,7 @@ class PoisoningClassifier:
         # stubs like "done" / "loaded"). Blend with the lite hashed model so
         # BLOCK requires agreement; keyword fast-path above still wins.
         stripped = (text or "").strip()
-        # Include typical str(dict) agent step payloads (~100–200 chars).
+        # Include typical str(dict) agent step payloads (~100-200 chars).
         if len(stripped) < 256:
             try:
                 from .memory_guard_lite import (
@@ -204,9 +206,11 @@ class PoisoningClassifier:
                 )
 
                 if lite_artifact_available():
-                    lite_p = LitePoisoningClassifier(
-                        poison_keywords=self.poison_keywords
-                    ).score(stripped).probability
+                    lite_p = (
+                        LitePoisoningClassifier(poison_keywords=self.poison_keywords)
+                        .score(stripped)
+                        .probability
+                    )
                     probability = min(probability, float(lite_p))
             except Exception:
                 pass

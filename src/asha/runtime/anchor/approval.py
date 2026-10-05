@@ -23,6 +23,7 @@ class ApprovalEngine:
     Handles escalation to humans when guards return REVIEW.
     Records decisions and ensures no silent auto-approvals.
     """
+
     def __init__(self, warn_policy: str = "strict", interactive: bool = False):
         self.warn_policy = warn_policy
         self.interactive = interactive
@@ -60,7 +61,9 @@ class ApprovalEngine:
 
         return tool_name in mission.allowed_tools
 
-    def request_approval(self, target_id: str, reason: str, context: str = "") -> ApprovalRecord:
+    def request_approval(
+        self, target_id: str, reason: str, context: str = ""
+    ) -> ApprovalRecord:
         """
         Escalates an action or event for human review.
         This function represents a blocking call until a decision is made.
@@ -69,7 +72,7 @@ class ApprovalEngine:
             decision = self._prompt_human(reason, context)
         else:
             decision = "n"
-        
+
         if decision == "y":
             verdict_type = Verdict.ALLOW
             reviewer_reason = "Human explicitly approved."
@@ -78,16 +81,14 @@ class ApprovalEngine:
             reviewer_reason = "Human rejected or timeout occurred."
 
         verdict = ApprovalVerdict(
-            verdict=verdict_type,
-            reason=reviewer_reason,
-            reviewer="human_operator"
+            verdict=verdict_type, reason=reviewer_reason, reviewer="human_operator"
         )
-        
+
         return ApprovalRecord(
             record_id=str(uuid.uuid4()),
             target_id=target_id,
             verdict=verdict,
-            timestamp=time.time()
+            timestamp=time.time(),
         )
 
     def process_verdict(
@@ -149,7 +150,7 @@ class ApprovalEngine:
                 if tool_name:
                     action_context = f"tool={tool_name}"
             return self.request_approval(target_id, reason, context=action_context)
-            
+
         if verdict_enum == Verdict.WARN and action is not None:
             tool_name = str(action.payload.get("tool_name", ""))
             if (
@@ -167,16 +168,14 @@ class ApprovalEngine:
 
         if verdict_enum == Verdict.WARN:
             reason = f"[ACTIONABLE WARNING] {reason}"
-            
+
         verdict = ApprovalVerdict(
-            verdict=verdict_enum,
-            reason=reason,
-            reviewer="system_auto"
+            verdict=verdict_enum, reason=reason, reviewer="system_auto"
         )
-        
+
         return ApprovalRecord(
             record_id=str(uuid.uuid4()),
             target_id=target_id,
             verdict=verdict,
-            timestamp=time.time()
+            timestamp=time.time(),
         )

@@ -15,8 +15,8 @@
 """Shannon-entropy + shape-matcher secret scanner.
 
 Port of the detect-secrets / truffleHog style approach: high-entropy
-substrings combined with known key-shape regexes. Pure Python — no
-generative models, no network calls.
+substrings combined with known key-shape regexes. Pure Python (no
+generative models, no network calls).
 """
 
 from __future__ import annotations
@@ -130,10 +130,10 @@ def _entropy_confidence(entropy: float, length: int) -> float:
     """Map raw entropy + length into a [0, 1] confidence contribution.
 
     Tuned to flag high-entropy secrets while ignoring short/low-entropy
-    identifiers. Absolute cutoffs are NOT decision thresholds — they feed
+    identifiers. Absolute cutoffs are NOT decision thresholds; they feed
     a continuous score that callers bucket via ``config/thresholds.yaml``.
     """
-    # Typical English ≈ 4.0–4.5 bits/char; secrets often ≥ 4.5–5.5.
+    # Typical English around 4.0-4.5 bits/char; secrets often >= 4.5-5.5.
     # Use a soft logistic around 4.5 bits/char, boosted by length.
     centered = (entropy - 4.5) / 0.6
     logistic = 1.0 / (1.0 + math.exp(-centered))
@@ -142,7 +142,7 @@ def _entropy_confidence(entropy: float, length: int) -> float:
 
 
 def _combine_confidence(shape_boost: float, entropy_conf: float) -> float:
-    # Noisy-OR style fusion so either strong signal can elevate confidence,
+    # Noisy-OR style fusion so either strong signal can boost confidence,
     # without requiring both.
     combined = 1.0 - (1.0 - shape_boost) * (1.0 - entropy_conf)
     return max(0.0, min(1.0, combined))

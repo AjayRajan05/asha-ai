@@ -166,8 +166,7 @@ class MetricsEngine:
 
         # Calculate normalized score
         total_score = positive_score - negative_score
-        normalized_score = max(
-            0, min(1, (total_score + 2) / 4))  # Normalize to 0-1
+        normalized_score = max(0, min(1, (total_score + 2) / 4))  # Normalize to 0-1
 
         return normalized_score
 
@@ -250,14 +249,11 @@ class MetricsEngine:
 
         if clarity < 0.6:
             recommendations.append("Use more specific and direct language")
-            recommendations.append(
-                "Remove ambiguous words like 'maybe' or 'possibly'")
+            recommendations.append("Remove ambiguous words like 'maybe' or 'possibly'")
 
         if structure < 0.6:
-            recommendations.append(
-                "Add clear structure with TASK/INPUT/OUTPUT format")
-            recommendations.append(
-                "Use bullet points or numbered lists for clarity")
+            recommendations.append("Add clear structure with TASK/INPUT/OUTPUT format")
+            recommendations.append("Use bullet points or numbered lists for clarity")
 
         if efficiency < 0.6:
             recommendations.append("Remove filler words and redundant phrases")
@@ -265,12 +261,10 @@ class MetricsEngine:
 
         # Specific recommendations based on issues
         if "Contains ambiguous language" in issues:
-            recommendations.append(
-                "Replace ambiguous terms with specific instructions")
+            recommendations.append("Replace ambiguous terms with specific instructions")
 
         if "Contains filler words" in issues:
-            recommendations.append(
-                "Remove words like 'very', 'quite', 'really'")
+            recommendations.append("Remove words like 'very', 'quite', 'really'")
 
         if "Too conversational" in issues:
             recommendations.append(
@@ -281,8 +275,7 @@ class MetricsEngine:
             recommendations.append("Remove repeated words and phrases")
 
         if "Lacks clear structure" in issues:
-            recommendations.append(
-                "Organize prompt with clear sections and headings")
+            recommendations.append("Organize prompt with clear sections and headings")
 
         return recommendations
 

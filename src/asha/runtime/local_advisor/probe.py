@@ -75,8 +75,7 @@ def probe_recommendations(
                 break
         if measured and rec.estimated_tok_s:
             blended = (
-                rec.estimated_tok_s * (1 - measured_weight)
-                + measured * measured_weight
+                rec.estimated_tok_s * (1 - measured_weight) + measured * measured_weight
             )
             rec.measured_tok_s = round(measured, 2)
             rec.estimated_tok_s = round(blended, 2)

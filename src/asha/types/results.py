@@ -11,6 +11,20 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 
+class ThreatLevelStr(str):
+    """Case-insensitive string representation of threat levels."""
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, str):
+            return self.lower() == other.lower()
+        if hasattr(other, "value"):
+            return self.lower() == str(other.value).lower()
+        return super().__eq__(other)
+
+    def __hash__(self) -> int:
+        return hash(self.lower())
+
+
 @dataclass(frozen=True)
 class SecurityInfo:
     """Security analysis attached to a processing result."""
@@ -23,18 +37,41 @@ class SecurityInfo:
     threat_level: str = "LOW"
     security_score: float = 0.0
 
+    @property
+    def is_safe(self) -> bool:
+        """Alias for safe (API consistency)."""
+        return self.safe
+
+    @property
+    def pii_detected_count(self) -> int:
+        """Total count of PII entities detected."""
+        return len(self.pii_detected)
+
+    @property
+    def threats_detected(self) -> int:
+        """Total count of threats detected."""
+        return len(self.threats)
+
+    @property
+    def pii_masked(self) -> int:
+        """Total count of PII entities masked."""
+        return len(self.masked_entities)
+
     @classmethod
-    def from_summary(cls, summary: Optional[Dict[str, Any]]) -> Optional["SecurityInfo"]:
+    def from_summary(
+        cls, summary: Optional[Dict[str, Any]]
+    ) -> Optional["SecurityInfo"]:
         if not summary:
             return None
         threats = summary.get("threats") or []
+        raw_level = summary.get("threat_level", "LOW")
         return cls(
             safe=bool(summary.get("is_safe", True)),
             pii_detected=list(summary.get("pii_detected") or []),
             threats=list(threats),
             masked_entities=dict(summary.get("masked_entities") or {}),
             masking_map=summary.get("masking_map"),
-            threat_level=str(summary.get("threat_level", "LOW")),
+            threat_level=ThreatLevelStr(str(raw_level)),
             security_score=float(summary.get("security_score", 0.0)),
         )
 
@@ -44,7 +81,7 @@ class SecurityInfo:
             "pii_detected": self.pii_detected,
             "threats": self.threats,
             "masked_entities": self.masked_entities,
-            "threat_level": self.threat_level,
+            "threat_level": str(self.threat_level),
             "security_score": self.security_score,
             "threats_detected": len(self.threats),
             "pii_masked": len(self.masked_entities),
@@ -100,6 +137,16 @@ class ProcessResult:
     def __str__(self) -> str:
         return self.output
 
+    @property
+    def is_safe(self) -> bool:
+        """Convenience property indicating whether prompt passed security checks."""
+        return self.security.safe if self.security else True
+
+    @property
+    def security_result(self) -> Optional[SecurityInfo]:
+        """Convenience alias for security attribute."""
+        return self.security
+
     def to_dict(self) -> Dict[str, Any]:
         """Legacy dict shape for return_dict=True shim."""
         out: Dict[str, Any] = {
@@ -126,6 +173,7 @@ class ProcessResult:
             out["masking_map"] = self.security.masking_map
         return out
 
+
 @dataclass(frozen=True)
 class SanitizeResult:
     """Result of sanitize()."""
@@ -139,6 +187,16 @@ class SanitizeResult:
 
     def __str__(self) -> str:
         return self.output
+
+    @property
+    def is_safe(self) -> bool:
+        """Alias for safe (API consistency)."""
+        return self.safe
+
+    @property
+    def security_result(self) -> SecurityInfo:
+        """Convenience alias for security attribute."""
+        return self.security
 
     def to_dict(self) -> Dict[str, Any]:
         """Legacy dict shape for return_details=True shim."""

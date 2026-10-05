@@ -18,7 +18,9 @@ class _StubGraph:
         self.nodes = {"start": object()}
         self.tools: list[Any] = []
 
-    def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+    def invoke(
+        self, input: Any, config: Any = None, **kwargs: Any
+    ) -> Any:  # noqa: A002
         return {"result": "ok"}
 
     def get_graph(self) -> Any:
@@ -33,5 +35,7 @@ def test_langgraph_importable() -> None:
 
 def test_anchor_graph_wraps_when_package_present() -> None:
     wrapped = anchor_graph(_StubGraph(), interactive=False)
-    result = wrapped.invoke({"messages": [{"role": "user", "content": "Analyze locally."}]})
+    result = wrapped.invoke(
+        {"messages": [{"role": "user", "content": "Analyze locally."}]}
+    )
     assert result["result"] == "ok"

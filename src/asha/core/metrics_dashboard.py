@@ -112,23 +112,20 @@ class MetricsCollector:
         cutoff_time = datetime.now() - time_window if time_window else self.start_time
 
         # Filter events by time window
-        relevant_events = [
-            e for e in self.events if e.timestamp >= cutoff_time]
+        relevant_events = [e for e in self.events if e.timestamp >= cutoff_time]
 
         if not relevant_events:
             return UsageStats(0, 0, 0, 0.0, 0, 0, 0.0, 0, 0)
 
         # Calculate statistics
-        total_requests = len(
-            [e for e in relevant_events if e.event_type == "request"])
+        total_requests = len([e for e in relevant_events if e.event_type == "request"])
         successful_requests = len(
             [e for e in relevant_events if e.event_type == "success"]
         )
         failed_requests = total_requests - successful_requests
 
         # Latency statistics
-        latencies = [
-            e.value for e in relevant_events if e.event_type == "latency"]
+        latencies = [e.value for e in relevant_events if e.event_type == "latency"]
         avg_latency = statistics.mean(latencies) if latencies else 0.0
 
         # Token statistics
@@ -171,15 +168,13 @@ class MetricsCollector:
         cutoff_time = datetime.now() - time_window if time_window else self.start_time
 
         # Filter events by time window
-        relevant_events = [
-            e for e in self.events if e.timestamp >= cutoff_time]
+        relevant_events = [e for e in self.events if e.timestamp >= cutoff_time]
 
         if not relevant_events:
             return PerformanceMetrics(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
         # Latency percentiles
-        latencies = [
-            e.value for e in relevant_events if e.event_type == "latency"]
+        latencies = [e.value for e in relevant_events if e.event_type == "latency"]
         if latencies:
             latencies.sort()
             p50 = latencies[len(latencies) // 2]
@@ -190,13 +185,11 @@ class MetricsCollector:
 
         # Throughput (requests per second)
         time_diff = (datetime.now() - cutoff_time).total_seconds()
-        requests = len(
-            [e for e in relevant_events if e.event_type == "request"])
+        requests = len([e for e in relevant_events if e.event_type == "request"])
         throughput = requests / time_diff if time_diff > 0 else 0.0
 
         # Error rate
-        total_requests = len(
-            [e for e in relevant_events if e.event_type == "request"])
+        total_requests = len([e for e in relevant_events if e.event_type == "request"])
         errors = len([e for e in relevant_events if e.event_type == "error"])
         error_rate = errors / total_requests if total_requests > 0 else 0.0
 
@@ -269,8 +262,7 @@ class MetricsDashboard:
 
         # Get metrics
         usage_stats = self.collector.get_usage_stats(time_delta)
-        performance_metrics = self.collector.get_performance_metrics(
-            time_delta)
+        performance_metrics = self.collector.get_performance_metrics(time_delta)
 
         # Print dashboard
         print("\n" + "=" * 80)
@@ -286,8 +278,7 @@ class MetricsDashboard:
             window_str = f"Last {int(time_delta.total_seconds() / 60)} minutes"
 
         print(f"📊 Time Window: {window_str}")
-        print(
-            f"🕐 Session Started: {self.session_start.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"🕐 Session Started: {self.session_start.strftime('%Y-%m-%d %H:%M:%S')}")
         print("")
 
         # Usage Statistics
@@ -300,8 +291,7 @@ class MetricsDashboard:
         print(f"  Avg Latency:        {usage_stats.avg_latency_ms:.1f}ms")
         print(f"  Tokens Processed:   {usage_stats.total_tokens_processed:,}")
         print(f"  Tokens Saved:       {usage_stats.total_tokens_saved:,}")
-        print(
-            f"  Cost Reduction:     {usage_stats.cost_reduction_percentage:.1f}%")
+        print(f"  Cost Reduction:     {usage_stats.cost_reduction_percentage:.1f}%")
         print(f"  Threats Blocked:    {usage_stats.threats_blocked:,}")
         print(f"  PII Detected:       {usage_stats.pii_detected:,}")
         print("")
@@ -312,14 +302,10 @@ class MetricsDashboard:
         print(f"  Latency P50:        {performance_metrics.latency_p50:.1f}ms")
         print(f"  Latency P95:        {performance_metrics.latency_p95:.1f}ms")
         print(f"  Latency P99:        {performance_metrics.latency_p99:.1f}ms")
-        print(
-            f"  Throughput:        {performance_metrics.throughput_rps:.1f} RPS")
-        print(
-            f"  Error Rate:         {performance_metrics.error_rate * 100:.2f}%")
-        print(
-            f"  Memory Usage:       {performance_metrics.memory_usage_mb:.1f}MB")
-        print(
-            f"  CPU Usage:          {performance_metrics.cpu_usage_percentage:.1f}%")
+        print(f"  Throughput:        {performance_metrics.throughput_rps:.1f} RPS")
+        print(f"  Error Rate:         {performance_metrics.error_rate * 100:.2f}%")
+        print(f"  Memory Usage:       {performance_metrics.memory_usage_mb:.1f}MB")
+        print(f"  CPU Usage:          {performance_metrics.cpu_usage_percentage:.1f}%")
         print("")
 
         # Value Summary
@@ -328,8 +314,7 @@ class MetricsDashboard:
         print("-" * 40)
         print(f"  Money Saved:        ${total_value['money_saved']:.2f}")
         print(f"  Time Saved:         {total_value['time_saved']:.1f}ms")
-        print(
-            f"  Security Incidents: {total_value['security_incidents']:,} prevented")
+        print(f"  Security Incidents: {total_value['security_incidents']:,} prevented")
         print(f"  ROI Score:          {total_value['roi_score']:.1f}/10")
         print("")
 
@@ -362,8 +347,7 @@ class MetricsDashboard:
             ]
 
             if day_events:
-                requests = len(
-                    [e for e in day_events if e.event_type == "request"])
+                requests = len([e for e in day_events if e.event_type == "request"])
                 tokens_saved = sum(
                     e.value for e in day_events if e.event_type == "tokens_saved"
                 )
@@ -474,8 +458,7 @@ class MetricsDashboard:
 
             with open(filename, "w", newline="") as f:
                 writer = csv.writer(f)
-                writer.writerow(
-                    ["timestamp", "event_type", "value", "metadata"])
+                writer.writerow(["timestamp", "event_type", "value", "metadata"])
                 for event in self.collector.events:
                     writer.writerow(
                         [
@@ -523,13 +506,11 @@ class MetricsDashboard:
         roi_score = min(
             10,
             (
-                (usage_stats.cost_reduction_percentage / 10) *
-                3  # Cost reduction (30%)
+                (usage_stats.cost_reduction_percentage / 10) * 3  # Cost reduction (30%)
                 + (security_incidents / max(usage_stats.total_requests, 1))
                 * 100
                 * 3  # Security (30%)
-                + (usage_stats.successful_requests /
-                   max(usage_stats.total_requests, 1))
+                + (usage_stats.successful_requests / max(usage_stats.total_requests, 1))
                 * 2  # Reliability (20%)
                 + (min(100, 1000 - usage_stats.avg_latency_ms) / 1000)
                 * 2  # Performance (20%)
@@ -573,17 +554,14 @@ class MetricsDashboard:
 
         # System recommendations
         if performance_metrics.memory_usage_mb > 1000:
-            recommendations.append(
-                "High memory usage - consider memory optimization")
+            recommendations.append("High memory usage - consider memory optimization")
 
         if performance_metrics.cpu_usage_percentage > 80:
-            recommendations.append(
-                "High CPU usage - consider scaling or optimization")
+            recommendations.append("High CPU usage - consider scaling or optimization")
 
         # Value recommendations
         if usage_stats.total_requests < 100:
-            recommendations.append(
-                "Low usage volume - consider wider adoption")
+            recommendations.append("Low usage volume - consider wider adoption")
 
         return recommendations
 

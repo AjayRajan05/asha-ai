@@ -24,7 +24,9 @@ def is_agent_graph(target: Any) -> bool:
     module = type(target).__module__ or ""
     if "langgraph" in module:
         return True
-    if callable(getattr(target, "invoke", None)) and callable(getattr(target, "get_graph", None)):
+    if callable(getattr(target, "invoke", None)) and callable(
+        getattr(target, "get_graph", None)
+    ):
         return True
     if callable(getattr(target, "invoke", None)) and hasattr(target, "nodes"):
         return True
@@ -90,7 +92,9 @@ class _AnchoredGraphProxy:
         required = [tool_name(t) for t in self._collect_tools()]
         return finalize_step_output(self._runtime, result, required_tools=required)
 
-    def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+    def invoke(
+        self, input: Any, config: Any = None, **kwargs: Any
+    ) -> Any:  # noqa: A002
         self._begin_step(input)
         config = self._inject_callbacks(config)
         try:
@@ -104,7 +108,9 @@ class _AnchoredGraphProxy:
         finally:
             finalize_session(self._runtime)
 
-    async def ainvoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+    async def ainvoke(
+        self, input: Any, config: Any = None, **kwargs: Any
+    ) -> Any:  # noqa: A002
         self._begin_step(input)
         config = self._inject_callbacks(config)
         try:

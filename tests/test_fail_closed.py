@@ -25,9 +25,7 @@ def test_privacy_fallback_strict_placeholder_on_security_error(monkeypatch):
     import asha.utils.dropin_privacy as dp
 
     monkeypatch.setattr(dp, "run_security_only", boom)
-    out = privacy_fallback(
-        "secret@company.com", True, safety=SafetyMode.STRICT
-    )
+    out = privacy_fallback("secret@company.com", True, safety=SafetyMode.STRICT)
     assert out == SECURITY_FAIL_CLOSED_PLACEHOLDER
 
 

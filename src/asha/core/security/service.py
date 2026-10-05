@@ -15,6 +15,7 @@ from .security_layer import SecurityLayer, SecurityLevel, SecurityResult, Threat
 
 logger = logging.getLogger(__name__)
 
+
 def read_security_field(security_result: Any, field: str, default: Any = None) -> Any:
     """Read a field from SecurityResult dataclass or serialized dict."""
     if security_result is None:
@@ -76,9 +77,16 @@ def _build_hybrid_masked_entities(pii_entities: List[Any]) -> Dict[str, Any]:
     """Normalize hybrid PII entities to masked_entities dict format."""
     masked_entities: Dict[str, Any] = {}
     for i, entity in enumerate(pii_entities):
-        entity_type = getattr(entity, "entity_type", None) or getattr(
-            entity, "pii_type", "unknown"
+        raw_type = (
+            getattr(entity, "category", None)
+            or getattr(entity, "entity_type", None)
+            or getattr(entity, "pii_type", None)
+            or "unknown"
         )
+        if hasattr(raw_type, "value"):
+            entity_type = raw_type.value
+        else:
+            entity_type = str(raw_type)
         masked_entities[f"entity_{i}"] = {
             "type": entity_type,
             "original_length": len(getattr(entity, "text", "")),
@@ -123,13 +131,28 @@ def _merge_with_safety(
         except (AttributeError, KeyError):
             pass
 
+    # Never downgrade an unsafe verdict from base
+    final_is_safe = bool(base.is_safe and getattr(safety_result, "is_safe", True))
+    if not final_is_safe and threat_level == SecurityLevel.LOW:
+        if any(
+            t in (ThreatType.INJECTION, ThreatType.MALICIOUS_CONTENT, ThreatType.SYSTEM_MANIPULATION)
+            for t in extra_threats
+        ):
+            threat_level = SecurityLevel.HIGH
+        else:
+            threat_level = SecurityLevel.MEDIUM
+
     return SecurityResult(
-        is_safe=getattr(safety_result, "is_safe", base.is_safe),
+        is_safe=final_is_safe,
         threat_level=threat_level,
         detected_threats=extra_threats,
         sanitized_content=base.sanitized_content,
         masked_entities=base.masked_entities,
-        security_score=getattr(safety_result, "confidence_score", base.security_score),
+        security_score=(
+            base.security_score
+            if not base.is_safe
+            else getattr(safety_result, "confidence_score", base.security_score)
+        ),
         recommendations=getattr(safety_result, "recommendations", base.recommendations)
         or base.recommendations,
         processing_time_ms=base.processing_time_ms,
@@ -227,23 +250,18 @@ def run_security(
             warnings.warn(msg, UserWarning, stacklevel=2)
             logger.warning(msg)
     if hybrid_detector:
-        pii_result = hybrid_detector.detect_and_mask(content)
-        masked_content = pii_result.masked_text
+        # Evaluate threat detection on raw unmasked content so PII masking never blinds injection checks
+        scored = layer.process(content, mask_pii=False)
+        pii_target = scored.sanitized_content if scored.sanitized_content else content
+        pii_result = hybrid_detector.detect_and_mask(pii_target)
         masked_entities = _build_hybrid_masked_entities(pii_result.entities)
         reversible = bool(config.get("reversible", False))
-        masking_map = (
-            dict(pii_result.masking_map or {}) if reversible else {}
-        )
-        # Hybrid owns PII masking; SecurityLayer still runs injection /
-        # neutralization / scoring so threat handling stays live.
-        scored = layer.process(masked_content, mask_pii=False)
+        masking_map = dict(pii_result.masking_map or {}) if reversible else {}
         base = SecurityResult(
             is_safe=scored.is_safe,
             threat_level=scored.threat_level,
             detected_threats=list(scored.detected_threats),
-            # Keep SecurityLayer neutralization (injection markers), not the
-            # pre-neutralization hybrid-masked text alone.
-            sanitized_content=scored.sanitized_content,
+            sanitized_content=pii_result.masked_text,
             masked_entities=masked_entities,
             security_score=float(scored.security_score),
             recommendations=list(scored.recommendations),
@@ -261,10 +279,6 @@ def run_security(
         )
     else:
         safety_result = None
-    if safety_result and not getattr(safety_result, "is_safe", True) and threat_blocking:
-        level = getattr(safety_result, "safety_level", None)
-        level_name = getattr(level, "value", "unsafe")
-        raise ValueError(f"Content blocked by safety classifier: {level_name}")
 
     return _merge_with_safety(
         base,

@@ -193,7 +193,7 @@ _DEFAULT_FORBIDDEN_BY_DOMAIN: Dict[str, List[str]] = {
     ],
 }
 
-# Keyword heuristics — confidence capped below typical safe_max.
+# Keyword heuristics: confidence capped below typical safe_max.
 _HEURISTIC_KEYWORDS: Dict[str, Sequence[str]] = {
     "analytics_reporting": (
         "report",
@@ -252,7 +252,9 @@ _HEURISTIC_KEYWORDS: Dict[str, Sequence[str]] = {
 _HEURISTIC_CONFIDENCE_CAP = 0.40
 
 
-def _unpack_domain_payload(payload: Any) -> Tuple[Any, List[str], Optional[Dict[str, Any]]]:
+def _unpack_domain_payload(
+    payload: Any,
+) -> Tuple[Any, List[str], Optional[Dict[str, Any]]]:
     """Accept legacy ``calibrator`` dumps and current ``pipeline`` train dumps."""
     if not isinstance(payload, dict):
         return payload, [], None
@@ -265,7 +267,11 @@ def _unpack_domain_payload(payload: Any) -> Tuple[Any, List[str], Optional[Dict[
         or meta.get("classes")
         or []
     )
-    fmap = meta.get("domain_forbidden") if isinstance(meta.get("domain_forbidden"), dict) else None
+    fmap = (
+        meta.get("domain_forbidden")
+        if isinstance(meta.get("domain_forbidden"), dict)
+        else None
+    )
     return model, [str(x) for x in labels], fmap
 
 
@@ -403,7 +409,9 @@ class DomainClassifier:
                     classes = [str(c) for c in list(raw_classes)]
                 else:
                     step = getattr(self._calibrator, "named_steps", {}).get("clf")
-                    raw_classes = getattr(step, "classes_", None) if step is not None else None
+                    raw_classes = (
+                        getattr(step, "classes_", None) if step is not None else None
+                    )
                     if raw_classes is not None:
                         classes = [str(c) for c in list(raw_classes)]
             domain = str(classes[idx]) if idx < len(classes) else "unknown"
@@ -430,7 +438,7 @@ class DomainClassifier:
             return "unknown", 0.20, list(_restrictive_forbidden())
 
         domain = leaders[0]
-        # Scale confidence down — heuristics must not clear safe_max.
+        # Scale confidence down: heuristics must not clear safe_max.
         raw = min(0.35, 0.15 + 0.05 * best_score)
         confidence = min(raw, _HEURISTIC_CONFIDENCE_CAP)
         forbidden = list(self._domain_forbidden.get(domain, ()))
@@ -464,7 +472,9 @@ def restrictive_forbidden() -> List[str]:
 
 
 def _mission_bands(backend: str = "hardened") -> ThresholdBands:
-    key = "mission_domain_lite" if backend in ("lite", "heuristic") else "mission_domain"
+    key = (
+        "mission_domain_lite" if backend in ("lite", "heuristic") else "mission_domain"
+    )
     try:
         return get_bands(key, thresholds=load_thresholds())
     except Exception:

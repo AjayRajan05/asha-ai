@@ -13,7 +13,7 @@ def render() -> None:
     section_header(
         "Numbers",
         "Benchmarks",
-        "Illustrative showcase metrics — validate on your workload before production claims.",
+        "Illustrative showcase metrics (validate on your workload before production claims).",
     )
 
     hero_metrics(

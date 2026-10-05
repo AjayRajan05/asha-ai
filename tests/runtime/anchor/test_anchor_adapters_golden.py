@@ -26,7 +26,11 @@ class _StubTool:
             "writes_data": destructive,
             "network_egress": "send" in name or "email" in name,
             "reads_data": "read" in name or "load" in name,
-            "category": "delete" if destructive else ("network_egress" if "email" in name else "read"),
+            "category": (
+                "delete"
+                if destructive
+                else ("network_egress" if "email" in name else "read")
+            ),
         }
         self.calls = 0
 
@@ -43,7 +47,9 @@ class _StubAgent:
         self.tools = tools
         self.module_hint = "stub"
 
-    def invoke(self, inputs: Dict[str, Any], config: Any = None, **kwargs: Any) -> Dict[str, Any]:
+    def invoke(
+        self, inputs: Dict[str, Any], config: Any = None, **kwargs: Any
+    ) -> Dict[str, Any]:
         for tool in self.tools:
             if hasattr(tool, "_run"):
                 tool._run()
@@ -72,7 +78,9 @@ def _headless(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_langchain_stub_blocks_destructive_tool() -> None:
-    register_tool("delete_local_file", destructive=True, writes_data=True, category="delete")
+    register_tool(
+        "delete_local_file", destructive=True, writes_data=True, category="delete"
+    )
     bad = _StubTool("delete_local_file", destructive=True)
     good = _StubTool("read_file")
     agent = _StubAgent([good, bad])
@@ -115,7 +123,9 @@ def test_graph_stub_dispatch_via_anchor_any() -> None:
             self.tools = [_StubTool("read_file")]
             self.nodes = {"start": object()}
 
-        def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+        def invoke(
+            self, input: Any, config: Any = None, **kwargs: Any
+        ) -> Any:  # noqa: A002
             return {"result": "ok"}
 
         def get_graph(self) -> Any:
@@ -124,9 +134,12 @@ def test_graph_stub_dispatch_via_anchor_any() -> None:
     g = _Graph()
     g.__class__.__module__ = "myapp.graphs"
     wrapped = anchor_graph(g, interactive=False)
-    assert wrapped.invoke({"messages": [{"role": "user", "content": "Analyze locally."}]})[
-        "result"
-    ] == "ok"
+    assert (
+        wrapped.invoke({"messages": [{"role": "user", "content": "Analyze locally."}]})[
+            "result"
+        ]
+        == "ok"
+    )
     again = anchor_any(g, interactive=False)
     assert again is not None
 

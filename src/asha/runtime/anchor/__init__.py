@@ -1,4 +1,4 @@
-"""ASHA ANCHOR — mission-aware agent governance."""
+"""ASHA ANCHOR: mission-aware agent governance."""
 
 from .runtime import AnchorRuntime, anchor, current_anchor_runtime
 from .adapters import anchor_any, anchor_crewai, anchor_generic

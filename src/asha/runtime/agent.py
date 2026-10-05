@@ -139,7 +139,11 @@ class Agent:
         if model == "mock":
             return "mock"
         if model is None:
-            raise AttributeError("'NoneType' object has no attribute 'startswith'")
+            raise ValueError(
+                "ASHA Agent: 'model' must be set when 'provider' is not explicitly given. "
+                "Pass model='gpt-4o-mini' (or any supported model string) or set the "
+                "ASHA_MODEL environment variable."
+            )
         elif model.startswith("gpt"):
             return "openai"
         elif model.startswith("claude"):
@@ -275,9 +279,7 @@ class Agent:
             "optimized_tokens": optimized_tokens,
             "compiled_tokens": compiled_tokens,
             "token_reduction_percentage": (
-                int((1 - optimized_tokens / raw_tokens) * 100)
-                if raw_tokens > 0
-                else 0
+                int((1 - optimized_tokens / raw_tokens) * 100) if raw_tokens > 0 else 0
             ),
         }
 
@@ -297,8 +299,7 @@ class Agent:
 
     def switch_provider(self, provider: str, model: Optional[str] = None) -> None:
         """Switch to a different provider."""
-        self.adapter = AdapterFactory.create_universal(
-            provider=provider, model=model)
+        self.adapter = AdapterFactory.create_universal(provider=provider, model=model)
         self.mode = "universal"
         self.model = model or self.model
 

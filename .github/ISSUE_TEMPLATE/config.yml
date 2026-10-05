@@ -8,7 +8,7 @@ contact_links:
     about: Optional community chat.
   - name: Security vulnerability
     url: https://github.com/AjayRajan05/ASHA/blob/main/SECURITY.md
-    about: Report security issues privately — do not open a public issue.
+    about: Report security issues privately (do not open a public issue).
   - name: Support policy
     url: https://github.com/AjayRajan05/ASHA/blob/main/SUPPORT.md
     about: What the project does and does not support in preview.

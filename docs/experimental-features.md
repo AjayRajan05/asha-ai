@@ -1,6 +1,6 @@
 # Experimental features
 
-!!! warning "Experimental — API may change"
+!!! warning "Experimental: API may change"
     Everything on this page is **experimental** in ASHA v0.4.2. Expect breaking changes before 1.0 without a long deprecation cycle. Prefer the stable drop-in API (`process`, `sanitize`, `optimize`, `wrap_llm`). Install with `pip install asha-ai`. See [status.md](status.md).
 
     Calling these APIs emits ``ASHAExperimentalWarning`` at runtime.
@@ -9,7 +9,7 @@
 
 ## AshaFit / local advisor
 
-!!! warning "Experimental — API may change"
+!!! warning "Experimental: API may change"
     `recommend_local_model` and `Agent(local_model=...)` are preview APIs.
 
 Recommends local LLMs for a prompt workload and hardware profile.
@@ -72,7 +72,7 @@ Scoring combines hardware fit, workload fit, privacy requirements, and estimated
 
 ## Smart routing (`SmartRoutingAdapter`)
 
-!!! warning "Experimental — API may change"
+!!! warning "Experimental: API may change"
     Task-based routing via `routing_config` is experimental. The standalone `ModelRouter` class was removed in v0.4.1.
 
 ```python
@@ -114,7 +114,7 @@ When `provider` is omitted, `Agent` infers from the model name (`gpt-*` → open
 
 ## Model gateway
 
-!!! warning "Experimental — API may change"
+!!! warning "Experimental: API may change"
     Advanced adapter construction and gateway-style options beyond basic `wrap_llm` / `Agent` usage are experimental.
 
 ### wrap_llm (recommended entry)
@@ -140,10 +140,10 @@ Import from **`asha.integrations`**, not the package root.
 | OpenAI | `asha-ai[openai]` | `OPENAI_API_KEY` |
 | Anthropic | `asha-ai[anthropic]` | `ANTHROPIC_API_KEY` |
 | Gemini | `asha-ai[gemini]` | `GOOGLE_API_KEY` |
-| Grok | — | `GROK_API_KEY` |
-| Ollama | — | local server |
-| HuggingFace | `asha-ai[transformers]` | — |
-| Mock | — | testing only |
+| Grok | none | `GROK_API_KEY` |
+| Ollama | none | local server |
+| HuggingFace | `asha-ai[transformers]` | none |
+| Mock | none | testing only |
 
 ### Agent
 

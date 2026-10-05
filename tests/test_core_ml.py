@@ -71,7 +71,7 @@ def test_embeddings_module_import_is_lite() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Embeddings (real MiniLM — downloads on first use; no hash fallback)
+# Embeddings (real MiniLM: downloads on first use; no hash fallback)
 # ---------------------------------------------------------------------------
 
 
@@ -95,7 +95,7 @@ def test_get_encoder_singleton() -> None:
 def test_encoder_raises_without_deps(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Missing sentence-transformers must raise — no silent hash substitute."""
+    """Missing sentence-transformers must raise (no silent hash substitute)."""
     import builtins
 
     import asha.core.ml.embeddings as emb
@@ -108,7 +108,9 @@ def test_encoder_raises_without_deps(
 
     real_import = builtins.__import__
 
-    def _block_sentence_transformers(name, globals=None, locals=None, fromlist=(), level=0):
+    def _block_sentence_transformers(
+        name, globals=None, locals=None, fromlist=(), level=0
+    ):
         if name == "sentence_transformers" or name.startswith("sentence_transformers."):
             raise ImportError("simulated missing sentence-transformers")
         return real_import(name, globals, locals, fromlist, level)
@@ -177,7 +179,13 @@ def test_derive_threshold_at_fpr() -> None:
 
 
 def test_packaged_thresholds_file_exists() -> None:
-    pkg = Path(__file__).resolve().parents[1] / "src" / "asha" / "config" / "thresholds.yaml"
+    pkg = (
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "asha"
+        / "config"
+        / "thresholds.yaml"
+    )
     # Also accept installed layout via importlib.
     from asha import config as asha_config
 
@@ -186,7 +194,7 @@ def test_packaged_thresholds_file_exists() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Secret entropy scanner — adversarial / shape cases
+# Secret entropy scanner: adversarial / shape cases
 # ---------------------------------------------------------------------------
 
 

@@ -335,8 +335,7 @@ class TraceContext:
             extra = log_data
         else:
             # For console/file, include structured data in message
-            structured_str = " | ".join(
-                [f"{k}={v}" for k, v in kwargs.items()])
+            structured_str = " | ".join([f"{k}={v}" for k, v in kwargs.items()])
             message = f"{message} | {structured_str}"
             extra = {}
 

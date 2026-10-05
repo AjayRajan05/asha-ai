@@ -145,18 +145,15 @@ class FormatLock:
         issues = []
 
         if structure_type == "json":
-            is_valid, json_issues = self._validate_json_integrity(
-                original, optimized)
+            is_valid, json_issues = self._validate_json_integrity(original, optimized)
             issues.extend(json_issues)
 
         elif structure_type == "code":
-            is_valid, code_issues = self._validate_code_integrity(
-                original, optimized)
+            is_valid, code_issues = self._validate_code_integrity(original, optimized)
             issues.extend(code_issues)
 
         elif structure_type == "markdown":
-            is_valid, md_issues = self._validate_markdown_integrity(
-                original, optimized)
+            is_valid, md_issues = self._validate_markdown_integrity(original, optimized)
             issues.extend(md_issues)
 
         return len(issues) == 0, issues
@@ -294,10 +291,8 @@ class FormatLock:
         issues = []
 
         # Extract code blocks
-        original_blocks = re.findall(
-            r"```(\n[\s\S]*?)\n```", original, re.DOTALL)
-        optimized_blocks = re.findall(
-            r"```(\n[\s\S]*?)\n```", optimized, re.DOTALL)
+        original_blocks = re.findall(r"```(\n[\s\S]*?)\n```", original, re.DOTALL)
+        optimized_blocks = re.findall(r"```(\n[\s\S]*?)\n```", optimized, re.DOTALL)
 
         if len(original_blocks) != len(optimized_blocks):
             issues.append(
@@ -327,10 +322,8 @@ class FormatLock:
         issues = []
 
         # Check header preservation
-        original_headers = re.findall(
-            r"^#{1,6}\s+(.+)$", original, re.MULTILINE)
-        optimized_headers = re.findall(
-            r"^#{1,6}\s+(.+)$", optimized, re.MULTILINE)
+        original_headers = re.findall(r"^#{1,6}\s+(.+)$", original, re.MULTILINE)
+        optimized_headers = re.findall(r"^#{1,6}\s+(.+)$", optimized, re.MULTILINE)
 
         if len(original_headers) != len(optimized_headers):
             issues.append(
@@ -338,10 +331,8 @@ class FormatLock:
             )
 
         # Check list preservation
-        original_lists = re.findall(
-            r"^\s*[-*+]\s+(.+)$", original, re.MULTILINE)
-        optimized_lists = re.findall(
-            r"^\s*[-*+]\s+(.+)$", optimized, re.MULTILINE)
+        original_lists = re.findall(r"^\s*[-*+]\s+(.+)$", original, re.MULTILINE)
+        optimized_lists = re.findall(r"^\s*[-*+]\s+(.+)$", optimized, re.MULTILINE)
 
         if len(original_lists) != len(optimized_lists):
             issues.append(
@@ -350,8 +341,7 @@ class FormatLock:
 
         # Check emphasis preservation
         original_emphasis = re.findall(r"\*[^*]+\*|_[^_]+_|`[^`]+`", original)
-        optimized_emphasis = re.findall(
-            r"\*[^*]+\*|_[^_]+_|`[^`]+`", optimized)
+        optimized_emphasis = re.findall(r"\*[^*]+\*|_[^_]+_|`[^`]+`", optimized)
 
         if len(original_emphasis) != len(optimized_emphasis):
             issues.append(

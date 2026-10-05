@@ -120,7 +120,7 @@ class ContextStage(BaseStage):
         entities = context.entities.copy()
         config = context.config.get("context", self.context_config)
 
-        # Intent is a property of the text, not of surviving entities — always
+        # Intent is a property of the text, not of surviving entities; always
         # detect it (teaching placeholders may leave the entity list empty).
         intent = self._detect_intent(context.current_text, config)
 
@@ -137,8 +137,7 @@ class ContextStage(BaseStage):
         entities = self._apply_intent_adjustments(entities, intent, config)
 
         # Step 3: Analyze entity relationships
-        entities = self._analyze_entity_relationships(
-            entities, context, config)
+        entities = self._analyze_entity_relationships(entities, context, config)
 
         # Step 4: Apply semantic context adjustments
         entities = self._apply_semantic_context(entities, context, config)
@@ -207,7 +206,17 @@ class ContextStage(BaseStage):
         return "neutral"
 
     _STRUCTURED_PII = frozenset(
-        {"email", "phone", "ssn", "credit_card", "aadhaar", "pan", "api_key", "jwt_token", "bearer_token"}
+        {
+            "email",
+            "phone",
+            "ssn",
+            "credit_card",
+            "aadhaar",
+            "pan",
+            "api_key",
+            "jwt_token",
+            "bearer_token",
+        }
     )
 
     def _apply_intent_adjustments(
@@ -225,23 +234,23 @@ class ContextStage(BaseStage):
             original_confidence = entity.confidence
 
             # Structured identifiers keep detection strength under teaching/docs
-            # intent — "example" often appears inside domains (example.com) without
+            # intent: "example" often appears inside domains (example.com) without
             # meaning the value is a placeholder.
-            if intent in ("teaching", "documentation") and entity.pii_type in self._STRUCTURED_PII:
+            if (
+                intent in ("teaching", "documentation")
+                and entity.pii_type in self._STRUCTURED_PII
+            ):
                 from ...security.patterns import is_example_email
 
                 if entity.pii_type == "email" and is_example_email(entity.text):
                     entity.confidence -= intent_config.get("confidence_reduction", 0.3)
                 # else: leave structured confidence untouched
             elif intent == "teaching":
-                entity.confidence -= intent_config.get(
-                    "confidence_reduction", 0.3)
+                entity.confidence -= intent_config.get("confidence_reduction", 0.3)
             elif intent == "documentation":
-                entity.confidence -= intent_config.get(
-                    "confidence_reduction", 0.2)
+                entity.confidence -= intent_config.get("confidence_reduction", 0.2)
             elif intent == "personal":
-                entity.confidence += intent_config.get(
-                    "confidence_boost", 0.15)
+                entity.confidence += intent_config.get("confidence_boost", 0.15)
 
             # Ensure confidence stays within bounds
             entity.confidence = max(0.0, min(1.0, entity.confidence))
@@ -359,7 +368,7 @@ class ContextStage(BaseStage):
 
         from ...security.patterns import is_example_email
 
-        # True teaching placeholders (user@example.com) — not every *@example.com
+        # True teaching placeholders (user@example.com), not every *@example.com
         if entity.pii_type == "email" and is_example_email(entity.text):
             return False
 

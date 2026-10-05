@@ -1,373 +1,170 @@
-# ASHA Streamlit showcase
+# ASHA Control Center: Developer Preview Showcase
 
-> **ASHA is the security layer that sits between your application and every LLM, protecting prompts before inference and governing agents after inference.**
+**Adaptive Security for Human-SI Systems (ASHA)**  
+*Interactive Developer Laboratory, Transparent Execution Console & Observability Suite*
 
-This is the **only runnable demo** for ASHA. It is a product-style Streamlit app that runs the **real library APIs** (`process`, `sanitize`, `Agent`, `ANCHOR`, `wrap_llm`, `PolicyConfig`) so visitors can see *why* ASHA exists and *how* it protects LLM apps?not just read docs.
+---
+
+## 1. What is ASHA Control Center?
+
+**ASHA Control Center** is a production-quality, developer-oriented Streamlit application that showcases the real capabilities of the ASHA library.
+
+It is **NOT** a static mockup, fake dashboard, or marketing demonstration. Every pipeline stage, security check, PII masking operation, token optimization calculation, and agent governance rule executes directly against the installed `asha` Python library.
+
+### Core Architecture Guarantee: Complete Transparency
+> **See exactly what enters ASHA, what ASHA changes, why it changes it, what reaches the LLM, what the LLM returns, and what ASHA allows to happen next.**
+
+```text
+USER INPUT
+    ↓
+ASHA ENTRY
+    ↓
+SANITIZE (Prompt Injection & Delimiters)
+    ↓
+PII PROTECTION (Reversible Masking Vault)
+    ↓
+COMPILE (Format & Prompt Assembly)
+    ↓
+OPTIMIZE (Entropy / Compression / Preservation)
+    ↓
+POLICY (Deterministic Guardrails)
+    ↓
+LLM / PROVIDER (Gemini, OpenAI, Anthropic, Ollama, Local)
+    ↓
+RESPONSE VALIDATION (Output Guard & PII Rehydration)
+    ↓
+ASHA RESULT
+    ↓
+USER OUTPUT
+```
+
+---
+
+## 2. Installation
+
+Install the library with showcase and provider dependencies:
 
 ```bash
-# From repo root (preferred ? installs asha + UI deps)
-pip install -e ".[demo]"
+# Clone the repository
+git clone https://github.com/AjayRajan05/asha-ai.git
+cd asha-ai
 
-# Or install UI deps from this folder after `pip install -e .`
-# pip install -r examples/showcase/requirements.txt
-
-streamlit run examples/showcase/streamlit_app.py
+# Install in editable mode with development/showcase dependencies
+pip install -e .
+pip install streamlit plotly requests
 ```
 
-Opens a local UI (default `http://localhost:8501`). No API key is required for the core demos. Optional Gemini / Ollama can be enabled later via `.env`.
-
 ---
 
-## Who should use ASHA?
+## 3. How to Launch
 
-- AI application developers shipping chat or copilots
-- Teams building **agentic** systems with tools
-- Enterprise copilots and internal knowledge assistants
-- **RAG** pipelines that pull sensitive documents into context
-- Customer support platforms that ingest tickets and attachments
-- Healthcare, finance, and legal AI that must not leak regulated data
-- Anyone who currently calls OpenAI / Gemini / Claude / Ollama with raw prompts
-
-If you send user text (or files) to a model today, this showcase is for you.
-
----
-
-## 30-second demo
-
-```text
-1. Open Security Console
-2. Click "Run security scan"
-3. Watch PII / secrets disappear in the After panel
-4. Open Rogue agent
-5. Click "Evaluate mission"
-6. Watch send_email get BLOCKED
-
-Done. That's ASHA:
-  - scrub what goes into the model
-  - leash what the agent is allowed to do
-```
-
-Suggested follow-up: **End-to-end story** (one click) or **Playground** (paste your own prompt).
-
----
-
-## Why not just call the LLM provider?
-
-Providers generate text. They do **not** act as your application's security layer.
-
-| Question | Typical provider API | ASHA |
-|----------|----------------------|------|
-| Does it remove PII before inference? | No | Yes (`process` / `sanitize`) |
-| Does it stop prompt injection / jailbreaks in *your* ingress? | No (model-side filters vary; not your control plane) | Yes (detect + surface threats) |
-| Does it prevent agent tool abuse (email / upload)? | No | Yes (ANCHOR mission gates) |
-| Does it optimize tokens before you pay? | No | Yes (compile + budget) |
-| Does it work offline on a lite install? | No | Yes (no key required for core path) |
-| Does it wrap multiple providers the same way? | Partial / per-SDK | Yes (`wrap_llm` / `Agent`) |
-
-**ASHA does not replace GPT, Claude, Gemini, or Ollama.**  
-It sits **in front of** them so your app stays safe and cheaper regardless of which model you pick.
-
----
-
-## Why ASHA instead of raw LLM usage?
-
-| Capability | Raw LLM call | ASHA |
-|------------|--------------|------|
-| PII masking | No | Yes |
-| Secret / API-key redaction | No | Yes |
-| Prompt injection detection | No | Yes |
-| Token optimization | No | Yes |
-| Agent / tool governance | No | Yes (ANCHOR) |
-| Offline processing (lite) | No | Yes |
-| Multi-provider drop-in | Partial | Yes |
-| Configurable policies (`strict` / `balanced` / `lite`) | No | Yes |
-
----
-
-## How much code?
-
-You do **not** rewrite your app. Minimal integration:
-
-```python
-from asha import process
-
-safe = process(user_prompt, mode="balanced")
-# send safe.output to OpenAI / Gemini / Claude / Ollama
-```
-
-```python
-from asha import Agent
-
-agent = Agent(model="mock", privacy=True)  # or gemini-1.5-flash, llama3.2, ...
-response = agent.run(user_prompt)
-```
-
-```python
-from asha.integrations import wrap_llm
-# client = wrap_llm(openai.OpenAI(), mode="balanced")
-# client.chat.completions.create(...)
-```
-
-```python
-from asha.runtime.anchor import AnchorRuntime
-
-runtime = AnchorRuntime(interactive=False, warn_policy="strict")
-runtime.initialize_mission("Analyze data locally. Do not email anyone.", context={...})
-runtime.evaluate_action_request("tool_call", {"tool_name": "send_email", ...})
-```
-
-The Streamlit app exercises these same APIs live.
-
----
-
-## What problem it showcases
-
-Raw LLM usage is risky and expensive:
-
-| Without ASHA | With ASHA (what the app proves) |
-|--------------|----------------------------------|
-| Emails, phones, SSNs, cards, API keys go to the model | PII / secrets are masked **before** inference |
-| Jailbreak / injection text is trusted | Threats are detected and surfaced |
-| Bloated prompts burn tokens | Prompts are optimized under a budget |
-| Agents can email or upload off-mission | ANCHOR **ALLOW**s local tools and **BLOCK**s exfil |
-| Apps must rewrite clients per provider | `wrap_llm` / `Agent` drop into existing stacks |
-
-**Product line:** *Scrub what goes into the model. Leash what the agent is allowed to do.*
-
----
-
-## Concrete use cases
-
-| Vertical | What ASHA does in practice |
-|----------|----------------------------|
-| **Healthcare** | Remove PHI (names, MRNs, phones) before clinical copilots see notes |
-| **Finance** | Mask account numbers, SSNs, cards; catch injection in research agents |
-| **Legal** | Redact parties and secrets in contract / NDA review flows |
-| **Customer support** | Scrub tickets and attachments; strip leaked API keys before helpdesk LLMs |
-| **AI agents** | Mission-scope tools so agents cannot email or upload off-policy |
-| **Enterprise copilots** | Govern HR/ops prompts that mix personal and internal data |
-| **RAG** | Sanitize retrieved chunks before they enter the context window |
-
-On the **Overview** page, industry cards load realistic prompts into the **Playground** with one click.
-
----
-
-## How usefulness is shown (workflows)
-
-Each page is a **workflow**, not a feature dump. Together they cover ASHA's two jobs:
-
-1. **Prompt security** ? protect what enters the model  
-2. **Agent governance** ? control what tools may run after the model decides  
-
-### Master workflow (end-to-end)
-
-```text
-Dirty input (ticket / chat / file)
-        |
-        v
-  process() / sanitize()     <- PII, secrets, injection, optimize
-        |
-        v
-  Safe / optimized prompt
-        |
-        +---> wrap_llm / Agent  -> model reply (Live LLM page)
-        |
-        +---> ANCHOR mission    -> ALLOW / BLOCK tools (Rogue agent page)
-```
-
-The **End-to-end story** page walks this narrative in five acts. Other pages zoom into one stage.
-
----
-
-## Pages (what is in the app)
-
-### 1. Overview ? ?Why ASHA?? in 30 seconds
-
-**Workflow:** storytelling + jump into live demos.
-
-| Section | What it shows |
-|---------|----------------|
-| Hero | Product positioning |
-| KPI cards | Protected prompts, threats, PII, token savings, latency, LLMs |
-| Why ASHA | Problem ? Solution ? Result |
-| Visual pipeline | Prompt ? PII ? secrets ? injection ? optimize ? policy ? router ? safe response |
-| Without vs With | Side-by-side risk comparison |
-| Use-case cards | Load industry prompts into Playground |
-| Live impact | Example counters (PII removed, injections, token %, confidence) |
-
----
-
-### 2. Playground ? full pipeline on any prompt
-
-```text
-Paste prompt -> mode (balanced / lite / strict)
-  -> process()
-  -> stages: raw -> PII -> threats -> metrics -> final prompt
-  -> security gauge + token reduction
-```
-
-**APIs:** `process()`.
-
----
-
-### 3. Security console ? before / after leak prevention
-
-```text
-Load ticket -> process() or sanitize()
-  -> Before | After
-  -> score gauge, threat badges, PII chips, threat chart
-  -> optional injection gallery batch
-```
-
-**APIs:** `process()`, `sanitize()`, `PolicyConfig`.  
-**Fixtures:** `fixtures/support_ticket.txt`, `fixtures/injection_prompts.txt` (synthetic PII).
-
----
-
-### 4. Rogue agent ? ANCHOR mission control
-
-```text
-Mission ("work locally, do not email")
-  -> tools registered
-  -> AnchorRuntime.initialize_mission(...)
-  -> evaluate_action_request per tool
-  -> ALLOW local read/write ? BLOCK email / cloud upload
-```
-
-**Flow in UI:** Agent ? ANCHOR ? Decision ? ALLOW/BLOCK.  
-**APIs:** `AnchorRuntime`, `ASHAAnchorBlocked` (`interactive=False`).
-
----
-
-### 5. Document scrubber ? files and attachments
-
-```text
-Sample | upload (.txt/.md/.pdf/.docx) | paste
-  -> sanitize() + process()
-  -> Original vs secure + PII chips
-```
-
-**APIs:** path/bytes inputs to `sanitize` / `process`.
-
----
-
-### 6. Live LLM ? drop-in before the model
-
-```text
-Raw prompt -> process() preview
-  -> mock Agent (default)
-  -> or wrap_llm(Gemini) / Agent(Ollama) if configured
-  -> reply + latency / threat / length metrics
-```
-
-**APIs:** `process()`, `Agent`, optional `wrap_llm`.
-
-Optional:
+Launch the application using Streamlit:
 
 ```bash
-copy .env.example .env
-# GOOGLE_API_KEY=...
-# ASHA_DEMO_BACKEND=gemini
-# or ASHA_DEMO_BACKEND=ollama
+streamlit run examples/showcase/app.py
 ```
 
-Default backend is **mock** (always works offline).
+The application will open in your browser at `http://localhost:8501`.
 
 ---
 
-### 7. End-to-end story ? both jobs in one run
+## 4. Provider Configuration
 
-1. Incoming dirty ticket  
-2. ASHA security scan (`process`)  
-3. Prompt optimization  
-4. ANCHOR: ALLOW local write, BLOCK `send_email`  
-5. Secure outcome  
+Configure upstream LLM provider credentials via environment variables or a `.env` file in the repository root.
+
+| Provider | Environment Variable | Default / Notes |
+| :--- | :--- | :--- |
+| **Google Gemini** | `GOOGLE_API_KEY` or `GEMINI_API_KEY` | Modern `google-genai` client |
+| **OpenAI** | `OPENAI_API_KEY` | Official OpenAI v1 API |
+| **Anthropic** | `ANTHROPIC_API_KEY` | Claude 3.5 Sonnet / Haiku |
+| **Ollama** | `OLLAMA_HOST` | Defaults to `http://localhost:11434` |
+| **llama.cpp** | `LLAMA_CPP_BASE_URL` | Defaults to `http://localhost:8080/v1` |
+| **Local Demo** | *(None)* | **100% Offline** deterministic mock provider |
+
+> **Security Invariant:** ASHA Control Center **never displays, logs, or exports raw API keys**. All credentials are masked as `[REDACTED_SECRET]` in audit traces and configuration tables.
 
 ---
 
-### 8. Architecture ? where ASHA sits
+## 5. Application Navigation & Features
 
-```text
-User / App -> ASHA SDK -> Security Engine -> Optimizer -> Policy
-          -> ANCHOR -> Universal adapters
-          -> OpenAI / Claude / Gemini / Ollama
+### 5.1 Overview
+- **Dashboard**: Real session metrics aggregated from live executions (Requests, PII Events, Tokens Saved, Blocked Threats, Average Latency).
+- **Runtime Status**: Active memory usage, installed version (`v0.4.2`), and execution mode.
+- **Provider Status**: Connectivity table displaying configured vs unconfigured providers.
+
+### 5.2 Playground
+- **LLM Playground**: 3-panel split console (`User Input` | `Live Pipeline` | `Provider Output`).
+- **Transparency Modes**:
+  - `Normal`: Standard developer output and clean execution summaries.
+  - `Transparent`: Step-by-step diffs and intermediate string representations at each stage.
+  - `Forensic`: Low-level dataclass inspection, token distributions, and raw object metadata.
+- **Process Pipeline**: Deconstructed breakdown of `asha.process()`.
+- **API Explorer**: Dynamic signature introspection and live runner for all top-level ASHA APIs (`process`, `sanitize`, `optimize`, `wrap_llm`, `Agent`, `ANCHOR`, `PolicyConfig`).
+
+### 5.3 Security Labs
+- **PII Protection Lab**: Interactive reversible masking using `PIIVault`. View detected entities (`PERSON`, `EMAIL`, `PHONE`), masked tokens (`[EMAIL_001]`), and response rehydration.
+- **Prompt Injection Lab**: Test direct instruction overrides, system prompt disclosure, multi-turn context hijacking, and role confusion (DAN). Inspect canonicalization and confidence scores.
+- **Unicode Security Lab**: Character-by-character codepoint inspector revealing zero-width spaces (`\u200b`), zero-width joiners, and Cyrillic/homoglyph obfuscation.
+- **Long Context Lab**: Configurable synthetic document generator (1K to 20K tokens) testing "needle-in-a-haystack" injection detection.
+- **RAG Security Lab**: Multi-document indirect injection scanner inspecting retrieved chunks before context window assembly.
+
+### 5.4 Optimization Lab
+- **Token Optimization**: Real measurements of token reduction via ASHA optimizer.
+- **Constraint Rejection Demo**: Demonstrates strict preservation of negations ("Do NOT send..."), numbers, and JSON schemas. When a candidate fails semantic invariants, ASHA cleanly rejects it and reports an honest **0 tokens saved**.
+
+### 5.5 Agents & ANCHOR Control Room
+- **ANCHOR Control Room**: Runtime agent governance firewall. Establishes immutable `MissionContract` boundaries and gates tool execution.
+- **Action Governance**: Validates action type normalization (mapping `bash_command`, `shell`, and `tool_call` to canonical events to prevent evasion).
+- **Memory Security**: `MemoryGuard` firewall protecting against cognitive poisoning and unprivileged scope writes.
+- **Intent Drift**: Multi-step trajectory simulator monitoring alignment decay (e.g. flight search escalating to identity document exfiltration).
+
+### 5.6 Provider Gateway
+- **Google Gemini**: Modern `google-genai` integration supporting `gemini-2.5-flash` and `gemini-2.0-flash`.
+- **OpenAI & llama.cpp**: Support for cloud models and local OpenAI-compatible HTTP servers.
+- **Ollama**: Local daemon ping and model querying.
+- **wrap_llm() Proxy**: Demonstrates programmatic verification that wrapped client instances are **never mutated** (`client is not wrapped_client`).
+
+### 5.7 Observability & Telemetry
+- **Live Trace**: Expandable forensic timeline of every execution event with microsecond timestamps and duration breakdowns.
+- **Request History**: Session-level history table with sorting and filtering.
+- **Replay Engine**: Re-executes historical prompts from scratch with fresh trace IDs for deterministic comparative benchmarking.
+- **JSON Export**: Export sanitized audit logs with zero credential leakage.
+
+---
+
+## 6. What Works Offline? (No API Keys Required)
+
+The demo is **fully functional without any third-party API keys or remote network access**:
+- The **Local Demo Provider** executes realistic, deterministic responses locally.
+- **PII Detection & Masking** runs 100% locally via regex and spaCy/statistical models.
+- **Sanitization & Prompt Injection Detection** evaluates on the CPU in under 5 milliseconds.
+- **Unicode Normalization & Inspection** runs entirely in Python standard library memory.
+- **ANCHOR Mission Governance & Memory Firewall** evaluates contracts in local memory.
+- **Token Optimization & Preservation Validation** executes locally using `tiktoken`.
+
+---
+
+## 7. Security & Developer Preview Limitations
+
+To maintain absolute security and transparency:
+1. **No Destructive Commands**: The demo will never execute destructive shell commands (`rm -rf`, `DROP TABLE`). ANCHOR runs dangerous actions through a safe simulated execution sandbox.
+2. **No Secret Leakage**: API keys, auth headers, and bearer tokens are automatically redacted in traces, downloads, and UI elements.
+3. **No 100% Security Claims**: ASHA provides defense-in-depth and probabilistic guardrails. It is not an OS-level kernel sandbox and does not replace transport-layer encryption or IAM controls.
+4. **Developer Preview**: Features marked as experimental or in-progress are transparently labeled in the UI.
+
+---
+
+## 8. Running Automated Showcase Tests
+
+Run the dedicated showcase test suite:
+
+```bash
+pytest tests/showcase/ -v
 ```
 
-ASHA is a **layer**, not a model.
-
----
-
-### 9. Benchmarks ? capability snapshot
-
-Illustrative cards/charts (lite vs hardened, offline-first, token examples). Validate on your workload before production claims. Preview: v0.4.2.
-
----
-
-## APIs exercised by page
-
-| Page | Primary ASHA surface |
-|------|----------------------|
-| Overview | Narrative ? live pages |
-| Playground | `process` |
-| Security console | `process`, `sanitize`, `PolicyConfig` |
-| Rogue agent | `AnchorRuntime` |
-| Document scrubber | `sanitize` / `process` on files |
-| Live LLM | `process`, `Agent`, optional `wrap_llm` |
-| End-to-end story | `process` + `AnchorRuntime` |
-| Architecture / Benchmarks | Product education |
-
-UI pages call `ui_backend.py`; they do **not** reimplement detectors.
-
----
-
-## Enterprise-ready checklist
-
-What enterprise readers typically look for (preview build?pin `asha==0.4.2` for pilots):
-
-- Offline-first lite path (no API key / no model download required)
-- Local processing of prompts and documents
-- Multi-provider support (OpenAI, Anthropic, Gemini, Ollama, mock)
-- Prompt optimization / token budget control
-- Mission-aware agents (ANCHOR)
-- Configurable security policies (`strict` / `balanced` / `lite` / `off`)
-- Drop-in integration (`process`, `wrap_llm`, `Agent`)
-- Headless CI-friendly ANCHOR (`interactive=False`)
-- Apache 2.0 license
-
----
-
-## Project layout
-
-```text
-examples/showcase/
-  streamlit_app.py      # entry + sidebar navigation
-  ui_backend.py         # wrappers over real asha.* APIs
-  _common.py            # .env load, Gemini/Ollama probes
-  components/           # styles, cards, metrics, pipeline, charts
-  views/                # one module per page
-  data/use_cases.py     # industry prompts
-  fixtures/             # synthetic ticket + injection lines
-```
-
----
-
-## Suggested demo path
-
-1. **Overview** ? Why ASHA + Without/With (30s)  
-2. **Security console** ? Run scan on the sample ticket  
-3. **Rogue agent** ? Evaluate mission (BLOCK on `send_email`)  
-4. **End-to-end story** ? Play story  
-5. **Playground** ? your own prompt  
-6. **Live LLM** ? mock now; Gemini when `.env` is set  
-
-That path answers: *Why ASHA? What changes? How do agents stay on mission? How little code do I need?*
-
----
-
-## Requirements
-
-- Python 3.10+
-- ASHA from this repo (v0.4.2 developer preview)
-- UI packages: see [`requirements.txt`](requirements.txt) or `pip install -e ".[demo]"`
-
-Never paste keys into chat or commit them. Use repo-root `.env` (gitignored). See [../../.env.example](../../.env.example).
+All 17 tests validate:
+- Trace creation, event sequencing, and secret redaction
+- Session metric arithmetic and accumulation
+- Safe recursive object serialization (preventing circular loops)
+- Preset scenario loading and execution through real ASHA functions
+- Zero credential leakage in provider status checks

@@ -21,7 +21,9 @@ def test_prepare_args_for_llm_masks_positional_string(monkeypatch) -> None:
         "_process_prompt_for_wrap",
         lambda prompt, mode, token_budget=1200: f"MASKED:{prompt}",
     )
-    args = llm_wrap._prepare_args_for_llm(("secret@example.com hello",), mode="balanced")
+    args = llm_wrap._prepare_args_for_llm(
+        ("secret@example.com hello",), mode="balanced"
+    )
     assert args[0] == "MASKED:secret@example.com hello"
 
 

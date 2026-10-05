@@ -34,8 +34,8 @@ HEAVY_MODULES = (
 
 # Hard budget after lazy package __init__ fix. Measured cold import of
 # asha.core.text + injection_lite + LiteInjectionDetector() is typically
-# tens of ms; 200ms leaves headroom for Windows antivirus / first-disk hit.
-_COLD_IMPORT_BUDGET_MS = 200.0
+# tens of ms; 200ms (350ms on Windows) leaves headroom for antivirus / disk jitter.
+_COLD_IMPORT_BUDGET_MS = 350.0 if sys.platform == "win32" else 200.0
 
 
 @pytest.fixture(autouse=True)
@@ -90,6 +90,6 @@ def test_cold_import_text_and_injection_lite():
             heavy = ast.literal_eval(line.split("=", 1)[1])
     assert elapsed_ms is not None, proc.stdout
     assert heavy == [], f"lite cold import loaded heavy modules: {heavy}"
-    assert elapsed_ms < _COLD_IMPORT_BUDGET_MS, (
-        f"cold import {elapsed_ms:.0f}ms exceeds {_COLD_IMPORT_BUDGET_MS:.0f}ms budget"
-    )
+    assert (
+        elapsed_ms < _COLD_IMPORT_BUDGET_MS
+    ), f"cold import {elapsed_ms:.0f}ms exceeds {_COLD_IMPORT_BUDGET_MS:.0f}ms budget"

@@ -19,7 +19,7 @@ def render() -> None:
     section_header(
         "Journey",
         "End-to-end story",
-        "Five acts — scrub the ticket, then leash the agent.",
+        "Five acts: scrub the ticket, then leash the agent.",
     )
 
     if st.button("Play story", type="primary", key="story_run"):
@@ -53,14 +53,14 @@ def render() -> None:
                 (
                     "Act 5",
                     "Secure outcome",
-                    "Scrub first, then leash the agent — safer AI operations.",
+                    "Scrub first, then leash the agent for safer AI operations.",
                 ),
             ]
         )
 
-        with st.expander("Act 1 — raw ticket", expanded=True):
+        with st.expander("Act 1: raw ticket", expanded=True):
             st.code(ticket, language="text")
-        with st.expander("Act 2/3 — after process()", expanded=True):
+        with st.expander("Act 2/3: after process()", expanded=True):
             st.code(cleaned.output, language="text")
 
         runtime = make_runtime(warn_policy="strict")

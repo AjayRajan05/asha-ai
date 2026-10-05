@@ -61,6 +61,8 @@ nav:
       - Compliance: compliance.md
       - Roadmap: roadmap.md
       - Production readiness (0.4.2): production-readiness.md
+      - Threat Model: security/threat-model.md
+      - Developer Preview: release/developer-preview.md
       - Experimental features: experimental-features.md
   - Support:
       - Support policy: support.md

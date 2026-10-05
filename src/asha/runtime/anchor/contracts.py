@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
+
 @dataclass(frozen=True)
 class MissionContract:
     """
@@ -8,6 +9,7 @@ class MissionContract:
     This is the source of truth for all runtime decisions.
     It must not be mutated after creation.
     """
+
     mission_id: str
     goal: str
     intent_summary: str

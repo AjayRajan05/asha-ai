@@ -47,6 +47,7 @@ else:
         class Response:
             pass
 
+
 from ...utils.dropin import process
 
 
@@ -100,8 +101,7 @@ class ASHAMiddleware(BaseHTTPMiddleware):
         self.privacy = privacy
         self.token_budget = token_budget
         self.endpoints = endpoints or ["/chat", "/completions", "/generate"]
-        self.prompt_fields = prompt_fields or [
-            "prompt", "messages", "input", "text"]
+        self.prompt_fields = prompt_fields or ["prompt", "messages", "input", "text"]
         self.debug_mode = debug_mode
 
     async def dispatch(
@@ -142,8 +142,7 @@ class ASHAMiddleware(BaseHTTPMiddleware):
                 )
 
             # Create new request with processed body
-            processed_request = self._create_processed_request(
-                request, processed_body)
+            processed_request = self._create_processed_request(request, processed_body)
 
             # Continue with processed request
             response = await call_next(processed_request)
@@ -227,9 +226,7 @@ class ASHAMiddleware(BaseHTTPMiddleware):
                 result = proc.to_dict()
 
                 # Update the field in the processed body
-                self._update_field(
-                    processed_body, field_path, proc.output
-                )
+                self._update_field(processed_body, field_path, proc.output)
 
                 # Track processing info
                 processing_info["prompts_processed"] += 1
@@ -246,16 +243,14 @@ class ASHAMiddleware(BaseHTTPMiddleware):
                 if self.debug_mode:
                     print(f"ASHA Debug: Processed field '{field_path}'")
                     print(f"ASHA Debug: Original: {prompt[:100]}...")
-                    print(
-                        f"ASHA Debug: Optimized: {result['optimized'][:100]}...")
+                    print(f"ASHA Debug: Optimized: {result['optimized'][:100]}...")
                     print(
                         f"ASHA Debug: Token reduction: {result.get('token_reduction', 0)}%"
                     )
 
             except Exception as e:
                 if self.debug_mode:
-                    print(
-                        f"ASHA Error processing field '{field_path}': {str(e)}")
+                    print(f"ASHA Error processing field '{field_path}': {str(e)}")
                 # Continue with original prompt if processing fails
                 continue
 
@@ -298,12 +293,10 @@ class ASHAMiddleware(BaseHTTPMiddleware):
                         # Check for message content
                         if "content" in item and isinstance(item["content"], str):
                             prompts.append(
-                                (f"{current_path}[{i}].content",
-                                 item["content"])
+                                (f"{current_path}[{i}].content", item["content"])
                             )
                         # Recursively search nested dicts
-                        prompts.extend(self._find_prompts(
-                            item, f"{current_path}[{i}]"))
+                        prompts.extend(self._find_prompts(item, f"{current_path}[{i}]"))
 
             elif isinstance(value, dict):
                 # Recursively search nested dicts

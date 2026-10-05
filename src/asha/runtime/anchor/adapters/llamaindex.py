@@ -1,4 +1,4 @@
-"""LlamaIndex adapter for ASHA ANCHOR — production parity with CrewAI."""
+"""LlamaIndex adapter for ASHA ANCHOR: production parity with CrewAI."""
 
 from __future__ import annotations
 
@@ -24,7 +24,15 @@ def is_llamaindex_agent(target: Any) -> bool:
     module = type(target).__module__ or ""
     if "llama_index" in module:
         return True
-    workflow_methods = ("query", "chat", "run", "achat", "aquery", "stream_events", "run_step")
+    workflow_methods = (
+        "query",
+        "chat",
+        "run",
+        "achat",
+        "aquery",
+        "stream_events",
+        "run_step",
+    )
     if any(callable(getattr(target, method, None)) for method in workflow_methods):
         return True
     return bool(discover_tools(target))
@@ -61,8 +69,12 @@ class _AnchoredLlamaIndexProxy:
         else:
             initialize_mission(self._runtime, prompt, tools)
 
-    def _execute_and_finalize(self, prompt: str, runner: Any, *args: Any, **kwargs: Any) -> Any:
-        self._bind_mission(prompt, phase=self._runtime.state.baseline_mission is not None)
+    def _execute_and_finalize(
+        self, prompt: str, runner: Any, *args: Any, **kwargs: Any
+    ) -> Any:
+        self._bind_mission(
+            prompt, phase=self._runtime.state.baseline_mission is not None
+        )
         try:
             with bind_runtime(self._runtime):
                 result = runner(*args, **kwargs)
@@ -85,15 +97,21 @@ class _AnchoredLlamaIndexProxy:
         return self._execute_and_finalize(prompt, self._inner.chat, *args, **kwargs)
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
-        prompt = extract_prompt_from_input(kwargs.get("input") or (args[0] if args else ""))
+        prompt = extract_prompt_from_input(
+            kwargs.get("input") or (args[0] if args else "")
+        )
         return self._execute_and_finalize(prompt, self._inner.run, *args, **kwargs)
 
     def run_step(self, *args: Any, **kwargs: Any) -> Any:
-        prompt = extract_prompt_from_input(kwargs.get("input") or (args[0] if args else ""))
+        prompt = extract_prompt_from_input(
+            kwargs.get("input") or (args[0] if args else "")
+        )
         return self._execute_and_finalize(prompt, self._inner.run_step, *args, **kwargs)
 
     def stream_events(self, *args: Any, **kwargs: Any) -> Iterator[Any]:
-        prompt = extract_prompt_from_input(kwargs.get("input") or (args[0] if args else ""))
+        prompt = extract_prompt_from_input(
+            kwargs.get("input") or (args[0] if args else "")
+        )
         self._bind_mission(prompt)
         with bind_runtime(self._runtime):
             events = list(self._inner.stream_events(*args, **kwargs))
@@ -104,7 +122,9 @@ class _AnchoredLlamaIndexProxy:
 
     async def aquery(self, *args: Any, **kwargs: Any) -> Any:
         prompt = str(kwargs.get("str_or_query_bundle") or (args[0] if args else ""))
-        self._bind_mission(prompt, phase=self._runtime.state.baseline_mission is not None)
+        self._bind_mission(
+            prompt, phase=self._runtime.state.baseline_mission is not None
+        )
         try:
             with bind_runtime(self._runtime):
                 result = await self._inner.aquery(*args, **kwargs)
@@ -115,7 +135,9 @@ class _AnchoredLlamaIndexProxy:
 
     async def achat(self, *args: Any, **kwargs: Any) -> Any:
         prompt = str(kwargs.get("message") or (args[0] if args else ""))
-        self._bind_mission(prompt, phase=self._runtime.state.baseline_mission is not None)
+        self._bind_mission(
+            prompt, phase=self._runtime.state.baseline_mission is not None
+        )
         try:
             with bind_runtime(self._runtime):
                 result = await self._inner.achat(*args, **kwargs)

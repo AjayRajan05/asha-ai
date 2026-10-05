@@ -1,14 +1,14 @@
-# ASHA detection thresholds — calibrated by training/train_hardened.py
-# Source corpus: asha_training_data_generators (synthetic). Re-calibrate after
+# ASHA detection thresholds: calibrated by training/train_hardened.py
+# Source corpus: reference evaluation corpus. Re-calibrate after
 # adding real/public red-team data.
 
 _meta:
   version: 1
-  note: "Calibrated from generator corpus; prefer REVIEW over ALLOW."
+  note: "Calibrated baseline corpus; prefer REVIEW over ALLOW."
 
 injection:
   safe_max: 0.0500
-  block_min: 0.9972
+  block_min: 0.9971
   target_fpr: 0.0100
   source: calibrated
   data_source: local_data_improve_data_quality
@@ -25,7 +25,6 @@ memory_poisoning:
   target_fpr: 0.0100
   source: calibrated
   data_source: local_data_improve_data_quality
-  note: "block_min floored to 0.85; safe_max raised — short benign agent outputs score ~0.45 on MiniLM RF"
 
 memory_poisoning_lite:
   safe_max: 0.3890

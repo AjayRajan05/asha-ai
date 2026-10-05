@@ -96,8 +96,7 @@ class VerificationStage(BaseStage):
         )
 
         # Step 4: Collect performance metrics
-        performance_metrics = self._collect_performance_metrics(
-            context, config)
+        performance_metrics = self._collect_performance_metrics(context, config)
 
         # Step 5: Final validation
         final_validation = self._final_validation(
@@ -205,8 +204,7 @@ class VerificationStage(BaseStage):
 
         # Check mask format validation
         if consistency_config.get("mask_format_validation", True):
-            invalid_masks = re.findall(
-                r"\[[^\]]*\[", text)  # Unclosed brackets
+            invalid_masks = re.findall(r"\[[^\]]*\[", text)  # Unclosed brackets
             for invalid_mask in invalid_masks:
                 issues.append(
                     {
@@ -218,8 +216,7 @@ class VerificationStage(BaseStage):
 
         # Check for partial masks
         if consistency_config.get("no_partial_masks", True):
-            partial_masks = re.findall(
-                r"\[\w+_[a-zA-Z]", text)  # Incomplete hash masks
+            partial_masks = re.findall(r"\[\w+_[a-zA-Z]", text)  # Incomplete hash masks
             for partial_mask in partial_masks:
                 issues.append(
                     {
@@ -257,16 +254,14 @@ class VerificationStage(BaseStage):
 
         # Estimate false positive rate (simplified)
         # This would ideally use ground truth data
-        estimated_fp_rate = self._estimate_false_positive_rate(
-            entities, masked_text)
+        estimated_fp_rate = self._estimate_false_positive_rate(entities, masked_text)
 
         # Calculate processing quality
         processing_quality = self._calculate_processing_quality(
             original_text, masked_text, entities
         )
 
-        overall_score = (coverage + (1 - estimated_fp_rate) +
-                         processing_quality) / 3
+        overall_score = (coverage + (1 - estimated_fp_rate) + processing_quality) / 3
 
         return {
             "masking_coverage": coverage,
@@ -274,8 +269,7 @@ class VerificationStage(BaseStage):
             "processing_quality": processing_quality,
             "overall_score": overall_score,
             "passed": (
-                coverage >= quality_thresholds.get(
-                    "minimum_masking_coverage", 0.8)
+                coverage >= quality_thresholds.get("minimum_masking_coverage", 0.8)
                 and estimated_fp_rate
                 <= quality_thresholds.get("maximum_false_positive_rate", 0.1)
                 and processing_quality
@@ -308,15 +302,13 @@ class VerificationStage(BaseStage):
         quality_score = 0.0
 
         # Text preservation (should be similar length and structure)
-        length_ratio = len(masked_text) / \
-            len(original_text) if original_text else 0
+        length_ratio = len(masked_text) / len(original_text) if original_text else 0
         if 0.7 <= length_ratio <= 1.3:  # Reasonable length range
             quality_score += 0.3
 
         # Entity coverage
         if entities:
-            high_confidence_entities = [
-                e for e in entities if e.confidence >= 0.7]
+            high_confidence_entities = [e for e in entities if e.confidence >= 0.7]
             coverage_score = len(high_confidence_entities) / len(entities)
             quality_score += coverage_score * 0.4
 
@@ -345,8 +337,7 @@ class VerificationStage(BaseStage):
             )
             metrics["total_execution_time_ms"] = total_time
             metrics["average_stage_time_ms"] = (
-                total_time /
-                len(context.stage_results) if context.stage_results else 0
+                total_time / len(context.stage_results) if context.stage_results else 0
             )
 
             # Stage-specific times
@@ -394,8 +385,7 @@ class VerificationStage(BaseStage):
 
         if context.debug_enabled:
             print(f"[verification] Leak check: {leak_detection['passed']}")
-            print(
-                f"[verification] Consistency check: {consistency_check['passed']}")
+            print(f"[verification] Consistency check: {consistency_check['passed']}")
             print(f"[verification] Quality check: {quality_check['passed']}")
             if not quality_check["passed"]:
                 print(f"[verification] Quality details: {quality_check}")
@@ -461,8 +451,7 @@ class VerificationStage(BaseStage):
         recommendations = []
 
         if not final_validation["passed"]:
-            recommendations.append(
-                "Address critical issues before using this result")
+            recommendations.append("Address critical issues before using this result")
 
         if leak_detection["leak_count"] > 0:
             recommendations.append(
@@ -480,8 +469,7 @@ class VerificationStage(BaseStage):
             )
 
         if quality_check["processing_quality"] < 0.7:
-            recommendations.append(
-                "Improve text processing and masking strategies")
+            recommendations.append("Improve text processing and masking strategies")
 
         if not recommendations:
             recommendations.append("Verification passed successfully")

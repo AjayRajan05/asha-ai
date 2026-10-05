@@ -52,9 +52,7 @@ def estimate_tok_per_sec(
     fit_type: str,
 ) -> float | None:
     if fit_type == "cpu_only" or gpu is None:
-        params_b = (
-            (model.parameter_count_active or model.parameter_count) / 1e9
-        )
+        params_b = (model.parameter_count_active or model.parameter_count) / 1e9
         return max(0.5, params_b * 0.4)
 
     bandwidth = gpu.memory_bandwidth_gbps
@@ -68,9 +66,7 @@ def estimate_tok_per_sec(
     fit = _FIT_FACTOR.get(fit_type, 0.5)
 
     if model.is_moe and model.parameter_count_active and model.parameter_count:
-        active_ratio = max(
-            model.parameter_count_active / model.parameter_count, 0.05
-        )
+        active_ratio = max(model.parameter_count_active / model.parameter_count, 0.05)
         read_ratio = min(1.0, max(active_ratio, 0.25))
         weight_bytes = int(weight_bytes * read_ratio)
 

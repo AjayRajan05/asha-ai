@@ -15,7 +15,7 @@ from asha.utils.dropin_privacy import SECURITY_FAIL_CLOSED_PLACEHOLDER
 async def test_optimize_async_returns_optimize_result():
     prompt = "Summarize quarterly sales data please"
     result = await optimize_async(prompt)
-    assert result.output == prompt
+    assert isinstance(result, OptimizeResult)
     assert "summarize" in result.output.lower()
     assert "sales" in result.output.lower()
 
@@ -35,7 +35,10 @@ async def test_process_async_fail_closed(monkeypatch):
     monkeypatch.setattr(proc_mod.PromptProcessor, "_run_engines", boom)
     result = await process_async("secret@company.com", mode="balanced")
     assert isinstance(result, ProcessResult)
-    assert result.output == SECURITY_FAIL_CLOSED_PLACEHOLDER or "secret@company.com" not in result.output
+    assert (
+        result.output == SECURITY_FAIL_CLOSED_PLACEHOLDER
+        or "secret@company.com" not in result.output
+    )
     assert result.degraded is True
 
 

@@ -1,6 +1,6 @@
 # Examples
 
-**ASHA v0.4.2** — copy-paste patterns with valid imports.
+**ASHA v0.4.2**: copy-paste patterns with valid imports.
 
 ---
 
@@ -222,7 +222,7 @@ pip install -e ".[demo]"
 streamlit run examples/showcase/streamlit_app.py
 ```
 
-Covers security console, ANCHOR mission control, document scrubber, live LLM, playground, architecture, and benchmarks — using the same APIs as the snippets above.
+Covers security console, ANCHOR mission control, document scrubber, live LLM, playground, architecture, and benchmarks (using the same APIs as the snippets above).
 
 Details: [`examples/showcase/README.md`](https://github.com/AjayRajan05/ASHA/blob/main/examples/showcase/README.md).
 

@@ -2,7 +2,7 @@
 
 **ANCHOR** is ASHA's mission-aware governance layer for autonomous agents. It keeps agents aligned with a compiled mission contract, gates dangerous tool calls, detects suspicious action chains, validates plan outputs, and enforces OS-level side-effect constraints during tool execution.
 
-Governance runs at **runtime** — agents and prompts do not need to mention ANCHOR.
+Governance runs at **runtime**: agents and prompts do not need to mention ANCHOR.
 
 !!! note "Developer preview"
     ANCHOR is preview in v0.4.2. Pin `asha==0.4.2` and validate on your agent stack. See [status.md](status.md).
@@ -162,7 +162,7 @@ from langgraph.graph import StateGraph
 from asha.runtime.anchor.adapters import anchor_graph
 
 graph = StateGraph(...)
-# wrap before or after compile — both work
+# wrap before or after compile (both work)
 app = anchor_graph(graph.compile(), risk_tolerance="LOW", interactive=False)
 app.invoke({"messages": [...]})
 ```
@@ -206,7 +206,7 @@ result = server.call_tool("read_file", {"path": "data/trends.csv"})
 | Mode | Behavior |
 |------|----------|
 | `off` | No sandbox enforcement |
-| `auto` (default) | In-process hooks: guarded `open()`, blocked network modules (best-effort — not a full OS jail) |
+| `auto` (default) | In-process hooks: guarded `open()`, blocked network modules (best-effort, not a full OS jail) |
 | `hard` / `subprocess` | Tool runs in an isolated child process |
 
 ```python
@@ -216,7 +216,7 @@ agent = anchor(Agent(provider="mock", model="mock"), isolation="hard", interacti
 ```
 
 Supported modes: `off`, `auto` (in-process hooks), `hard` / `subprocess` (child process).  
-This is **preview isolation**, not a container/seccomp jail. Container backends (`docker`, `bwrap`) raise a clear error and are deferred to 0.5.x — use `hard` today when you need process isolation.
+This is **preview isolation**, not a container/seccomp jail. Container backends (`docker`, `bwrap`) raise a clear error and are deferred to 0.5.x; use `hard` today when you need process isolation.
 
 ---
 
@@ -277,7 +277,7 @@ Public docs describe the governance shape, not internal detector scores or calib
 | `ASHA_ANCHOR_INTERACTIVE` | auto (TTY) | `0` disables human approval prompts |
 | `ASHA_ANCHOR_WARN_POLICY` | permissive (headless) | `strict` escalates WARN / REVIEW more aggressively |
 | `ASHA_ANCHOR_TELEMETRY` | off | `1` enables local JSONL telemetry (opt-in) |
-| `ASHA_ANCHOR_TELEMETRY_PATH` | — | Explicit telemetry file path (also enables logging) |
+| `ASHA_ANCHOR_TELEMETRY_PATH` | none | Explicit telemetry file path (also enables logging) |
 
 ---
 

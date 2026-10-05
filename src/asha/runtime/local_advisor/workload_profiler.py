@@ -162,9 +162,7 @@ def profile_workload(
     max_tokens = max(compiled_tokens)
     context_length = max(2048, int(p95_tokens * 1.2))
 
-    avg_complexity = (
-        sum(complexities) / len(complexities) if complexities else 0.5
-    )
+    avg_complexity = sum(complexities) / len(complexities) if complexities else 0.5
 
     intent_rank = sorted(intent_counts.items(), key=lambda x: x[1], reverse=True)
     top_intents: List[IntentType] = []

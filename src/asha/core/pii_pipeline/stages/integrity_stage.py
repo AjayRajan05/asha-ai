@@ -255,8 +255,7 @@ class IntegrityStage(BaseStage):
         masked_words = set(masked_text.lower().split())
 
         # Remove mask tokens from comparison
-        non_mask_words = {
-            word for word in masked_words if not word.startswith("[")}
+        non_mask_words = {word for word in masked_words if not word.startswith("[")}
 
         # Calculate overlap
         if original_words:
@@ -302,8 +301,7 @@ class IntegrityStage(BaseStage):
             length_score = min(1.0, len(entity.text) / 20)
 
             # Combined importance
-            importance[entity.text] = (
-                base_importance + type_score + length_score) / 3
+            importance[entity.text] = (base_importance + type_score + length_score) / 3
 
         return importance
 
@@ -359,14 +357,12 @@ class IntegrityStage(BaseStage):
             for pattern, replacement in incomplete_patterns:
                 if re.search(pattern, repaired_text):
                     repaired_text = re.sub(pattern, replacement, repaired_text)
-                    repairs_applied.append(
-                        f"Fixed incomplete phrase: {pattern}")
+                    repairs_applied.append(f"Fixed incomplete phrase: {pattern}")
 
         # Improve flow
         if repair_strategies.get("improve_flow", True):
             # Fix spacing around masks
-            repaired_text = re.sub(
-                r"\s*\[\w+\]\s*", " [MASKED] ", repaired_text)
+            repaired_text = re.sub(r"\s*\[\w+\]\s*", " [MASKED] ", repaired_text)
             repaired_text = re.sub(r"\s+", " ", repaired_text).strip()
 
             if repaired_text != text:
@@ -387,8 +383,7 @@ class IntegrityStage(BaseStage):
             "word_count_masked": len(masked_text.split()),
             "entity_count": len(entities),
             "masking_ratio": (
-                len(re.findall(r"\[\w+.*?\]", masked_text)
-                    ) / len(masked_text.split())
+                len(re.findall(r"\[\w+.*?\]", masked_text)) / len(masked_text.split())
                 if masked_text.split()
                 else 0
             ),

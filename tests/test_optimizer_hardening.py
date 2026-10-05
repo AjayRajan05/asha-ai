@@ -74,7 +74,7 @@ def test_safety_constraints_uses_config_floor_not_magic_literal() -> None:
     bands = get_bands("optimizer_similarity", thresholds=cfg)
     constraints = SafetyConstraints(similarity_mode="jaccard")
     original = "alpha beta gamma delta"
-    # Partial overlap — score depends on Jaccard; patch floor very high to force fail
+    # Partial overlap: score depends on Jaccard; patch floor very high to force fail
     optimized = "alpha beta epsilon zeta"
     score = jaccard_similarity(original, optimized)
     with patch(

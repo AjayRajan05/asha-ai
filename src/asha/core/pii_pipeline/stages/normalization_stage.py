@@ -22,8 +22,8 @@ class NormalizationStage(BaseStage):
     def __init__(self) -> None:
         super().__init__("normalization")
 
-        # Obfuscation patterns — only bracketed/parenthesized forms.
-        # Never rewrite bare "at"/"dot" (breaks "email me at alice@…" and
+        # Obfuscation patterns: only bracketed/parenthesized forms.
+        # Never rewrite bare "at"/"dot" (breaks "email me at alice@..." and
         # "cancellation").
         self.obfuscation_patterns = {
             r"\s*\[\s*at\s*\]\s*": "@",
@@ -33,7 +33,7 @@ class NormalizationStage(BaseStage):
             r"[-\s]\*[-\s]": "-",
         }
 
-        # Format standardization — credit cards first so phone/SSN patterns
+        # Format standardization: credit cards first so phone/SSN patterns
         # cannot carve a 16-digit PAN into ###-###-#### fragments.
         self.format_patterns = [
             (
@@ -137,8 +137,7 @@ class NormalizationStage(BaseStage):
 
         # Apply obfuscation patterns
         for pattern, replacement in self.obfuscation_patterns.items():
-            normalized = re.sub(pattern, replacement,
-                                normalized, flags=re.IGNORECASE)
+            normalized = re.sub(pattern, replacement, normalized, flags=re.IGNORECASE)
 
         return normalized
 
@@ -228,8 +227,7 @@ class NormalizationStage(BaseStage):
         self.add_debug_info(
             context,
             "Normalization fallback used",
-            {"reason": "main_normalization_failed",
-                "fallback_type": "basic_cleanup"},
+            {"reason": "main_normalization_failed", "fallback_type": "basic_cleanup"},
         )
 
         return StageResult(

@@ -1,6 +1,6 @@
 # Private / auto-downloaded detector artifacts
 
-## Decision (Phase 2.1 — recommended option A)
+## Decision (Phase 2.1: recommended option A)
 
 | Path | Who | What |
 |------|-----|------|
@@ -18,7 +18,7 @@ Public git tree still must **not** commit raw `training/`, datasets, or unpackag
    `https://github.com/AjayRajan05/ASHA/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`
 2. Extracted to: `~/.cache/asha/models` (or `$XDG_CACHE_HOME/asha/models`, or `ASHA_MODELS_CACHE`)
 3. Marker file: `.asha-models-0.4.2.ok`
-4. No interactive consent — this is library-owned fetch for the hardened path.
+4. No interactive consent: this is library-owned fetch for the hardened path.
 5. If download fails → clear warning + **lite/heuristic fallback** (never silent “secure”).
 
 ### Env knobs
@@ -29,13 +29,13 @@ Public git tree still must **not** commit raw `training/`, datasets, or unpackag
 | `ASHA_MODELS_URL` | Override download URL (`file:` URLs supported) |
 | `ASHA_MODELS_ZIP` | Local zip path fallback |
 | `ASHA_MODELS_CACHE` | Override cache directory |
-| `ASHA_DISABLE_MODEL_DOWNLOAD=1` | CI / air-gap — never fetch |
+| `ASHA_DISABLE_MODEL_DOWNLOAD=1` | CI / air-gap: never fetch |
 
 ---
 
 ## Maintainer: build & publish the bundle
 
-**Prefer real training** (see [TRAINING.md](TRAINING.md)) — not the bootstrap stub:
+**Prefer real training** (see [TRAINING.md](TRAINING.md)), not the bootstrap stub:
 
 ```bash
 python -m pip install -e ".[hardened]"
@@ -80,6 +80,6 @@ alignment/
 
 ## Public messaging
 
-- Everyone: `pip install asha-ai` — works offline, no models.
-- Hardened: `pip install asha-ai[hardened]` — models download automatically on first hardened detect.
+- Everyone: `pip install asha-ai` (works offline, no models).
+- Hardened: `pip install asha-ai[hardened]` (models download automatically on first hardened detect).
 - Never document exact threshold cutoffs or training recipes in public `docs/`.

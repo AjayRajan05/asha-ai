@@ -27,9 +27,9 @@ def test_optimize_tokens_does_not_import_security_module():
     ]
     for node in imports:
         if isinstance(node, ast.ImportFrom) and node.module:
-            assert "security" not in node.module, (
-                f"optimize_tokens must not import {node.module}"
-            )
+            assert (
+                "security" not in node.module
+            ), f"optimize_tokens must not import {node.module}"
         for alias in getattr(node, "names", []):
             name = alias.name
             assert "security" not in name.lower()

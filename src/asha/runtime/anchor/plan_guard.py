@@ -1,4 +1,4 @@
-"""Plan and agent-output governance — detect narrated success without tool receipts."""
+"""Plan and agent-output governance: detect narrated success without tool receipts."""
 
 from __future__ import annotations
 
@@ -82,7 +82,9 @@ def evaluate_plan_output(
     return PlanVerdict(Verdict.ALLOW, "Plan output acceptable.", 0.0)
 
 
-def tools_used_from_history(action_types_and_payloads: Iterable[Tuple[str, dict]]) -> List[str]:
+def tools_used_from_history(
+    action_types_and_payloads: Iterable[Tuple[str, dict]],
+) -> List[str]:
     names: List[str] = []
     for action_type, payload in action_types_and_payloads:
         if action_type == "tool_call":

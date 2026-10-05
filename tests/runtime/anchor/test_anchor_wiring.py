@@ -67,9 +67,10 @@ def test_finalize_session_emits_risk_summary() -> None:
     assert runtime.state.risk_history
     assert len(runtime.state.risk_history) >= 1
     assert getattr(summary, "alignment_score", None) == 1.0
-    assert str(getattr(summary, "severity", "")).upper().endswith("LOW") or getattr(
-        summary, "total_risk_score", 1
-    ) == 0.0
+    assert (
+        str(getattr(summary, "severity", "")).upper().endswith("LOW")
+        or getattr(summary, "total_risk_score", 1) == 0.0
+    )
     assert "risk" in getattr(summary, "explanation", "").lower() or getattr(
         summary, "explanation", ""
     )
@@ -96,5 +97,7 @@ def test_tools_used_from_history_fallback_in_plan_guard() -> None:
 def test_mission_session_refresh_preserves_baseline_id() -> None:
     session = MissionSession(MissionCompiler())
     baseline = session.initialize("Baseline mission.", context={"local_only": True})
-    merged = session.refresh_phase("Phase two.", context={"available_tools": ["load_data"]})
+    merged = session.refresh_phase(
+        "Phase two.", context={"available_tools": ["load_data"]}
+    )
     assert merged.mission_id == baseline.mission_id

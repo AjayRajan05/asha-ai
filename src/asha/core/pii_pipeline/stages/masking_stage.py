@@ -116,7 +116,7 @@ class MaskingStage(BaseStage):
         }
 
         for entity in entities:
-            # Skip low-confidence entities — hybrid default must not mask
+            # Skip low-confidence entities: hybrid default must not mask
             # dictionary/heuristic name FPs that scoring left in the pipeline.
             if float(entity.confidence) < float(
                 config.get("min_mask_confidence", 0.55)
@@ -157,8 +157,7 @@ class MaskingStage(BaseStage):
             )
 
         # Step 4: Validate masking
-        validation_result = self._validate_masking(
-            masked_text, entity_mapping, config)
+        validation_result = self._validate_masking(masked_text, entity_mapping, config)
 
         self.add_debug_info(
             context,

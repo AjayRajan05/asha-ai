@@ -141,8 +141,7 @@ class ScoringStage(BaseStage):
         entities = self._calculate_base_confidence(entities, config)
 
         # Step 2: Apply contextual adjustments
-        entities = self._apply_contextual_adjustments(
-            entities, context, config)
+        entities = self._apply_contextual_adjustments(entities, context, config)
 
         # Step 3: Normalize confidence scores
         entities = self._normalize_confidence(entities, config)
@@ -217,7 +216,7 @@ class ScoringStage(BaseStage):
     def _determine_detection_method(self, entity: PIIEntity) -> str:
         """Determine the detection method for an entity"""
         # Detectors tag metadata as "detector"; scoring historically used
-        # "detection_method" — honour both.
+        # "detection_method", so support both.
         for key in ("detection_method", "detector"):
             if key in entity.metadata and entity.metadata[key]:
                 return str(entity.metadata[key])
@@ -319,8 +318,7 @@ class ScoringStage(BaseStage):
                         ) / len(booster_config.get("personal_words", []))
 
                 # Check for context words near the entity
-                entity_window = self._get_entity_context(
-                    entity, context, 50).lower()
+                entity_window = self._get_entity_context(entity, context, 50).lower()
                 for word in booster_config.get("context_words", []):
                     if re.search(rf"\b{re.escape(word)}\b", entity_window):
                         entity.confidence += booster_config.get(
@@ -332,9 +330,9 @@ class ScoringStage(BaseStage):
             if entity.pii_type not in self._STRUCTURED_PII:
                 for word in reducers.get("example_words", []):
                     if re.search(rf"\b{re.escape(word)}\b", teaching_text):
-                        entity.confidence -= reducers.get("reduction_amount", 0.25) / len(
-                            reducers.get("example_words", [])
-                        )
+                        entity.confidence -= reducers.get(
+                            "reduction_amount", 0.25
+                        ) / len(reducers.get("example_words", []))
 
             # Ensure confidence stays within bounds
             entity.confidence = max(0.0, min(1.0, entity.confidence))
@@ -355,7 +353,17 @@ class ScoringStage(BaseStage):
         return context.current_text[start:end]
 
     _STRUCTURED_PII = frozenset(
-        {"email", "phone", "ssn", "credit_card", "aadhaar", "pan", "api_key", "jwt_token", "bearer_token"}
+        {
+            "email",
+            "phone",
+            "ssn",
+            "credit_card",
+            "aadhaar",
+            "pan",
+            "api_key",
+            "jwt_token",
+            "bearer_token",
+        }
     )
 
     def _normalize_confidence(
@@ -408,8 +416,7 @@ class ScoringStage(BaseStage):
         self, entities: List[PIIEntity], config: Dict[str, Any]
     ) -> List[PIIEntity]:
         """Apply confidence threshold filtering"""
-        thresholds = config.get(
-            "thresholds", self.scoring_config["thresholds"])
+        thresholds = config.get("thresholds", self.scoring_config["thresholds"])
         min_confidence = thresholds.get("minimum_confidence", 0.55)
 
         filtered_entities = []

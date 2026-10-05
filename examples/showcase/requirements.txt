@@ -1,4 +1,4 @@
-# ASHA Streamlit showcase — UI dependencies
+# ASHA Streamlit showcase: UI dependencies
 # Install from repo root:
 #   pip install -e ".[demo]"
 # or:

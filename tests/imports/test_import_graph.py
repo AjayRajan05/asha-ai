@@ -38,7 +38,12 @@ def test_integrations_wrap_llm_importable() -> None:
     with pytest.raises(ValueError) as exc_info:
         mod.wrap_llm(_Bad())
     message = str(exc_info.value).lower()
-    assert "unsupported" in message or "client" in message or "adapter" in message or "wrap" in message
+    assert (
+        "unsupported" in message
+        or "client" in message
+        or "adapter" in message
+        or "wrap" in message
+    )
 
 
 def test_compat_legacy_results_importable() -> None:

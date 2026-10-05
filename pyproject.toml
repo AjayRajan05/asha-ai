@@ -19,7 +19,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "asha-ai"
 version = "0.4.2"
-description = "ASHA developer preview (0.4.2) — mission-aware agent governance (ANCHOR) plus drop-in LLM security/optimization. pip install asha-ai — import asha. No API key or model download required."
+description = "ASHA developer preview (0.4.2): mission-aware Superintelligence (SI) agent governance (ANCHOR) plus drop-in LLM security and optimization. pip install asha-ai (import asha). No API key or model download required."
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
@@ -30,6 +30,10 @@ maintainers = [
 ]
 keywords = [
     "llm",
+    "superintelligence",
+    "si",
+    "agent-governance",
+    "alignment",
     "security",
     "optimization",
     "privacy",
@@ -58,7 +62,6 @@ dependencies = [
     "pydantic>=2.0.0,<3.0.0",
     "tiktoken>=0.5.0,<2.0.0",
     "requests>=2.28.0,<3.0.0",
-    "python-dotenv>=1.0.0,<2.0.0",
     "click>=8.0.0,<9.0.0",
     # Text-document extraction for PII masking of file inputs (no OCR).
     "pypdf>=4.0.0,<6.0.0",
@@ -73,6 +76,8 @@ dev = [
     "black>=22.0.0,<26.0.0",
     "flake8>=5.0.0,<8.0.0",
     "mypy>=1.0.0,<3.0.0",
+    # dotenv: used in examples/ and local scripts, never in src/asha/
+    "python-dotenv>=1.0.0,<2.0.0",
     # Present on publish/CI runners so lite-path tests that touch ML helpers import cleanly.
     "numpy>=1.23.0,<3.0.0",
 ]
@@ -117,6 +122,10 @@ hardened = [
 # Optional Aho-Corasick accelerator for lite-tier pattern matching (stdlib fallback exists).
 fast = [
     "pyahocorasick>=2.0.0",
+]
+# Optional rich terminal formatting (ANSI fallback exists).
+rich = [
+    "rich>=13.0.0,<15.0.0",
 ]
 fastapi = [
     "fastapi>=0.100.0,<1.0.0",
@@ -175,7 +184,7 @@ demo = [
     "streamlit-extras>=0.4.0,<0.7.0",
 ]
 all = [
-    "asha-ai[openai,anthropic,gemini,ml,hardened,fastapi,flask,django,langchain,instructor,otel,llamaindex,local-advisor,anchor,demo]",
+    "asha-ai[openai,anthropic,gemini,ml,hardened,fastapi,flask,django,langchain,instructor,otel,llamaindex,local-advisor,anchor,demo,rich]",
 ]
 
 [project.urls]
@@ -215,7 +224,7 @@ extend-exclude = '''
 '''
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -240,8 +249,25 @@ module = [
     "asha.integrations.flask.*",
     "asha.runtime.adapters.claude_adapter",
     "asha.runtime.adapters.hf_adapter",
+    "numpy.*",
 ]
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "joblib.*",
+    "sklearn.*",
+    "langdetect.*",
+    "accelerate.*",
+    "django.*",
+    "crewai.*",
+    "kenlm.*",
+    "ahocorasick.*",
+    "cpuinfo.*",
+    "pynvml.*",
+    "numpy.*",
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"

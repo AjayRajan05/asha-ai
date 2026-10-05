@@ -55,7 +55,7 @@ pip install asha-ai[integrations]
 | Instructor | `asha.integrations.composition_strategy` |
 | OpenTelemetry | `asha.integrations.otel` |
 
-Middleware uses `mode="balanced"` or `mode="off"` — not a removed `privacy=` kwarg.
+Middleware uses `mode="balanced"` or `mode="off"` (not a removed `privacy=` kwarg).
 
 ---
 

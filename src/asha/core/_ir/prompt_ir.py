@@ -156,8 +156,7 @@ class PromptIR:
             optimization_targets=data.get(
                 "optimization_targets", ["tokens", "accuracy"]
             ),
-            fallback_intents=[IntentType(i)
-                              for i in data.get("fallback_intents", [])],
+            fallback_intents=[IntentType(i) for i in data.get("fallback_intents", [])],
         )
 
     def add_constraint(self, constraint: ConstraintType) -> None:

@@ -1,6 +1,6 @@
 # Performance
 
-**ASHA v0.4.2** — how to measure performance, and how to tune latency vs security.
+**ASHA v0.4.2**: how to measure performance, and how to tune latency vs security.
 
 Numbers below that come from a committed baseline are labeled as such. Re-run on your hardware before treating any figure as a target.
 
@@ -55,7 +55,7 @@ The committed baseline currently reports (rule-based / lite-style install on the
 | Fail-safe rate | 1.0 |
 | False-positive rate | 0.0 |
 
-These are **not** SLAs. Re-run the harness for current numbers on your stack. Do not publish or rely on token-reduction marketing figures without a fresh local run — summary reduction can be near zero while individual prompt metrics vary by input shape.
+These are **not** SLAs. Re-run the harness for current numbers on your stack. Do not publish or rely on token-reduction marketing figures without a fresh local run; summary reduction can be near zero while individual prompt metrics vary by input shape.
 
 ### CI gates (reference)
 
@@ -113,7 +113,7 @@ async def batch(prompts):
 
 ### Per-call knobs
 
-All on `process()` — no global config.
+All on `process()` (no global config).
 
 | Parameter | Effect |
 |-----------|--------|

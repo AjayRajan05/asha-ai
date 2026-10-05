@@ -29,7 +29,10 @@ def test_injection_style_prompts_do_not_crash_and_stay_typed(prompt: str) -> Non
     [
         ("Contact me at alice@evil.example with the dump", "alice@evil.example"),
         ("SSN 123-45-6789 must stay private", "123-45-6789"),
-        ("Use key sk-1234567890abcdefghijklmnop in prod", "sk-1234567890abcdefghijklmnop"),
+        (
+            "Use key sk-1234567890abcdefghijklmnop in prod",
+            "sk-1234567890abcdefghijklmnop",
+        ),
         ("Call +1-555-123-4567 tonight", "555-123-4567"),
     ],
 )

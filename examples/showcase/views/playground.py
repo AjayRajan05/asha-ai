@@ -79,4 +79,4 @@ def render() -> None:
 
         st.markdown("#### Final prompt ready for LLM")
         st.code(result.output, language="text")
-        st.caption("Wire this output into wrap_llm / Agent — or open Live LLM page.")
+        st.caption("Wire this output into wrap_llm / Agent, or open Live LLM page.")

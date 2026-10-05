@@ -20,7 +20,9 @@ class SandboxManager:
 
     _SUPPORTED = frozenset({"off", "none", "disabled", "auto", "hard", "subprocess"})
 
-    def __init__(self, mode: str = "auto", policy: Optional[SandboxPolicy] = None) -> None:
+    def __init__(
+        self, mode: str = "auto", policy: Optional[SandboxPolicy] = None
+    ) -> None:
         self.mode = (mode or "auto").lower()
         if self.mode in ("docker", "bwrap", "container"):
             raise ValueError(
@@ -34,7 +36,9 @@ class SandboxManager:
             )
         self.policy = policy or SandboxPolicy()
 
-    def apply_mission(self, *, local_only: bool, allowed_write_paths: list[str]) -> None:
+    def apply_mission(
+        self, *, local_only: bool, allowed_write_paths: list[str]
+    ) -> None:
         self.policy = policy_from_mission(
             local_only=local_only,
             allowed_write_paths=allowed_write_paths,

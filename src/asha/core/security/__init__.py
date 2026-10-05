@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Security package — lazy exports so ``injection_lite`` stays stdlib-cheap."""
+"""Security package: lazy exports so ``injection_lite`` stays stdlib-cheap."""
 
 from __future__ import annotations
 

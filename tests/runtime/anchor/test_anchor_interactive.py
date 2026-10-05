@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+import pytest
+
 from asha.exceptions import ASHAAnchorBlocked
 from asha.runtime.anchor.runtime import AnchorRuntime
 
@@ -48,12 +50,10 @@ def test_raise_on_block_after_human_denies() -> None:
     )
 
     with patch("builtins.input", return_value="n"):
-        try:
+        with pytest.raises(ASHAAnchorBlocked):
             runtime.evaluate_action_request(
                 "tool_call",
                 {"tool_name": "network_exfil", "arguments": "{}"},
                 raise_on_block=True,
             )
-            assert False, "expected ASHAAnchorBlocked"
-        except ASHAAnchorBlocked:
-            pass
+

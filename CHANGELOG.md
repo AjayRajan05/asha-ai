@@ -13,12 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Package rename** — `privysha` → `asha` on PyPI and in imports (`from asha import ...`).
-- **ANCHOR runtime** — mission-aware agent governance: action, memory, chain, and plan guards; human approval; OS sandbox (`auto` hooks or `subprocess`).
-- **Framework adapters** — CrewAI, LangChain, AutoGen, LlamaIndex, MCP, LangGraph, `asha.Agent`, and generic duck-typed agents via `anchor()` / `anchor_any()`.
-- **ANCHOR extras** — `asha-ai[crewai]`, `asha-ai[langchain]`, `asha-ai[langgraph]`, `asha-ai[llamaindex]`, `asha-ai[mcp]`, and meta `asha-ai[anchor]`.
-- **Mission-drift gate** — `tests/fixtures/anchor/mission_drift.jsonl` with CI coverage.
-- **CLI** — `asha` entry point (replaces `privysha`).
+- **Package rename**: `privysha` → `asha` on PyPI and in imports (`from asha import ...`).
+- **ANCHOR runtime**: mission-aware agent governance: action, memory, chain, and plan guards; human approval; OS sandbox (`auto` hooks or `subprocess`).
+- **Framework adapters**: CrewAI, LangChain, AutoGen, LlamaIndex, MCP, LangGraph, `asha.Agent`, and generic duck-typed agents via `anchor()` / `anchor_any()`.
+- **ANCHOR extras**: `asha-ai[crewai]`, `asha-ai[langchain]`, `asha-ai[langgraph]`, `asha-ai[llamaindex]`, `asha-ai[mcp]`, and meta `asha-ai[anchor]`.
+- **Mission-drift gate**: `tests/fixtures/anchor/mission_drift.jsonl` with CI coverage.
+- **CLI**: `asha` entry point (replaces `privysha`).
 
 ### Changed
 
@@ -211,7 +211,7 @@ drop-in API (`process`, `wrap_llm`, `optimize`, `sanitize`) for general use.
 - **Prompt IR (Intermediate Representation)**: Structured prompt compilation
 - **Model Router**: Automatic provider selection based on task complexity
 - **Debug Tracing**: Complete pipeline visibility and performance metrics
-- **Comprehensive Documentation**: Full ReadTheDocs integration
+- **Documentation**: Full ReadTheDocs integration
 - **PyPI Publishing**: Ready for production distribution
 
 ### Enhanced

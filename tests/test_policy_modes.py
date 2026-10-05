@@ -30,7 +30,12 @@ def test_mode_lite_processes_without_crash():
     assert isinstance(result, ProcessResult)
     out = output_of(result).lower()
     assert len(out) > 0
-    assert "summarize" in out or "document" in out or "quarterly" in out or "revenue" in out
+    assert (
+        "summarize" in out
+        or "document" in out
+        or "quarterly" in out
+        or "revenue" in out
+    )
 
 
 def test_privacy_false_skips_masking_in_balanced():

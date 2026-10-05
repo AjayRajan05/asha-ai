@@ -20,8 +20,9 @@ This enables true one-line integration: `import asha; asha.auto_patch()`
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Iterator, List, Optional
 from functools import wraps
+from contextlib import contextmanager
 
 
 from ..exceptions import ASHAProcessingError
@@ -122,7 +123,7 @@ def auto_patch(
     Patches major LLM SDKs to automatically apply ASHA processing.
 
     .. warning::
-        Experimental in 0.4.2 — prefer ``wrap_llm()``. Emits
+        Experimental in 0.4.2; prefer ``wrap_llm()``. Emits
         ``ASHAExperimentalWarning``.
 
     Args:
@@ -141,8 +142,7 @@ def auto_patch(
     global _asha_enabled, _patch_warning_shown
 
     if providers is None:
-        providers = ["openai", "anthropic",
-                     "google.generativeai", "huggingface"]
+        providers = ["openai", "anthropic", "google.generativeai", "huggingface"]
 
     _asha_enabled = enable
 
@@ -187,8 +187,7 @@ def auto_patch(
     if "openai" in providers:
         try:
             if not _check_version_compatibility("openai", verbose):
-                patch_errors.append(
-                    "OpenAI: Unsupported version - skipping patch")
+                patch_errors.append("OpenAI: Unsupported version - skipping patch")
             else:
                 result = _patch_openai(asha_process, mode, verbose)
                 if result["success"]:
@@ -203,8 +202,7 @@ def auto_patch(
     if "anthropic" in providers:
         try:
             if not _check_version_compatibility("anthropic", verbose):
-                patch_errors.append(
-                    "Anthropic: Unsupported version - skipping patch")
+                patch_errors.append("Anthropic: Unsupported version - skipping patch")
             else:
                 result = _patch_anthropic(asha_process, mode, verbose)
                 if result["success"]:
@@ -328,9 +326,7 @@ def _patch_openai_v1(
             return original_create(self, *args, **kwargs)
 
         try:
-            result = asha_process(
-                prompt, mode=mode, debug=verbose
-            )
+            result = asha_process(prompt, mode=mode, debug=verbose)
             processed_prompt = _coerce_processed(result, prompt)
             kwargs = _replace_prompt_openai(kwargs, processed_prompt)
             if verbose:
@@ -387,9 +383,7 @@ def _patch_openai_legacy(
 
             try:
                 # Process with ASHA
-                result = asha_process(
-                prompt, mode=mode, debug=verbose
-            )
+                result = asha_process(prompt, mode=mode, debug=verbose)
                 processed_prompt = _coerce_processed(result, prompt)
 
                 # Replace prompt in kwargs
@@ -424,9 +418,7 @@ def _patch_openai_legacy(
 
             try:
                 # Process with ASHA
-                result = asha_process(
-                prompt, mode=mode, debug=verbose
-            )
+                result = asha_process(prompt, mode=mode, debug=verbose)
                 processed_prompt = _coerce_processed(result, prompt)
 
                 # Replace prompt in kwargs
@@ -539,8 +531,7 @@ def _patch_google_generativeai(
         return {"success": False, "error": "Google GenerativeAI SDK not installed"}
 
     # Store original functions
-    original_generate_content = getattr(
-        genai.GenerativeModel, "generate_content", None)
+    original_generate_content = getattr(genai.GenerativeModel, "generate_content", None)
 
     if not original_generate_content:
         return {
@@ -561,9 +552,7 @@ def _patch_google_generativeai(
 
         try:
             # Process with ASHA
-            result = asha_process(
-                prompt, mode=mode, debug=verbose
-            )
+            result = asha_process(prompt, mode=mode, debug=verbose)
             processed_prompt = _coerce_processed(result, prompt)
 
             # Replace prompt in kwargs
@@ -624,9 +613,7 @@ def _patch_huggingface(
 
         try:
             # Process with ASHA
-            result = asha_process(
-                prompt, mode=mode, debug=verbose
-            )
+            result = asha_process(prompt, mode=mode, debug=verbose)
             processed_prompt = _coerce_processed(result, prompt)
 
             # Replace prompt in args
@@ -763,9 +750,7 @@ def _unpatch_all() -> None:
 
         pipeline_cls = getattr(hf_pipeline, "Pipeline", None)
         if pipeline_cls is not None:
-            _restore_original(
-                "huggingface:Pipeline.__call__", pipeline_cls, "__call__"
-            )
+            _restore_original("huggingface:Pipeline.__call__", pipeline_cls, "__call__")
     except ImportError:
         pass
 
@@ -795,3 +780,80 @@ def enable_auto_patch() -> None:
     global _asha_enabled
     _asha_enabled = True
     print("[ASHA] Auto-patch enabled")
+
+
+@contextmanager
+def patch_context(
+    providers: Optional[List[str]] = None,
+    mode: str = "balanced",
+    *,
+    client: Optional[Any] = None,
+    profile: Optional[Any] = None,
+    token_budget: int = 1200,
+    rehydrate_pii: Optional[bool] = None,
+    verbose: bool = False,
+) -> Iterator[Any]:
+    """
+    Context manager for temporary, scoped ASHA protection.
+
+    Can be used in two modes:
+
+    1. Client-Scoped Mode (Recommended):
+       Wraps a specific client instance with :class:`~asha.integrations.SecureLLM`
+       without monkey-patching global modules:
+
+       >>> import openai
+       >>> from asha import patch_context, Profile
+       >>> raw_client = openai.OpenAI()
+       >>> with patch_context(client=raw_client, profile=Profile.BALANCED()) as client:
+       ...     response = client.chat.completions.create(...)
+
+    2. Provider-Scoped Mode:
+       Temporarily monkey-patches installed SDK modules (e.g. ``openai``, ``anthropic``)
+       and guarantees un-patching upon exiting the block, even if an exception occurs:
+
+       >>> with patch_context(providers=["openai"], mode="strict"):
+       ...     # OpenAI SDK calls are protected here
+       ...     response = openai.chat.completions.create(...)
+       >>> # OpenAI SDK is completely unpatched and restored here!
+
+    Args:
+        providers: List of SDK provider names to patch when ``client`` is None.
+        mode: Policy mode string ('strict', 'balanced', 'lite', 'off').
+        client: Optional client instance. If provided, client-proxying is used.
+        profile: Optional :class:`~asha.core.policy_config.Profile` preset.
+        token_budget: Max tokens per prompt.
+        rehydrate_pii: Whether to unmask PII in responses.
+        verbose: Emit verbose logging.
+
+    Yields:
+        Secured client proxy if ``client`` was passed, or None for provider mode.
+    """
+    if client is not None:
+        from .llm_wrap import wrap_llm
+
+        secured = wrap_llm(
+            client,
+            mode=mode,
+            profile=profile,
+            token_budget=token_budget,
+            rehydrate_pii=rehydrate_pii,
+        )
+        yield secured
+        return
+
+    # Provider monkey-patching mode
+    prior_active = dict(_patches_applied)
+    try:
+        auto_patch(enable=True, providers=providers, mode=mode, verbose=verbose)
+        yield
+    finally:
+        _unpatch_all()
+        if prior_active:
+            auto_patch(
+                enable=True,
+                providers=list(prior_active.keys()),
+                mode=mode,
+                verbose=False,
+            )
+

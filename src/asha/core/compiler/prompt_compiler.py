@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 from typing import Dict, List, Any, Optional, Union
 from .._ir.prompt_ir import (
     PromptIR,
@@ -225,31 +226,37 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
             "emphasis": "**{text}**",
         }
 
-    def compile(self, ir: PromptIR, optimization_level: str = "standard") -> str:
+    def compile(
+        self,
+        ir: Union[PromptIR, str],
+        optimization_level: str = "standard",
+        preserve_intent: bool = True,
+    ) -> str:
         """
-        Compile Prompt IR into executable prompt.
+        Compile Prompt IR into executable prompt while preserving user content.
 
         Args:
-            ir: Prompt Intermediate Representation
+            ir: Prompt Intermediate Representation or prompt string
             optimization_level: "minimal", "standard", or "comprehensive"
+            preserve_intent: If True (default), strictly preserve original prompt content
 
         Returns:
             Compiled prompt ready for LLM
         """
         # Select compilation strategy based on optimization level
         if optimization_level == "minimal":
-            return self._compile_minimal(ir)
+            return self._compile_minimal(ir, preserve_intent=preserve_intent)
         elif optimization_level == "comprehensive":
-            return self._compile_comprehensive(ir)
+            return self._compile_comprehensive(ir, preserve_intent=preserve_intent)
         else:
-            return self._compile_standard(ir)
+            return self._compile_standard(ir, preserve_intent=preserve_intent)
 
-    def _compile_standard(self, ir: Union[PromptIR, str]) -> str:
-        """Standard compilation with balanced detail and conciseness."""
-
-        # Handle both IR objects and strings
+    def _compile_standard(
+        self, ir: Union[PromptIR, str], preserve_intent: bool = True
+    ) -> str:
+        """Standard compilation with balanced detail, preserving user prompt."""
         if isinstance(ir, str):
-            # Create a default PromptIR object for string input
+            prompt_text = ir
             ir = PromptIR(
                 intent=IntentType.ANALYZE,
                 entity=EntityType.TEXT,
@@ -259,41 +266,44 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
                 extracted_entities=[],
                 parameters={},
             )
+        else:
+            prompt_text = getattr(ir, "original_prompt", "") or ""
 
-        intent = getattr(ir, "intent", IntentType.ANALYZE)
-        template = self.templates.get(
-            intent, self.templates[IntentType.ANALYZE])
+        if not prompt_text.strip():
+            return ""
 
-        # Fill template components
-        task_verb = self.compilation_rules["intent_verbs"][intent]
-        entity_desc = self.compilation_rules["entity_descriptions"][
-            getattr(ir, "entity", EntityType.TEXT)
-        ]
-
-        # Build constraints text
-        constraints_text = self._build_constraints_text(
-            getattr(ir, "constraints", []))
-
-        # Build context text
-        context_text = self._build_context_text(ir)
-
-        # Compile prompt
-        compiled = template.format(
-            task=task_verb,
-            entity=entity_desc,
-            context=context_text,
-            constraints=constraints_text,
+        # Build constraints text if present
+        constraints = getattr(ir, "constraints", [])
+        constraints_text = (
+            self._build_constraints_text(constraints) if constraints else ""
         )
 
-        # Apply post-processing
+        # If intent is abstain or no specific constraints, keep prompt text clean
+        intent = getattr(ir, "intent", IntentType.ABSTAIN)
+        if (
+            intent == IntentType.ABSTAIN
+            or not constraints
+            or constraints_text == "No specific constraints."
+        ):
+            return self._post_process_prompt(prompt_text, ir)
+
+        parts = [prompt_text.strip()]
+        if (
+            constraints_text
+            and constraints_text != "No specific constraints."
+            and constraints_text.lower() not in prompt_text.lower()
+        ):
+            parts.append(f"Requirements:\n{constraints_text}")
+
+        compiled = "\n\n".join(parts)
         return self._post_process_prompt(compiled, ir)
 
-    def _compile_minimal(self, ir: Union[PromptIR, str]) -> str:
+    def _compile_minimal(
+        self, ir: Union[PromptIR, str], preserve_intent: bool = True
+    ) -> str:
         """Minimal compilation for maximum token efficiency."""
-
-        # Handle both IR objects and strings
         if isinstance(ir, str):
-            # Create a default PromptIR object for string input
+            prompt_text = ir
             ir = PromptIR(
                 intent=IntentType.ANALYZE,
                 entity=EntityType.TEXT,
@@ -303,30 +313,20 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
                 extracted_entities=[],
                 parameters={},
             )
+        else:
+            prompt_text = getattr(ir, "original_prompt", "") or ""
 
-        task_verb = self.compilation_rules["intent_verbs"][ir.intent]
-        entity_desc = self.compilation_rules["entity_descriptions"][ir.entity]
+        if not prompt_text.strip():
+            return ""
 
-        # Ultra-compact format
-        minimal_prompt = f"{task_verb.title()} {entity_desc}"
+        return self._post_process_prompt(prompt_text, ir)
 
-        if ir.context:
-            minimal_prompt += f" | {ir.context}"
-
-        if ir.constraints:
-            constraint_text = ", ".join(
-                [c.value for c in ir.constraints[:3]]
-            )  # Limit constraints
-            minimal_prompt += f" | {constraint_text}"
-
-        return minimal_prompt
-
-    def _compile_comprehensive(self, ir: Union[PromptIR, str]) -> str:
-        """Comprehensive compilation with maximum detail and guidance."""
-
-        # Handle both IR objects and strings
+    def _compile_comprehensive(
+        self, ir: Union[PromptIR, str], preserve_intent: bool = True
+    ) -> str:
+        """Comprehensive compilation with structured guidance."""
         if isinstance(ir, str):
-            # Create a default PromptIR object for string input
+            prompt_text = ir
             ir = PromptIR(
                 intent=IntentType.ANALYZE,
                 entity=EntityType.TEXT,
@@ -336,42 +336,49 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
                 extracted_entities=[],
                 parameters={},
             )
+        else:
+            prompt_text = getattr(ir, "original_prompt", "") or ""
+
+        if not prompt_text.strip():
+            return ""
 
         sections = []
 
         # System role
         system_role = self._generate_system_role(ir)
-        sections.append(
-            f"{self.formatting_rules['system_prefix']}{system_role}")
+        sections.append(f"{self.formatting_rules['system_prefix']}{system_role}")
 
-        # Task definition
-        task_verb = self.compilation_rules["intent_verbs"][ir.intent]
-        entity_desc = self.compilation_rules["entity_descriptions"][ir.entity]
-        sections.append(
-            f"{self.formatting_rules['task_prefix']}{task_verb.title()} {entity_desc}"
-        )
+        # Task definition - user's actual prompt text!
+        sections.append(f"{self.formatting_rules['task_prefix']}{prompt_text.strip()}")
 
         # Context
-        if ir.context:
+        context_val = getattr(ir, "context", None)
+        if (
+            context_val
+            and context_val.lower() not in prompt_text.lower()
+        ):
             context_section = self._build_detailed_context(ir)
             sections.append(
                 f"{self.formatting_rules['context_prefix']}{context_section}"
             )
 
         # Constraints and requirements
-        constraints_section = self._build_detailed_constraints(ir)
-        sections.append(
-            f"{self.formatting_rules['constraints_prefix']}{constraints_section}"
-        )
+        if getattr(ir, "constraints", None):
+            constraints_section = self._build_detailed_constraints(ir)
+            if (
+                constraints_section
+                and constraints_section != "Standard quality and ethical guidelines."
+            ):
+                sections.append(
+                    f"{self.formatting_rules['constraints_prefix']}{constraints_section}"
+                )
 
         # Output format
         output_format = self._generate_output_format(ir)
         if output_format:
             sections.append(f"OUTPUT FORMAT:\n{output_format}")
 
-        # Join sections
         compiled = self.formatting_rules["section_separator"].join(sections)
-
         return self._post_process_prompt(compiled, ir)
 
     def _build_constraints_text(self, constraints: List[ConstraintType]) -> str:
@@ -424,8 +431,7 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
             context_items.append(f"• Background: {ir.context}")
 
         if ir.extracted_entities:
-            context_items.append(
-                f"• Key entities: {', '.join(ir.extracted_entities)}")
+            context_items.append(f"• Key entities: {', '.join(ir.extracted_entities)}")
 
         if ir.parameters:
             context_items.append(
@@ -538,16 +544,13 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
             format_requirements.append("Follow the specified format precisely")
 
         if ir.intent in [IntentType.ANALYZE, IntentType.COMPARE]:
-            format_requirements.append(
-                "Provide clear, structured output with sections")
+            format_requirements.append("Provide clear, structured output with sections")
 
         if ir.intent in [IntentType.CLASSIFY, IntentType.VALIDATE]:
-            format_requirements.append(
-                "Include confidence scores and reasoning")
+            format_requirements.append("Include confidence scores and reasoning")
 
         if ir.intent == IntentType.EXTRACT:
-            format_requirements.append(
-                "Present extracted data in organized format")
+            format_requirements.append("Present extracted data in organized format")
 
         return (
             "\n".join(f"• {req}" for req in format_requirements)
@@ -556,21 +559,21 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
         )
 
     def _post_process_prompt(self, prompt: str, ir: PromptIR) -> str:
-        """Apply post-processing optimizations."""
-        # Remove excessive whitespace
-        prompt = " ".join(prompt.split())
-
-        # Ensure proper spacing around punctuation
-        prompt = prompt.replace(" ,", ",").replace(" .", ".")
+        """Apply post-processing optimizations while preserving structure."""
+        # Normalize trailing whitespace per line and limit blank lines
+        lines = [re.sub(r"[ \t]+", " ", line).strip() for line in prompt.splitlines()]
+        cleaned = "\n".join(lines)
+        cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+        cleaned = cleaned.replace(" ,", ",").replace(" .", ".")
 
         # Add final optimization hints if needed
         if ir.is_cost_sensitive():
-            prompt += "\n\nFocus on efficiency and cost-effectiveness."
+            cleaned += "\n\nFocus on efficiency and cost-effectiveness."
 
         if ir.is_time_sensitive():
-            prompt += "\n\nPrioritize speed and quick results."
+            cleaned += "\n\nPrioritize speed and quick results."
 
-        return prompt.strip()
+        return cleaned.strip()
 
     def get_compilation_metrics(
         self, original_prompt: str, compiled_prompt: str, ir: PromptIR
@@ -578,15 +581,16 @@ Follow the user's wording closely. Prefer clarifying questions over inventing in
         """Get compilation metrics for analysis."""
         original_tokens = self._estimate_tokens(original_prompt)
         compiled_tokens = self._estimate_tokens(compiled_prompt)
+        tokens_saved = original_tokens - compiled_tokens
 
         return {
             "original_tokens": original_tokens,
             "compiled_tokens": compiled_tokens,
-            "token_reduction": original_tokens - compiled_tokens,
+            "token_reduction": max(0, tokens_saved),
             "token_reduction_percentage": (
-                ((original_tokens - compiled_tokens) / original_tokens * 100)
-                if original_tokens > 0
-                else 0
+                (tokens_saved / original_tokens * 100)
+                if original_tokens > 0 and tokens_saved > 0
+                else 0.0
             ),
             "intent": ir.intent.value,
             "entity": ir.entity.value,

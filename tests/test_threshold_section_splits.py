@@ -27,7 +27,7 @@ def test_mission_domain_lite_and_hardened_thresholds_differ() -> None:
     assert "mission_domain" in cfg
     assert "mission_domain_lite" in cfg
     assert hardened.safe_max != lite.safe_max, (
-        "mission_domain and mission_domain_lite share the same safe_max — "
+        "mission_domain and mission_domain_lite share the same safe_max; "
         "recalibrate each path independently (do not copy one value into both)"
     )
 

@@ -131,8 +131,7 @@ class OutputShaper:
         )
 
         # Select best template based on existing constraints
-        selected_template = self._select_template(
-            templates, existing_constraints)
+        selected_template = self._select_template(templates, existing_constraints)
 
         # Add shaping constraint to prompt
         shaped_prompt = self._add_shaping_constraint(prompt, selected_template)
@@ -141,8 +140,7 @@ class OutputShaper:
         shaping_type = self._determine_shaping_type(selected_template)
 
         # Estimate output reduction
-        estimated_reduction = self._estimate_reduction(
-            selected_template, intent_type)
+        estimated_reduction = self._estimate_reduction(selected_template, intent_type)
 
         return ShapingResult(
             shaped_prompt=shaped_prompt,

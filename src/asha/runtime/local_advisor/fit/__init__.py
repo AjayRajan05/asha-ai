@@ -16,7 +16,11 @@
 
 from .compatibility import check_compatibility
 from .performance import estimate_tok_per_sec
-from .quantization import effective_quant_type, estimate_weight_bytes, quant_quality_penalty
+from .quantization import (
+    effective_quant_type,
+    estimate_weight_bytes,
+    quant_quality_penalty,
+)
 from .vram import estimate_vram
 
 __all__ = [

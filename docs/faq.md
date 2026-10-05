@@ -28,7 +28,7 @@ A Python library for mission-aware agent governance (`anchor`) and drop-in promp
 from asha import process, sanitize, optimize, Agent, anchor
 ```
 
-Nothing else — no `wrap_llm`, `Pipeline`, or `Processor` at root.
+Nothing else: no `wrap_llm`, `Pipeline`, or `Processor` at root.
 
 ### Where is wrap_llm?
 
@@ -42,7 +42,7 @@ A **`ProcessResult`** dataclass. `str(result)` returns `result.output`.
 
 ### Does process() raise?
 
-- **`mode="balanced"`** (default): fail-open — degraded fallback, `result.degraded=True`
+- **`mode="balanced"`** (default): fail-open with degraded fallback (`result.degraded=True`)
 - **`mode="strict"`**: raises `ASHAProcessingError` on total failure
 
 ### How do I get metrics?
@@ -53,7 +53,7 @@ print(result.metrics.token_reduction_pct)
 print(result.security.pii_detected)
 ```
 
-No `return_metrics=True` — use typed fields.
+No `return_metrics=True`; use typed fields.
 
 ### How do I set pii_mode or reversible?
 
@@ -70,7 +70,7 @@ Top-level `pii_mode=` on `process()` raises `TypeError`. Default `pii_mode` is `
 
 | Mode | Description |
 |------|-------------|
-| `balanced` | Default — security + optimization |
+| `balanced` | Default: security + optimization |
 | `strict` | Fail-closed |
 | `lite` | Minimal policy features |
 | `off` | Passthrough |
@@ -93,7 +93,7 @@ Rule-based installs are typically tens of milliseconds on ordinary prompts; ML p
 
 ### Does process() mask PII in attached documents?
 
-Yes when ASHA can read the file: pass a path/bytes to `sanitize` / `process`, or use `wrap_llm` so local attachments are extracted and masked before the LLM call. Scanned/image-only PDFs need OCR (not included). Provider-only `file_id` uploads without local bytes are not readable — see [security.md](security.md).
+Yes when ASHA can read the file: pass a path/bytes to `sanitize` / `process`, or use `wrap_llm` so local attachments are extracted and masked before the LLM call. Scanned/image-only PDFs need OCR (not included). Provider-only `file_id` uploads without local bytes are not readable (see [security.md](security.md)).
 
 ### What PII is detected?
 

@@ -14,10 +14,19 @@ class SandboxPolicy:
     allow_subprocess: bool = False
     allow_file_write: bool = True
     allowed_write_paths: tuple[str, ...] = ("output/", "data/")
-    blocked_modules: tuple[str, ...] = ("socket", "ftplib", "smtplib", "requests", "httpx", "urllib")
+    blocked_modules: tuple[str, ...] = (
+        "socket",
+        "ftplib",
+        "smtplib",
+        "requests",
+        "httpx",
+        "urllib",
+    )
 
 
-def policy_from_mission(*, local_only: bool, allowed_write_paths: Iterable[str]) -> SandboxPolicy:
+def policy_from_mission(
+    *, local_only: bool, allowed_write_paths: Iterable[str]
+) -> SandboxPolicy:
     write_paths = tuple(allowed_write_paths) if allowed_write_paths else ("output/",)
     return SandboxPolicy(
         allow_network=not local_only,

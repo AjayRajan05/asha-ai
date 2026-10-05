@@ -3,12 +3,14 @@ from typing import List, Dict, Any, Optional
 from .verdicts import ApprovalVerdict, RiskSeverity
 from .contracts import MissionContract
 
+
 @dataclass(frozen=True)
 class ActionEvent:
     action_id: str
     action_type: str  # tool_call, function_call, shell_command, network_request, database_write, file_write
     payload: Dict[str, Any]
     timestamp: float
+
 
 @dataclass(frozen=True)
 class MemoryEvent:
@@ -18,12 +20,14 @@ class MemoryEvent:
     scope: str
     timestamp: float
 
+
 @dataclass(frozen=True)
 class ChainEvent:
     chain_id: str
     actions: List[ActionEvent]
     pattern_detected: Optional[str]
     timestamp: float
+
 
 @dataclass(frozen=True)
 class RiskSummary:
@@ -34,12 +38,14 @@ class RiskSummary:
     severity: RiskSeverity
     explanation: str
 
+
 @dataclass(frozen=True)
 class ApprovalRecord:
     record_id: str
     target_id: str  # id of the action or memory event
     verdict: ApprovalVerdict
     timestamp: float
+
 
 @dataclass
 class AnchorState:

@@ -59,10 +59,11 @@ class PromptOptimizer:
     def optimize(
         self,
         prompt: str,
-        ir: PromptIR,
+        ir: Optional[PromptIR] = None,
         optimization_targets: Optional[List[str]] = None,
         optimization_level: int = 2,
         preserve_format: bool = True,
+        token_budget: Optional[int] = None,
     ) -> Tuple[str, Dict[str, Any]]:
         """
         Optimize prompt using MSDPC.
@@ -73,6 +74,7 @@ class PromptOptimizer:
             optimization_targets: List of optimization targets (not used by MSDPC)
             optimization_level: Optimization level (not used by MSDPC)
             preserve_format: Whether to preserve format structure
+            token_budget: Maximum allowed tokens for the optimized prompt
 
         Returns:
             Tuple of (optimized_prompt, optimization_metrics)
@@ -103,20 +105,23 @@ class PromptOptimizer:
             }
             return prompt, legacy_metrics
 
-        enable_structure = (
-            not preserve_format or structure == "plain"
-        )
-        enable_output_shaping = True  # Always enable output shaping for better results
+        target_reduction = 0.4
+        if token_budget is not None and token_budget > 0:
+            orig_tok = len(prompt.split())
+            if orig_tok > token_budget:
+                target_reduction = min(0.85, max(0.1, (orig_tok - token_budget) / orig_tok))
 
         self.msdpc_optimizer.configure(
-            enable_structure_building=enable_structure,
-            enable_output_shaping=enable_output_shaping,
+            enable_structure_building=False,
+            enable_output_shaping=False,
             enable_templates=False,  # Keep templates disabled for minimal changes
-            target_reduction=0.4,  # 40% target reduction
+            target_reduction=target_reduction,
         )
 
         # Apply MSDPC optimization
-        optimized_prompt, msdpc_metrics = self.msdpc_optimizer.optimize(prompt)
+        optimized_prompt, msdpc_metrics = self.msdpc_optimizer.optimize(
+            prompt, token_budget=token_budget
+        )
 
         # Apply safety constraints check (embedding cosine vs calibrated floor)
         safety_report = self.safety_constraints.get_safety_report(
@@ -127,19 +132,31 @@ class PromptOptimizer:
         if not is_safe:
             # Revert to original if safety violations detected
             optimized_prompt = prompt
-            msdpc_metrics.stages_applied.append(
-                "reverted_due_to_safety_violations")
+            msdpc_metrics.stages_applied.append("reverted_due_to_safety_violations")
+            optimized_tokens = msdpc_metrics.original_tokens
+            token_reduction = 0
+            token_reduction_percentage = 0.0
+            token_savings = 0
+        else:
+            optimized_tokens = msdpc_metrics.optimized_tokens
+            token_reduction = max(
+                0, msdpc_metrics.original_tokens - msdpc_metrics.optimized_tokens
+            )
+            token_reduction_percentage = (
+                msdpc_metrics.token_reduction_percentage
+                if msdpc_metrics.optimized_tokens < msdpc_metrics.original_tokens
+                else 0.0
+            )
+            token_savings = token_reduction
 
         # Convert MSDPC metrics to legacy format for compatibility
         legacy_metrics = {
             "original_tokens": msdpc_metrics.original_tokens,
-            "optimized_tokens": msdpc_metrics.optimized_tokens,
-            "token_reduction": msdpc_metrics.original_tokens
-            - msdpc_metrics.optimized_tokens,
-            "token_reduction_percentage": msdpc_metrics.token_reduction_percentage,
+            "optimized_tokens": optimized_tokens,
+            "token_reduction": token_reduction,
+            "token_reduction_percentage": token_reduction_percentage,
             "optimizations_applied": msdpc_metrics.stages_applied,
-            "token_savings": msdpc_metrics.original_tokens
-            - msdpc_metrics.optimized_tokens,
+            "token_savings": token_savings,
             "cost_savings": 0.0,  # Would need model info for calculation
             "quality_score": (
                 msdpc_metrics.clarity_score
@@ -266,12 +283,14 @@ Performance Classification:
 
     def switch_to_legacy(self) -> None:
         """Legacy mode is deprecated."""
-        raise DeprecationWarning(
-            "Legacy optimizer is deprecated. Use MSDPC instead.")
+        raise DeprecationWarning("Legacy optimizer is deprecated. Use MSDPC instead.")
 
     def benchmark_optimization(self, prompt: str, ir: PromptIR) -> Dict[str, Any]:
         """Benchmark optimization performance using MSDPC."""
-        results: Dict[str, Any] = {"msdpc_enabled": self.use_msdpc, "benchmark_results": {}}
+        results: Dict[str, Any] = {
+            "msdpc_enabled": self.use_msdpc,
+            "benchmark_results": {},
+        }
 
         # Test different optimization strategies
         strategies = ["tokens", "speed", "accuracy", "cost"]
@@ -309,8 +328,7 @@ Performance Classification:
         # Complexity-based recommendations
         complexity = ir.get_complexity_level()
         if complexity == "high":
-            recommendations.append(
-                "Break down complex task into simpler sub-tasks")
+            recommendations.append("Break down complex task into simpler sub-tasks")
             recommendations.append("Consider using comprehensive optimization")
         elif complexity == "low":
             recommendations.append("Minimal optimization should be sufficient")

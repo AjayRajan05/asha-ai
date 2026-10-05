@@ -71,6 +71,7 @@ else:
             def handle(self, *args: Any, **options: Any) -> None:
                 pass
 
+
 _F = TypeVar("_F", bound=Callable[..., Any])
 
 from ...utils.dropin import process
@@ -113,14 +114,11 @@ class ASHAMiddleware(MiddlewareMixin):
             )
 
         super().__init__(get_response)
-        self.privacy = getattr(
-            settings, "ASHA_CONFIG", {}).get("PRIVACY", True)
+        self.privacy = getattr(settings, "ASHA_CONFIG", {}).get("PRIVACY", True)
         self.token_budget = getattr(settings, "ASHA_CONFIG", {}).get(
             "TOKEN_BUDGET", 1200
         )
-        self.debug_mode = getattr(settings, "ASHA_CONFIG", {}).get(
-            "DEBUG_MODE", False
-        )
+        self.debug_mode = getattr(settings, "ASHA_CONFIG", {}).get("DEBUG_MODE", False)
 
         # Default endpoints that typically contain LLM prompts
         self.endpoints = getattr(settings, "ASHA_CONFIG", {}).get(
@@ -188,8 +186,7 @@ class ASHAMiddleware(MiddlewareMixin):
             request.asha_original_data = request_data.copy()
 
             # Extract and process prompts
-            processed_data, processing_info = self._process_prompts(
-                request_data)
+            processed_data, processing_info = self._process_prompts(request_data)
 
             if self.debug_mode:
                 print(
@@ -228,18 +225,13 @@ class ASHAMiddleware(MiddlewareMixin):
         Returns:
             HttpResponse with ASHA headers
         """
-        if (
-            hasattr(request, "asha_processing_info")
-            and request.asha_processing_info
-        ):
+        if hasattr(request, "asha_processing_info") and request.asha_processing_info:
             processing_info = request.asha_processing_info
 
             if processing_info["prompts_processed"] > 0:
                 # Add processing headers
                 response["X-ASHA-Processed"] = "true"
-                response["X-ASHA-Prompts"] = str(
-                    processing_info["prompts_processed"]
-                )
+                response["X-ASHA-Prompts"] = str(processing_info["prompts_processed"])
                 response["X-ASHA-Token-Reduction"] = str(
                     processing_info.get("avg_token_reduction", 0)
                 )
@@ -251,8 +243,7 @@ class ASHAMiddleware(MiddlewareMixin):
                 )
 
                 if self.debug_mode:
-                    processing_time = (
-                        time.time() - request.asha_start_time) * 1000
+                    processing_time = (time.time() - request.asha_start_time) * 1000
                     response["X-ASHA-Processing-Time"] = f"{processing_time:.2f}ms"
 
         return response
@@ -269,7 +260,9 @@ class ASHAMiddleware(MiddlewareMixin):
                 content_type = request.content_type or ""
 
                 if "application/json" in content_type:
-                    return cast(Dict[str, Any], json.loads(request.body.decode("utf-8")))
+                    return cast(
+                        Dict[str, Any], json.loads(request.body.decode("utf-8"))
+                    )
                 elif "application/x-www-form-urlencoded" in content_type:
                     return dict(request.POST)
                 elif "multipart/form-data" in content_type:
@@ -316,9 +309,7 @@ class ASHAMiddleware(MiddlewareMixin):
                 result = proc.to_dict()
 
                 # Update the field in the processed data
-                self._update_field(
-                    processed_data, field_path, proc.output
-                )
+                self._update_field(processed_data, field_path, proc.output)
 
                 # Track processing info
                 processing_info["prompts_processed"] += 1
@@ -339,16 +330,14 @@ class ASHAMiddleware(MiddlewareMixin):
                 if self.debug_mode:
                     print(f"ASHA Debug: Processed field '{field_path}'")
                     print(f"ASHA Debug: Original: {prompt[:100]}...")
-                    print(
-                        f"ASHA Debug: Optimized: {result['optimized'][:100]}...")
+                    print(f"ASHA Debug: Optimized: {result['optimized'][:100]}...")
                     print(
                         f"ASHA Debug: Token reduction: {result.get('token_reduction', 0)}%"
                     )
 
             except Exception as e:
                 if self.debug_mode:
-                    print(
-                        f"ASHA Error processing field '{field_path}': {str(e)}")
+                    print(f"ASHA Error processing field '{field_path}': {str(e)}")
                 # Continue with original prompt if processing fails
                 continue
 
@@ -391,12 +380,10 @@ class ASHAMiddleware(MiddlewareMixin):
                         # Check for message content
                         if "content" in item and isinstance(item["content"], str):
                             prompts.append(
-                                (f"{current_path}[{i}].content",
-                                 item["content"])
+                                (f"{current_path}[{i}].content", item["content"])
                             )
                         # Recursively search nested dicts
-                        prompts.extend(self._find_prompts(
-                            item, f"{current_path}[{i}]"))
+                        prompts.extend(self._find_prompts(item, f"{current_path}[{i}]"))
 
             elif isinstance(value, dict):
                 # Recursively search nested dicts
@@ -461,19 +448,20 @@ class ASHAMiddleware(MiddlewareMixin):
 
 # Optional Django decorators
 try:
-    from django.views.decorators.http import require_http_methods as _require_http_methods
+    from django.views.decorators.http import (
+        require_http_methods as _require_http_methods,
+    )
 
     DJANGO_DECORATORS_AVAILABLE = True
 except ImportError:
     DJANGO_DECORATORS_AVAILABLE = False
 
-    def _require_http_methods(
-        *args: Any, **kwargs: Any
-    ) -> Callable[[_F], _F]:
+    def _require_http_methods(*args: Any, **kwargs: Any) -> Callable[[_F], _F]:
         def decorator(func: _F) -> _F:
             return func
 
         return decorator
+
 
 require_http_methods = _require_http_methods
 
@@ -528,9 +516,7 @@ def asha_view(
                     request.asha_view_metrics = proc.to_dict()
 
                 # Update request data
-                processed_data = cast(
-                    Dict[str, Any], json.loads(proc.output)
-                )
+                processed_data = cast(Dict[str, Any], json.loads(proc.output))
 
             except Exception as e:
                 if debug_metrics:
@@ -584,8 +570,7 @@ if DJANGO_COMMAND_AVAILABLE:
 
         def handle(self, *args: Any, **options: Any) -> None:
             """Test the ASHA middleware integration."""
-            self.stdout.write(self.style.SUCCESS(
-                "Testing ASHA Django integration..."))
+            self.stdout.write(self.style.SUCCESS("Testing ASHA Django integration..."))
 
             # Test basic processing
             test_prompt = "Hey bro analyze this dataset with john@email.com"
@@ -594,10 +579,8 @@ if DJANGO_COMMAND_AVAILABLE:
             self.stdout.write(f"Original: {test_prompt}")
             self.stdout.write(f"Optimized: {result['optimized']}")
             self.stdout.write(f"Token reduction: {result['token_reduction']}%")
-            self.stdout.write(
-                f"Security safe: {result['security_result']['is_safe']}")
+            self.stdout.write(f"Security safe: {result['security_result']['is_safe']}")
 
             self.stdout.write(
-                self.style.SUCCESS(
-                    "ASHA Django integration test completed!")
+                self.style.SUCCESS("ASHA Django integration test completed!")
             )

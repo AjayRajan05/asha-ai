@@ -123,7 +123,9 @@ def test_auto_patch_fail_closed_on_process_error(monkeypatch):
     monkeypatch.setattr(
         auto_patch_module,
         "_patch_openai",
-        lambda proc, mode, verbose=False: auto_patch_module._patch_openai_v1(boom, mode, verbose),
+        lambda proc, mode, verbose=False: auto_patch_module._patch_openai_v1(
+            boom, mode, verbose
+        ),
     )
 
     auto_patch(providers=["openai"])
@@ -246,3 +248,30 @@ def test_huggingface_patch_processes_pipeline_call(monkeypatch):
     p("secret@example.com")
     assert captured["args"][0].startswith("processed:")
     auto_patch(enable=False)
+
+
+def test_get_patch_status_returns_dict():
+    status = get_patch_status()
+    assert isinstance(status, dict)
+    assert "enabled" in status
+    assert "active_patches" in status
+    assert "patch_details" in status
+    assert "total_patches_applied" in status
+
+
+def test_disable_enable_round_trip():
+    disable_auto_patch()
+    status_disabled = get_patch_status()
+    assert status_disabled["enabled"] is False
+    assert status_disabled["total_patches_applied"] == 0
+
+    enable_auto_patch()
+    status_enabled = get_patch_status()
+    assert isinstance(status_enabled, dict)
+    assert "enabled" in status_enabled
+    disable_auto_patch()
+
+
+def test_check_version_compatibility_unknown_provider():
+    result = auto_patch_module._check_version_compatibility("unknown_provider_xyz")
+    assert result is True

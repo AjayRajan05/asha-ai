@@ -60,25 +60,41 @@ _LOCK = threading.Lock()
 _DEFAULT_CAPS: Dict[str, ToolCapabilities] = {
     "load_trend_data": ToolCapabilities(reads_data=True, category="read"),
     "read_file": ToolCapabilities(reads_data=True, category="read"),
-    "fetch_url": ToolCapabilities(reads_data=True, network_egress=True, category="read"),
+    "fetch_url": ToolCapabilities(
+        reads_data=True, network_egress=True, category="read"
+    ),
     "write_trend_report": ToolCapabilities(writes_data=True, category="write"),
     "write_file": ToolCapabilities(writes_data=True, category="write"),
     "analyze_trends": ToolCapabilities(category="analyze"),
     "send_email": ToolCapabilities(network_egress=True, category="network_egress"),
     "send_bulk_email": ToolCapabilities(network_egress=True, category="network_egress"),
-    "upload_to_cloud": ToolCapabilities(network_egress=True, writes_data=True, category="network_egress"),
-    "send_network_request": ToolCapabilities(network_egress=True, category="network_egress"),
+    "upload_to_cloud": ToolCapabilities(
+        network_egress=True, writes_data=True, category="network_egress"
+    ),
+    "send_network_request": ToolCapabilities(
+        network_egress=True, category="network_egress"
+    ),
     "network_exfil": ToolCapabilities(network_egress=True, category="network_egress"),
     "network_upload": ToolCapabilities(network_egress=True, category="network_egress"),
-    "delete_local_file": ToolCapabilities(destructive=True, writes_data=True, category="delete"),
-    "delete_file": ToolCapabilities(destructive=True, writes_data=True, category="delete"),
-    "delete_patient_record": ToolCapabilities(destructive=True, writes_data=True, category="delete"),
+    "delete_local_file": ToolCapabilities(
+        destructive=True, writes_data=True, category="delete"
+    ),
+    "delete_file": ToolCapabilities(
+        destructive=True, writes_data=True, category="delete"
+    ),
+    "delete_patient_record": ToolCapabilities(
+        destructive=True, writes_data=True, category="delete"
+    ),
     "make_payment": ToolCapabilities(category="payment"),
     "approve_payment": ToolCapabilities(category="payment"),
     "verify_identity": ToolCapabilities(category="verify"),
     "notify_user": ToolCapabilities(category="notify"),
     "read_file": ToolCapabilities(reads_data=True, category="read"),
     "write_file": ToolCapabilities(writes_data=True, category="write"),
+    "bash_command": ToolCapabilities(writes_data=True, destructive=True, category="write"),
+    "bash": ToolCapabilities(writes_data=True, destructive=True, category="write"),
+    "execute_command": ToolCapabilities(writes_data=True, destructive=True, category="write"),
+    "run_command": ToolCapabilities(writes_data=True, destructive=True, category="write"),
 }
 
 
@@ -174,7 +190,10 @@ def infer_capabilities_from_name(tool_name: str) -> ToolCapabilities:
 
 def infer_category_from_name(tool_name: str) -> str:
     lowered = tool_name.lower()
-    if any(h in lowered for h in ("send_", "upload_", "network_", "exfil", "email", "call_api", "http")):
+    if any(
+        h in lowered
+        for h in ("send_", "upload_", "network_", "exfil", "email", "call_api", "http")
+    ):
         return "network_egress"
     if any(h in lowered for h in ("delete_", "remove_", "destroy")):
         return "delete"
@@ -184,7 +203,10 @@ def infer_category_from_name(tool_name: str) -> str:
         return "verify"
     if "notify" in lowered or "alert" in lowered:
         return "notify"
-    if any(h in lowered for h in ("read", "load", "fetch", "get", "search", "db_query", "query")):
+    if any(
+        h in lowered
+        for h in ("read", "load", "fetch", "get", "search", "db_query", "query")
+    ):
         return "read"
     if any(h in lowered for h in ("write", "save", "persist", "export", "edit")):
         return "write"

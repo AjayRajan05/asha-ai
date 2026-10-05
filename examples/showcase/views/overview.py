@@ -62,19 +62,19 @@ def render() -> None:
     with c1:
         why_card(
             "Problem",
-            "Large language models receive raw prompts — emails, keys, cards, and jailbreaks travel straight into the provider.",
+            "Large language models receive raw prompts: emails, keys, cards, and jailbreaks travel straight into the provider.",
             "warn",
         )
     with c2:
         why_card(
             "Solution",
-            "ASHA sanitizes, secures, and optimizes prompts before inference — then ANCHOR governs what agents can do.",
+            "ASHA sanitizes, secures, and optimizes prompts before inference, then ANCHOR governs what agents can do.",
             "accent",
         )
     with c3:
         why_card(
             "Result",
-            "Safer AI · lower costs · governed agents. Drop-in for apps, copilots, and autonomous tool users.",
+            "Safer AI · lower costs · governed agents. Drop-in for apps, assistants, and autonomous tool users.",
             "allow",
         )
 
@@ -103,7 +103,7 @@ def render() -> None:
                 st.session_state["nav"] = "Playground"
                 st.rerun()
 
-    section_header("Live impact", "What a typical protected run looks like", "Demo counters — run Playground for live numbers.")
+    section_header("Live impact", "What a typical protected run looks like", "Demo counters (run Playground for live numbers).")
     i1, i2, i3, i4 = st.columns(4)
     with i1:
         st.markdown(

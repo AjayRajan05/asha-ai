@@ -57,6 +57,7 @@ else:
             def __getattr__(self, name: str) -> Any:
                 return getattr(self.func(), name)
 
+
 _F = TypeVar("_F", bound=Callable[..., Any])
 
 from ...utils.dropin import process
@@ -180,8 +181,7 @@ class ASHAMiddleware:
                 g.asha_original_data = request_data.copy()
 
                 # Extract and process prompts
-                processed_data, processing_info = self._process_prompts(
-                    request_data)
+                processed_data, processing_info = self._process_prompts(request_data)
 
                 if self.debug_mode:
                     print(
@@ -225,8 +225,7 @@ class ASHAMiddleware:
                     )
 
                     if self.debug_mode:
-                        processing_time = (
-                            time.time() - g.asha_start_time) * 1000
+                        processing_time = (time.time() - g.asha_start_time) * 1000
                         response.headers["X-ASHA-Processing-Time"] = (
                             f"{processing_time:.2f}ms"
                         )
@@ -294,9 +293,7 @@ class ASHAMiddleware:
                 ).to_dict()
 
                 # Update the field in the processed data
-                self._update_field(
-                    processed_data, field_path, str(result["optimized"])
-                )
+                self._update_field(processed_data, field_path, str(result["optimized"]))
 
                 # Track processing info
                 processing_info["prompts_processed"] += 1
@@ -317,16 +314,14 @@ class ASHAMiddleware:
                 if self.debug_mode:
                     print(f"ASHA Debug: Processed field '{field_path}'")
                     print(f"ASHA Debug: Original: {prompt[:100]}...")
-                    print(
-                        f"ASHA Debug: Optimized: {result['optimized'][:100]}...")
+                    print(f"ASHA Debug: Optimized: {result['optimized'][:100]}...")
                     print(
                         f"ASHA Debug: Token reduction: {result.get('token_reduction', 0)}%"
                     )
 
             except Exception as e:
                 if self.debug_mode:
-                    print(
-                        f"ASHA Error processing field '{field_path}': {str(e)}")
+                    print(f"ASHA Error processing field '{field_path}': {str(e)}")
                 # Continue with original prompt if processing fails
                 continue
 
@@ -369,12 +364,10 @@ class ASHAMiddleware:
                         # Check for message content
                         if "content" in item and isinstance(item["content"], str):
                             prompts.append(
-                                (f"{current_path}[{i}].content",
-                                 item["content"])
+                                (f"{current_path}[{i}].content", item["content"])
                             )
                         # Recursively search nested dicts
-                        prompts.extend(self._find_prompts(
-                            item, f"{current_path}[{i}]"))
+                        prompts.extend(self._find_prompts(item, f"{current_path}[{i}]"))
 
             elif isinstance(value, dict):
                 # Recursively search nested dicts
@@ -470,13 +463,9 @@ def add_asha_middleware(
 
 
 # Flask context proxy for accessing ASHA data
-asha_metrics = LocalProxy(lambda: getattr(
-    g, "asha_processing_info", None))
-asha_original_data = LocalProxy(
-    lambda: getattr(g, "asha_original_data", None))
-asha_processed_data = LocalProxy(
-    lambda: getattr(g, "asha_processed_data", None)
-)
+asha_metrics = LocalProxy(lambda: getattr(g, "asha_processing_info", None))
+asha_original_data = LocalProxy(lambda: getattr(g, "asha_original_data", None))
+asha_processed_data = LocalProxy(lambda: getattr(g, "asha_processed_data", None))
 
 
 # Flask decorator for endpoint-specific processing

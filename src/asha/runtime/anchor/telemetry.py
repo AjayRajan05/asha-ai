@@ -55,12 +55,34 @@ class AnchorTelemetry:
         *,
         enabled: Optional[bool] = None,
     ):
+        import pathlib
+
         env_path = os.environ.get("ASHA_ANCHOR_TELEMETRY_PATH", "").strip()
         if enabled is None:
-            enabled = _env_truthy("ASHA_ANCHOR_TELEMETRY") or bool(log_file) or bool(env_path)
+            enabled = (
+                _env_truthy("ASHA_ANCHOR_TELEMETRY") or bool(log_file) or bool(env_path)
+            )
         self.enabled = bool(enabled)
-        self.log_file = log_file or env_path or "anchor_telemetry.jsonl"
-        # Unique name per instance — never reuse id(self); logging caches loggers and
+
+        if log_file or env_path:
+            resolved_path = log_file or env_path
+        else:
+            # Default to an absolute, user-scoped path to avoid cwd-relative
+            # writes that can leak events across tenants on shared servers.
+            resolved_path = str(
+                pathlib.Path.home() / ".cache" / "asha" / "telemetry" / "anchor_telemetry.jsonl"
+            )
+            if self.enabled:
+                logging.getLogger(__name__).warning(
+                    "ASHA ANCHOR telemetry is enabled. Writing governance events to %s. "
+                    "Set ASHA_ANCHOR_TELEMETRY_PATH to override or "
+                    "unset ASHA_ANCHOR_TELEMETRY to disable.",
+                    resolved_path,
+                )
+
+        self.log_file = resolved_path
+
+        # Unique name per instance: never reuse id(self); logging caches loggers and
         # object ids can collide after GC, leaving stale FileHandlers attached.
         self.logger = logging.getLogger(f"AnchorTelemetry.{uuid.uuid4().hex}")
         self.logger.setLevel(logging.INFO)
@@ -112,7 +134,9 @@ class AnchorTelemetry:
             }
         )
 
-    def log_chain_evaluated(self, chain_event: ChainEvent, verdict: ChainVerdict) -> None:
+    def log_chain_evaluated(
+        self, chain_event: ChainEvent, verdict: ChainVerdict
+    ) -> None:
         self._emit(
             {
                 "event_type": "chain_evaluated",
@@ -126,7 +150,9 @@ class AnchorTelemetry:
             }
         )
 
-    def log_plan_evaluated(self, verdict: PlanVerdict, *, target_id: str, timestamp: float) -> None:
+    def log_plan_evaluated(
+        self, verdict: PlanVerdict, *, target_id: str, timestamp: float
+    ) -> None:
         self._emit(
             {
                 "event_type": "plan_evaluated",
@@ -138,7 +164,14 @@ class AnchorTelemetry:
             }
         )
 
-    def log_approval(self, record_id: str, target_id: str, verdict: str, reason: str, timestamp: float) -> None:
+    def log_approval(
+        self,
+        record_id: str,
+        target_id: str,
+        verdict: str,
+        reason: str,
+        timestamp: float,
+    ) -> None:
         self._emit(
             {
                 "event_type": "approval_recorded",
@@ -164,7 +197,9 @@ class AnchorTelemetry:
             }
         )
 
-    def log_session_finalized(self, summary: RiskSummary, state: AnchorState, timestamp: float) -> None:
+    def log_session_finalized(
+        self, summary: RiskSummary, state: AnchorState, timestamp: float
+    ) -> None:
         self._emit(
             {
                 "event_type": "session_finalized",

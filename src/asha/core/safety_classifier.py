@@ -31,7 +31,7 @@ from dataclasses import dataclass
 from enum import Enum
 import time
 
-# Do not import torch/transformers at module load — that pulls torch into every
+# Do not import torch/transformers at module load: that pulls torch into every
 # process() path and can poison the suite after numpy reloads on Windows.
 # HF toxic-bert stays opt-in via ASHA_ENABLE_HF_SAFETY=1 inside ASHASafetyClassifier.
 
@@ -245,8 +245,7 @@ class JailbreakDetector:
 
             for match in re.finditer(pattern, text):
                 # Check context to reduce false positives
-                context_score = self._check_jailbreak_context(
-                    match.group(), text)
+                context_score = self._check_jailbreak_context(match.group(), text)
                 final_confidence = confidence * context_score
 
                 if final_confidence > 0.6:  # Threshold for jailbreak detection
@@ -257,8 +256,7 @@ class JailbreakDetector:
                         pattern_matched=match.group(),
                         position=(match.start(), match.end()),
                         severity=final_confidence,
-                        context=self._extract_context(
-                            match.start(), match.end(), text),
+                        context=self._extract_context(match.start(), match.end(), text),
                     )
                     threats.append(threat)
 
@@ -269,8 +267,7 @@ class JailbreakDetector:
             description = pattern_info["description"]
 
             for match in re.finditer(pattern, text):
-                context_score = self._check_jailbreak_context(
-                    match.group(), text)
+                context_score = self._check_jailbreak_context(match.group(), text)
                 final_confidence = confidence * context_score
 
                 if final_confidence > 0.6:
@@ -281,8 +278,7 @@ class JailbreakDetector:
                         pattern_matched=match.group(),
                         position=(match.start(), match.end()),
                         severity=final_confidence,
-                        context=self._extract_context(
-                            match.start(), match.end(), text),
+                        context=self._extract_context(match.start(), match.end(), text),
                     )
                     threats.append(threat)
 
@@ -300,8 +296,7 @@ class JailbreakDetector:
                     pattern_matched=match.group(),
                     position=(match.start(), match.end()),
                     severity=confidence,
-                    context=self._extract_context(
-                        match.start(), match.end(), text),
+                    context=self._extract_context(match.start(), match.end(), text),
                 )
                 threats.append(threat)
 
@@ -349,8 +344,7 @@ class JailbreakDetector:
         context = full_text[start:end].lower()
 
         # Check for legitimate context
-        legitimate_count = sum(
-            1 for word in legitimate_contexts if word in context)
+        legitimate_count = sum(1 for word in legitimate_contexts if word in context)
 
         # Check for risk indicators
         risk_count = sum(1 for word in risk_indicators if word in context)
@@ -483,8 +477,7 @@ class ContentSafetyAnalyzer:
                     pattern_matched=match.group(),
                     position=(match.start(), match.end()),
                     severity=confidence,
-                    context=self._extract_context(
-                        match.start(), match.end(), text),
+                    context=self._extract_context(match.start(), match.end(), text),
                 )
                 threats.append(threat)
 
@@ -502,8 +495,7 @@ class ContentSafetyAnalyzer:
                     pattern_matched=match.group(),
                     position=(match.start(), match.end()),
                     severity=confidence,
-                    context=self._extract_context(
-                        match.start(), match.end(), text),
+                    context=self._extract_context(match.start(), match.end(), text),
                 )
                 threats.append(threat)
 
@@ -521,8 +513,7 @@ class ContentSafetyAnalyzer:
                     pattern_matched=match.group(),
                     position=(match.start(), match.end()),
                     severity=confidence,
-                    context=self._extract_context(
-                        match.start(), match.end(), text),
+                    context=self._extract_context(match.start(), match.end(), text),
                 )
                 threats.append(threat)
 
@@ -563,7 +554,7 @@ class ASHASafetyClassifier:
         if not _hf_stack_available():
             print(
                 "Warning: Hardened HF safety model unavailable "
-                "(torch/transformers not importable) — using rule-based only. "
+                "(torch/transformers not importable); using rule-based only. "
                 "Install with: pip install asha[hardened]"
             )
             return
@@ -585,9 +576,7 @@ class ASHASafetyClassifier:
                 )
                 self.loaded = True
         except Exception as e:
-            print(
-                f"Warning: Could not load safety model '{model_name}': {e}"
-            )
+            print(f"Warning: Could not load safety model '{model_name}': {e}")
             print(
                 "Note: Using rule-based safety detection only. "
                 "Install with: pip install asha[hardened]"
@@ -660,8 +649,7 @@ class SafetyClassifier:
         """Initialize safety classifier."""
         self.jailbreak_detector = JailbreakDetector()
         self.content_analyzer = ContentSafetyAnalyzer()
-        self.ml_classifier = ASHASafetyClassifier(
-            model_name) if enable_ml else None
+        self.ml_classifier = ASHASafetyClassifier(model_name) if enable_ml else None
         self.enable_ml = enable_ml and (self.ml_classifier is not None)
 
         # Safety thresholds
@@ -678,7 +666,7 @@ class SafetyClassifier:
 
     def classify_safety(self, text: str) -> SafetyResult:
         """
-        Classify text safety with comprehensive analysis.
+        Classify text safety across jailbreaks, attacks, and toxicity.
 
         Args:
             text: Text to analyze for safety
@@ -701,12 +689,10 @@ class SafetyClassifier:
         ml_score = 0.0
         ml_classification = "unknown"
         if self.enable_ml and self.ml_classifier is not None:
-            ml_score, ml_classification = self.ml_classifier.classify_safety(
-                text)
+            ml_score, ml_classification = self.ml_classifier.classify_safety(text)
 
         # Calculate overall safety assessment
-        safety_level, confidence_score = self._calculate_safety_level(
-            threats, ml_score)
+        safety_level, confidence_score = self._calculate_safety_level(threats, ml_score)
 
         # Generate risk factors
         risk_factors = self._generate_risk_factors(threats, ml_score)
@@ -761,8 +747,7 @@ class SafetyClassifier:
             ThreatType.HARMFUL_CONTENT,
             ThreatType.SYSTEM_MANIPULATION,
         ]
-        high_risk_threats = [
-            t for t in threats if t.threat_type in high_risk_types]
+        high_risk_threats = [t for t in threats if t.threat_type in high_risk_types]
 
         # Determine safety level
         if critical_threats or high_risk_threats:
@@ -814,8 +799,7 @@ class SafetyClassifier:
             recommendations.append(
                 "Content blocked - critical security threats detected"
             )
-            recommendations.append(
-                "Immediate review required for policy compliance")
+            recommendations.append("Immediate review required for policy compliance")
         elif safety_level == SafetyLevel.UNSAFE:
             recommendations.append(
                 "Content blocked - multiple security threats detected"
@@ -843,8 +827,7 @@ class SafetyClassifier:
             )
 
         if ThreatType.PROMPT_INJECTION.value in threat_types:
-            recommendations.append(
-                "Prompt injection attempt - input sanitized")
+            recommendations.append("Prompt injection attempt - input sanitized")
 
         return recommendations
 
@@ -868,10 +851,10 @@ class SafetyClassifier:
         }
 
 
-# Convenience function for easy usage
+# Convenience helper
 def classify_safety(text: str, enable_ml: bool = True) -> SafetyResult:
     """
-    Classify text safety with comprehensive analysis.
+    Classify text safety across jailbreaks, attacks, and toxicity.
 
     Args:
         text: Text to analyze

@@ -71,9 +71,7 @@ class EmbeddingClassifier:
         if self._clf_ready:
             return
         with self._lock:
-            path = self._classifier_path or _default_model_path(
-                "embedding_rf.joblib"
-            )
+            path = self._classifier_path or _default_model_path("embedding_rf.joblib")
             if path is not None and Path(path).is_file():
                 try:
                     from asha.core.ml.calibration import load_calibrator
@@ -109,7 +107,7 @@ class EmbeddingClassifier:
         """Return calibrated P(injection) in ``[0, 1]``.
 
         Requires a working MiniLM encoder (downloads on first use). Missing
-        joblib artifacts fall back to seed-centroid scoring — train with
+        joblib artifacts fall back to seed-centroid scoring; train with
         ``python -m training.injection.train`` for the calibrated RF.
         """
         self._ensure_classifier()
