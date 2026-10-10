@@ -15,6 +15,10 @@
 """Automated validation of showcase backend functions and pipelines."""
 
 import pytest
+
+pytest.importorskip("streamlit", reason="showcase tests require the 'demo' extra (streamlit)")
+pytest.importorskip("plotly", reason="showcase tests require the 'demo' extra (plotly)")
+
 import asha
 from asha import PolicyConfig, optimize, process, sanitize, scan_rag_context, wrap_llm, Agent, ANCHOR
 from examples.showcase.runtime.local_provider import LocalDemoProvider

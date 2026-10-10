@@ -1,6 +1,10 @@
 """Unit tests for showcase session metric calculations."""
 
 import pytest
+
+pytest.importorskip("streamlit", reason="showcase tests require the 'demo' extra (streamlit)")
+pytest.importorskip("plotly", reason="showcase tests require the 'demo' extra (plotly)")
+
 from examples.showcase.runtime.trace import Trace, EventType
 from examples.showcase.runtime.session import (
     calculate_session_metrics,

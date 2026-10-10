@@ -144,7 +144,7 @@ langchain = [
 ]
 langgraph = [
     "asha-si[langchain]",
-    "langgraph>=0.2.0,<1.0.0",
+    "langgraph>=0.2.0,<2.0.0",
 ]
 crewai = [
     "crewai>=0.80.0,<2.0.0",

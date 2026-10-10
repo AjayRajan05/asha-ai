@@ -1,6 +1,11 @@
 """Unit tests for safe provider status detection and secret protection."""
 
 import os
+import pytest
+
+pytest.importorskip("streamlit", reason="showcase tests require the 'demo' extra (streamlit)")
+pytest.importorskip("plotly", reason="showcase tests require the 'demo' extra (plotly)")
+
 from examples.showcase.runtime.session import get_provider_statuses
 
 

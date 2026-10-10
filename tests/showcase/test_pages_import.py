@@ -20,6 +20,9 @@ import importlib
 from pathlib import Path
 import pytest
 
+pytest.importorskip("streamlit", reason="showcase tests require the 'demo' extra (streamlit)")
+pytest.importorskip("plotly", reason="showcase tests require the 'demo' extra (plotly)")
+
 
 def test_import_all_showcase_pages() -> None:
     """Every page module in examples/showcase/pages must import cleanly."""

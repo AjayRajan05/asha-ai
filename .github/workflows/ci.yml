@@ -166,7 +166,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -e ".[dev,integrations,flask,django,llamaindex]"
-        pip install "crewai>=0.80.0,<1.0.0" "langgraph>=0.2.0,<1.0.0"
+        pip install "crewai>=0.80.0,<2.0.0" "langgraph>=0.2.0,<2.0.0"
 
     - name: Check for dependency conflicts
       run: pip check

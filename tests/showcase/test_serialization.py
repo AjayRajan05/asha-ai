@@ -3,6 +3,11 @@
 import json
 from dataclasses import dataclass
 from enum import Enum
+import pytest
+
+pytest.importorskip("streamlit", reason="showcase tests require the 'demo' extra (streamlit)")
+pytest.importorskip("plotly", reason="showcase tests require the 'demo' extra (plotly)")
+
 from examples.showcase.components.object_inspector import safe_serialize_json
 
 

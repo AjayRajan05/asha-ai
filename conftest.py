@@ -22,9 +22,20 @@ if str(SRC) not in sys.path:
 ResultType = Union[ProcessResult, SanitizeResult, OptimizeResult, str, dict]
 
 # tests/showcase needs the optional ``demo`` extra (streamlit, plotly); CI installs only ``dev``.
+collect_ignore: list[str] = []
 collect_ignore_glob: list[str] = []
 if any(importlib.util.find_spec(_m) is None for _m in ("streamlit", "plotly")):
-    collect_ignore_glob.append("tests/showcase/*")
+    collect_ignore.extend([
+        "tests/showcase",
+        "tests/showcase/test_backend_execution.py",
+        "tests/showcase/test_metrics.py",
+        "tests/showcase/test_pages_import.py",
+        "tests/showcase/test_provider_status.py",
+        "tests/showcase/test_scenarios.py",
+        "tests/showcase/test_serialization.py",
+        "tests/showcase/test_trace.py",
+    ])
+    collect_ignore_glob.extend(["tests/showcase/*", "tests/showcase/*.py", "*showcase*"])
 
 
 def output_of(result: ResultType) -> str:
