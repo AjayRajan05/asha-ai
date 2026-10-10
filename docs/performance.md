@@ -70,7 +70,7 @@ On push (Ubuntu, Python 3.11), CI runs architecture tests, coverage floor, bench
 | Priority | Settings |
 |----------|----------|
 | **Speed** | `mode="lite"` or `mode="off"`; `PolicyConfig(pii_mode="rule")` |
-| **Security** | `mode="strict"`; `PolicyConfig(pii_mode="hybrid")` (needs `asha-ai[ml]`) |
+| **Security** | `mode="strict"`; `PolicyConfig(pii_mode="hybrid")` (needs `asha-si[ml]`) |
 | **Token savings** | Lower `token_budget`; keep optimization enabled |
 | **Semantic fidelity** | `PolicyConfig(preserve_intent=True)` |
 

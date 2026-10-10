@@ -8,7 +8,7 @@ ASHA follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 | Version | Status | Notes |
 |---------|--------|-------|
-| **0.4.2** | **Active: developer preview** | Package rename (`asha`); ANCHOR agent governance. Install: `pip install asha-ai`. See [status.md](status.md) |
+| **0.4.2** | **Active: developer preview** | Package rename (`asha`); ANCHOR agent governance. Install: `pip install asha-si`. See [status.md](status.md) |
 | 0.4.1 | Superseded | Architecture complete; root API frozen |
 | 0.4.0 | Superseded | Typed results introduced |
 | 0.3.x | Previous preview | Dict/string returns, lazy root exports |
@@ -33,7 +33,7 @@ PyPI classifier: **Development Status :: 3 - Alpha**
 - `process(mode=)` + `policy=PolicyConfig(...)` - no loose deprecated kwargs
 - Layer boundaries enforced in CI
 
-Breaking changes within 0.4.x are documented in the [CHANGELOG](https://github.com/AjayRajan05/ASHA/blob/main/CHANGELOG.md) and [migration-v0.4.md](migration-v0.4.md).
+Breaking changes within 0.4.x are documented in the [CHANGELOG](https://github.com/AjayRajan05/asha-si/blob/main/CHANGELOG.md) and [migration-v0.4.md](migration-v0.4.md).
 
 ---
 
@@ -124,12 +124,12 @@ After **1.0.0**, breaking changes require a major release.
 ## Installing vs pinning
 
 ```bash
-pip install asha-ai          # default: everyone, lite path
+pip install asha-si          # default: everyone, lite path
 ```
 
 ```toml
 # Optional: freeze the build you validated in a pilot
-asha==0.4.2
+asha-si==0.4.2
 ```
 
-Review the [CHANGELOG](https://github.com/AjayRajan05/ASHA/blob/main/CHANGELOG.md) before upgrading across minor versions.
+Review the [CHANGELOG](https://github.com/AjayRajan05/asha-si/blob/main/CHANGELOG.md) before upgrading across minor versions.

@@ -8,14 +8,23 @@ Upgrade from ASHA **0.3.x** (or early 0.4.0) to **0.4.2**. Also covers the **Pri
 
 | Before | After |
 |--------|-------|
-| `pip install privysha` | `pip install asha-ai` (pin pilots: `asha-ai==0.4.2`) |
+| `pip install privysha` | `pip install asha-si` (pin pilots: `asha-si==0.4.2`) |
 | `from privysha import process` | `from asha import process` |
 | CLI `privysha` | CLI `asha` |
 | Env vars `PRIVYSHA_*` | Env vars `ASHA_*` |
-| PyPI name | **`asha-ai`** (`asha` on PyPI is unrelated; imports stay `asha`) |
-| Repo / docs | [github.com/AjayRajan05/ASHA](https://github.com/AjayRajan05/ASHA) · [docs site](https://ajayrajan05.github.io/ASHA/) |
+| PyPI name | **`asha-si`** (`asha` on PyPI is unrelated; imports stay `asha`) |
+| Repo / docs | [github.com/AjayRajan05/asha-si](https://github.com/AjayRajan05/asha-si) · [docs site](https://ajayrajan05.github.io/asha-si/) |
 
-Uninstall the old package if both are present: `pip uninstall privysha` then `pip install asha-ai==0.4.2`.
+Uninstall the old package if both are present: `pip uninstall privysha` then `pip install asha-si==0.4.2`.
+
+### Renamed from `asha-ai` to `asha-si`
+
+If you installed the library under the interim name `asha-ai`, switch to `asha-si`. The import name (`asha`) and CLI (`asha`) do not change.
+
+```bash
+pip uninstall asha-ai
+pip install asha-si
+```
 
 ---
 

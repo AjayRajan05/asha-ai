@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import re
-from typing import Any, Callable, List, Optional, Pattern, Union
+from typing import Callable, List, Optional, Pattern, Union
 
 from ..core.security.pii_detector import PIIMatch
 

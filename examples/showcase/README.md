@@ -46,8 +46,8 @@ Install the library with showcase and provider dependencies:
 
 ```bash
 # Clone the repository
-git clone https://github.com/AjayRajan05/asha-ai.git
-cd asha-ai
+git clone https://github.com/AjayRajan05/asha-si.git
+cd ASHA
 
 # Install in editable mode with development/showcase dependencies
 pip install -e .

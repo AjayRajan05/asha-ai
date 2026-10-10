@@ -37,15 +37,15 @@ from asha.runtime.anchor.adapters import (
 )
 ```
 
-Install only what you need (lite `pip install asha-ai` stays free of framework deps):
+Install only what you need (lite `pip install asha-si` stays free of framework deps):
 
 ```bash
-pip install asha-ai[crewai]
-pip install asha-ai[langchain]
-pip install asha-ai[langgraph]
-pip install asha-ai[llamaindex]
-pip install asha-ai[mcp]
-pip install asha-ai[anchor]   # all of the above
+pip install asha-si[crewai]
+pip install asha-si[langchain]
+pip install asha-si[langgraph]
+pip install asha-si[llamaindex]
+pip install asha-si[mcp]
+pip install asha-si[anchor]   # all of the above
 ```
 
 ---
@@ -54,15 +54,15 @@ pip install asha-ai[anchor]   # all of the above
 
 | Framework | Tier | Install | Entry point |
 |-----------|------|---------|-------------|
-| CrewAI | Supported (golden) | `asha-ai[crewai]` | `anchor_crewai()` |
-| LangChain | Supported (golden) | `asha-ai[langchain]` | `anchor_langchain()` |
-| LangGraph | Supported (golden) | `asha-ai[langgraph]` | `anchor_graph()` |
-| LlamaIndex | Best-effort | `asha-ai[llamaindex]` | `anchor_llamaindex()` |
-| MCP | Best-effort | `asha-ai[mcp]` | `anchor_mcp()` |
+| CrewAI | Supported (golden) | `asha-si[crewai]` | `anchor_crewai()` |
+| LangChain | Supported (golden) | `asha-si[langchain]` | `anchor_langchain()` |
+| LangGraph | Supported (golden) | `asha-si[langgraph]` | `anchor_graph()` |
+| LlamaIndex | Best-effort | `asha-si[llamaindex]` | `anchor_llamaindex()` |
+| MCP | Best-effort | `asha-si[mcp]` | `anchor_mcp()` |
 | AutoGen | Experimental | (duck-typed) | `anchor_autogen()` |
 | Generic | Experimental | (stdlib) | `anchor_generic()` / `anchor_any()` |
 
-CI installs `asha-ai[anchor]` and runs golden-path + mission-drift gates headless (`ASHA_ANCHOR_INTERACTIVE=0`, `ASHA_ANCHOR_WARN_POLICY=strict`). Interactive ANCHOR demo: `streamlit run examples/showcase/streamlit_app.py` (Rogue agent page).
+CI installs `asha-si[anchor]` and runs golden-path + mission-drift gates headless (`ASHA_ANCHOR_INTERACTIVE=0`, `ASHA_ANCHOR_WARN_POLICY=strict`). Interactive ANCHOR demo: `streamlit run examples/showcase/streamlit_app.py` (Rogue agent page).
 
 ---
 
@@ -87,7 +87,7 @@ CI installs `asha-ai[anchor]` and runs golden-path + mission-drift gates headles
 | **MCP** | `anchor_mcp()` | call_tool / acall_tool (non-destructive proxy) |
 | **Generic** | `anchor_generic()` | any run/invoke + tools |
 
-Adapters are duck-typed. Missing optional packages raise a clear `pip install asha-ai[...]` hint when the target module requires that framework.
+Adapters are duck-typed. Missing optional packages raise a clear `pip install asha-si[...]` hint when the target module requires that framework.
 
 ---
 

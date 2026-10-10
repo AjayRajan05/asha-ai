@@ -1,8 +1,8 @@
 site_name: ASHA
 site_description: Mission-aware agent governance (ANCHOR) plus LLM security and optimization (v0.4.2 developer preview)
-site_url: https://ajayrajan05.github.io/ASHA/
-repo_url: https://github.com/AjayRajan05/ASHA
-repo_name: AjayRajan05/ASHA
+site_url: https://ajayrajan05.github.io/asha-si/
+repo_url: https://github.com/AjayRajan05/asha-si
+repo_name: AjayRajan05/asha-si
 
 theme:
   name: material
@@ -25,6 +25,10 @@ theme:
     - navigation.expand
     - search.suggest
     - content.code.copy
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - content.action.edit
 
 plugins:
   - search
@@ -34,6 +38,9 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.highlight
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
   - toc:
       permalink: true
 
@@ -62,9 +69,11 @@ nav:
       - Roadmap: roadmap.md
       - Production readiness (0.4.2): production-readiness.md
       - Threat Model: security/threat-model.md
-      - Developer Preview: release/developer-preview.md
       - Experimental features: experimental-features.md
   - Support:
       - Support policy: support.md
       - FAQ: faq.md
       - Contributing: contributing.md
+      - Code of Conduct: code-of-conduct.md
+      - Security policy: security-policy.md
+      - Changelog: changelog.md

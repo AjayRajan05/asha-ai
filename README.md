@@ -3,24 +3,22 @@
 **ASHA: Governance, Alignment, and Security Runtime for Superintelligence (SI) and Autonomous Agent Networks. Provides configurable security, preprocessing, token optimization, and runtime controls for Python-based LLM applications.**
 
 > **Developer preview (v0.4.2).** Pre-1.0: APIs may change.  
-> Install with `pip install asha-ai`. For long-lived pilots, pin the version you tested (see [docs/status.md](docs/status.md)).
+> Install with `pip install asha-si`. For long-lived pilots, pin the version you tested (see [docs/status.md](docs/status.md)).
 >
 > **Security Notice:** ASHA is an application utility layer. It is not a replacement for provider-level safety systems, application authorization, operating-system sandboxing, network isolation, or secure software engineering practices. Review the [ASHA Threat Model](docs/security/threat-model.md).
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/)
-[![PyPI](https://img.shields.io/badge/pypi-0.4.2-orange)](https://pypi.org/project/asha-ai/)
+[![PyPI](https://img.shields.io/badge/pypi-0.4.2-orange)](https://pypi.org/project/asha-si/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-material-blue)](https://ajayrajan05.github.io/ASHA/)
-[![Discussions](https://img.shields.io/badge/GitHub-Discussions-black?logo=github)](https://github.com/AjayRajan05/ASHA/discussions)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-material-blue)](https://ajayrajan05.github.io/asha-si/)
+[![Discussions](https://img.shields.io/badge/GitHub-Discussions-black?logo=github)](https://github.com/AjayRajan05/asha-si/discussions)
 [![Slack](https://img.shields.io/badge/Slack-Join-4A154B?logo=slack&logoColor=white)](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
 
 ## Quickstart
 
 ```bash
-pip install asha-ai
+pip install asha-si
 ```
-
-PyPI distribution name is **`asha-ai`** (the name `asha` is taken by an unrelated project). Imports stay `from asha import ...`.
 
 No API key and no heavy dependencies required for the core installation.
 
@@ -55,12 +53,12 @@ print(result.metrics)  # honest token savings and processing latency
 
 | Install | What you get | Dependency cost |
 |---------|--------------|-----------------|
-| `pip install asha-ai` | **Recommended for everyone**: core APIs, lite/heuristic detectors, and text PDF/DOCX extraction for PII masking | pydantic, tiktoken, requests, click, pypdf, python-docx |
-| `pip install asha-ai[fast]` | Faster pattern matching | + `pyahocorasick` |
-| `pip install asha-ai[hardened]` | Optional classical ML detectors (models auto-download on first use) | + torch / transformers / sklearn stack |
-| `pip install asha-ai[anchor]` | All ANCHOR framework adapters (CrewAI, LangChain, LangGraph, LlamaIndex, MCP) | + framework packages |
+| `pip install asha-si` | **Recommended for everyone**: core APIs, lite/heuristic detectors, and text PDF/DOCX extraction for PII masking | pydantic, tiktoken, requests, click, pypdf, python-docx |
+| `pip install asha-si[fast]` | Faster pattern matching | + `pyahocorasick` |
+| `pip install asha-si[hardened]` | Optional classical ML detectors (models auto-download on first use) | + torch / transformers / sklearn stack |
+| `pip install asha-si[anchor]` | All ANCHOR framework adapters (CrewAI, LangChain, LangGraph, LlamaIndex, MCP) | + framework packages |
 
-Other common extras: `asha-ai[openai]`, `asha-ai[integrations]`, `asha-ai[ml]`, or per-framework `asha-ai[crewai]` / `asha-ai[langchain]` / `asha-ai[langgraph]` / `asha-ai[llamaindex]` / `asha-ai[mcp]`. Hardened weights are **not** required for the default lite path. Adapter matrix: [docs/anchor.md](docs/anchor.md).
+Other common extras: `asha-si[openai]`, `asha-si[integrations]`, `asha-si[ml]`, or per-framework `asha-si[crewai]` / `asha-si[langchain]` / `asha-si[langgraph]` / `asha-si[llamaindex]` / `asha-si[mcp]`. Hardened weights are **not** required for the default lite path. Adapter matrix: [docs/anchor.md](docs/anchor.md).
 
 ## Mission governance (`anchor`)
 
@@ -152,13 +150,13 @@ Interactive developer control center running the **real** ASHA library:
 
 ## Docs
 
-Full documentation (tutorial, how-tos, reference, explanation): **[docs site](https://ajayrajan05.github.io/ASHA/)** · [docs/index.md](docs/index.md) · [Status](docs/status.md) · [Roadmap](docs/roadmap.md)
+Full documentation (tutorial, how-tos, reference, explanation): **[docs site](https://ajayrajan05.github.io/asha-si/)** · [docs/index.md](docs/index.md) · [Status](docs/status.md) · [Roadmap](docs/roadmap.md)
 
 ### Migration from PrivySHA
 
 ```bash
 pip uninstall privysha -y
-pip install asha-ai==0.4.2
+pip install asha-si==0.4.2
 ```
 
 ```python
@@ -170,9 +168,9 @@ Env prefix is `ASHA_*`. Details: [docs/migration-v0.4.md](docs/migration-v0.4.md
 
 ## Community & support
 
-- **[GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions)**: questions, ideas, and design talk (primary)
+- **[GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions)**: questions, ideas, and design talk (primary)
 - **[Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)**: community chat
-- **[GitHub Issues](https://github.com/AjayRajan05/ASHA/issues)**: bugs and feature requests
+- **[GitHub Issues](https://github.com/AjayRajan05/asha-si/issues)**: bugs and feature requests
 - **Support policy:** [SUPPORT.md](SUPPORT.md)
 
 ## License

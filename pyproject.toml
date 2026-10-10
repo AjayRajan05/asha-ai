@@ -17,9 +17,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "asha-ai"
+name = "asha-si"
 version = "0.4.2"
-description = "ASHA developer preview (0.4.2): mission-aware Superintelligence (SI) agent governance (ANCHOR) plus drop-in LLM security and optimization. pip install asha-ai (import asha). No API key or model download required."
+description = "ASHA developer preview (0.4.2): mission-aware Superintelligence (SI) agent governance (ANCHOR) plus drop-in LLM security and optimization. pip install asha-si (import asha). No API key or model download required."
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
@@ -101,13 +101,13 @@ transformers = [
     "accelerate>=0.20.0,<2.0.0"
 ]
 ml = [
-    "asha-ai[transformers]",
+    "asha-si[transformers]",
     "spacy>=3.4.0,<4.0.0",
 ]
 # Classical ML/DL detectors for ASHA hardening (no generative LLM calls).
 # Lazy-imported at use time; lite installs without this extra stay light.
 hardened = [
-    "asha-ai[ml]",
+    "asha-si[ml]",
     "sentence-transformers>=2.2.0,<4.0.0",
     "scikit-learn>=1.2.0,<2.0.0",
     "numpy>=1.23.0,<3.0.0",
@@ -143,7 +143,7 @@ langchain = [
     "langchain>=0.2.0,<1.0.0",
 ]
 langgraph = [
-    "asha-ai[langchain]",
+    "asha-si[langchain]",
     "langgraph>=0.2.0,<1.0.0",
 ]
 crewai = [
@@ -157,14 +157,14 @@ mcp = [
 ]
 # All ANCHOR framework adapters (optional; lite install stays free of these).
 anchor = [
-    "asha-ai[crewai,langchain,langgraph,llamaindex,mcp]",
+    "asha-si[crewai,langchain,langgraph,llamaindex,mcp]",
 ]
 instructor = [
     "instructor>=0.4.0,<2.0.0",
-    "asha-ai[openai]",
+    "asha-si[openai]",
 ]
 integrations = [
-    "asha-ai[fastapi,langchain,instructor]",
+    "asha-si[fastapi,langchain,instructor]",
 ]
 otel = [
     "opentelemetry-api>=1.20.0,<3.0.0",
@@ -174,7 +174,7 @@ local-advisor = [
     "huggingface_hub>=0.20.0,<2.0.0",
 ]
 local-advisor-gpu = [
-    "asha-ai[local-advisor]",
+    "asha-si[local-advisor]",
     "nvidia-ml-py>=12.0.0,<14.0.0",
 ]
 demo = [
@@ -184,14 +184,14 @@ demo = [
     "streamlit-extras>=0.4.0,<0.7.0",
 ]
 all = [
-    "asha-ai[openai,anthropic,gemini,ml,hardened,fastapi,flask,django,langchain,instructor,otel,llamaindex,local-advisor,anchor,demo,rich]",
+    "asha-si[openai,anthropic,gemini,ml,hardened,fastapi,flask,django,langchain,instructor,otel,llamaindex,local-advisor,anchor,demo,rich]",
 ]
 
 [project.urls]
-Homepage = "https://github.com/AjayRajan05/ASHA"
-Documentation = "https://ajayrajan05.github.io/ASHA/"
-Issues = "https://github.com/AjayRajan05/ASHA/issues"
-Changelog = "https://github.com/AjayRajan05/ASHA/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/AjayRajan05/asha-si"
+Documentation = "https://ajayrajan05.github.io/asha-si/"
+Issues = "https://github.com/AjayRajan05/asha-si/issues"
+Changelog = "https://github.com/AjayRajan05/asha-si/blob/main/CHANGELOG.md"
 
 [project.scripts]
 asha = "asha.cli:main"
@@ -261,6 +261,8 @@ module = [
     "accelerate.*",
     "django.*",
     "crewai.*",
+    "langchain.*",
+    "langchain_core.*",
     "kenlm.*",
     "ahocorasick.*",
     "cpuinfo.*",

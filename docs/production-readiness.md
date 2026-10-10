@@ -8,8 +8,8 @@ Finish release leftovers and in-version work first. Do not bump the version for 
 
 | Item | Status |
 |------|--------|
-| `asha-models-0.4.2` GitHub Release asset | Done: auto-download URL in [PRIVATE_ARTIFACTS](https://github.com/AjayRajan05/ASHA/blob/main/maintainers/PRIVATE_ARTIFACTS.md) |
-| GitHub Discussions | Enabled: [discussions](https://github.com/AjayRajan05/ASHA/discussions) |
+| `asha-models-0.4.2` GitHub Release asset | Done: auto-download URL in [PRIVATE_ARTIFACTS](https://github.com/AjayRajan05/asha-si/blob/main/maintainers/PRIVATE_ARTIFACTS.md) |
+| GitHub Discussions | Enabled: [discussions](https://github.com/AjayRajan05/asha-si/discussions) |
 | Optional Slack invite | Live: [join](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw); see [support.md](support.md) |
 
 Hardened installs download the official bundle on first use; override with `ASHA_MODELS_DIR` / `ASHA_MODELS_ZIP` / `ASHA_DISABLE_MODEL_DOWNLOAD=1` (see [status.md](status.md)).
@@ -27,7 +27,7 @@ Hardened installs download the official bundle on first use; override with `ASHA
 
 Only consider **1.0.0** after 0.4.2 is complete and the maintainer is ready. All of the following would need to be true then:
 
-1. **Models distribution**: default `asha-models` URL returns 200; clean `pip install asha-ai[hardened]` works without local zip.
+1. **Models distribution**: default `asha-models` URL returns 200; clean `pip install asha-si[hardened]` works without local zip.
 2. **API freeze window**: a deliberate deprecation-only period on the public root + `wrap_llm` surface.
 3. **Community signal**: feedback channels used; no open P0 security issues without a documented mitigation.
 4. **Docs freeze**: status, versioning, migration, and support docs match shipped behavior.
@@ -48,5 +48,5 @@ Only consider **1.0.0** after 0.4.2 is complete and the maintainer is ready. All
 
 - [roadmap.md](roadmap.md)
 - [versioning.md](versioning.md)
-- [SUPPORT.md](https://github.com/AjayRajan05/ASHA/blob/main/SUPPORT.md)
-- [GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions) · [Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
+- [SUPPORT.md](https://github.com/AjayRajan05/asha-si/blob/main/SUPPORT.md)
+- [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions) · [Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)

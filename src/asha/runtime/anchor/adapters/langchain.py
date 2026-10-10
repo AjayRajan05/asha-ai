@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterator, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Sequence
 
 from ..llm_guard import evaluate_llm_tool_calls
 from ..runtime import AnchorRuntime
@@ -20,12 +20,16 @@ from .base import (
     wrap_tool_list,
 )
 
-try:
+if TYPE_CHECKING:
     from langchain_core.callbacks import BaseCallbackHandler as _LCCallbackHandler
     from langchain_core.tools import BaseTool as _LangChainBaseTool
-except ImportError:  # pragma: no cover - optional dependency
-    _LCCallbackHandler = object  # type: ignore[misc, assignment]
-    _LangChainBaseTool = object  # type: ignore[misc, assignment]
+else:
+    try:
+        from langchain_core.callbacks import BaseCallbackHandler as _LCCallbackHandler
+        from langchain_core.tools import BaseTool as _LangChainBaseTool
+    except ImportError:  # pragma: no cover - optional dependency
+        _LCCallbackHandler = object
+        _LangChainBaseTool = object
 
 
 from .discovery import discover_tools

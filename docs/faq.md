@@ -12,7 +12,7 @@ A Python library for mission-aware agent governance (`anchor`) and drop-in promp
 
 ### Is it production-ready?
 
-**Developer preview.** Install with `pip install asha-ai` for everyday use. For production pilots, pin the version you tested (e.g. `asha==0.4.2`) and monitor. A semver-stable **1.0** API guarantee is not claimed yet. Read [status.md](status.md).
+**Developer preview.** Install with `pip install asha-si` for everyday use. For production pilots, pin the version you tested (e.g. `asha-si==0.4.2`) and monitor. A semver-stable **1.0** API guarantee is not claimed yet. Read [status.md](status.md).
 
 ### Python version?
 
@@ -131,12 +131,12 @@ No. `isolation="auto"` uses in-process hooks; `isolation="hard"` uses a subproce
 
 ### Where do I ask questions?
 
-[GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions) (primary) or [ASHA Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw) for optional chat.
+[GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions) (primary) or [ASHA Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw) for optional chat.
 
 ### How do hardened models download?
 
-`pip install asha-ai[hardened]` auto-fetches  
-`https://github.com/AjayRajan05/ASHA/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`  
+`pip install asha-si[hardened]` auto-fetches  
+`https://github.com/AjayRajan05/asha-si/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`  
 on first use. Override with `ASHA_MODELS_DIR` / `ASHA_MODELS_ZIP` / `ASHA_DISABLE_MODEL_DOWNLOAD=1`.
 
 ---

@@ -4,8 +4,8 @@
 
 | Path | Who | What |
 |------|-----|------|
-| **`pip install asha-ai`** | Everyone (default) | Lite/heuristic security. **No download required.** |
-| **`pip install asha-ai[hardened]`** | Advanced users | Classical ML detectors. On first use, ASHA **automatically downloads** the official `asha-models-0.4.2` bundle into the user cache (**no permission prompt**). |
+| **`pip install asha-si`** | Everyone (default) | Lite/heuristic security. **No download required.** |
+| **`pip install asha-si[hardened]`** | Advanced users | Classical ML detectors. On first use, ASHA **automatically downloads** the official `asha-models-0.4.2` bundle into the user cache (**no permission prompt**). |
 | **`ASHA_MODELS_DIR`** | Optional override | Point at a custom / air-gapped models tree instead of the cache. |
 
 Public git tree still must **not** commit raw `training/`, datasets, or unpackaged `models/` working copies. Keep those **locally** (they are listed in `.gitignore`); the shippable bundle is the GitHub Release asset.
@@ -15,7 +15,7 @@ Public git tree still must **not** commit raw `training/`, datasets, or unpackag
 ## How auto-download works
 
 1. Default URL:  
-   `https://github.com/AjayRajan05/ASHA/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`
+   `https://github.com/AjayRajan05/asha-si/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`
 2. Extracted to: `~/.cache/asha/models` (or `$XDG_CACHE_HOME/asha/models`, or `ASHA_MODELS_CACHE`)
 3. Marker file: `.asha-models-0.4.2.ok`
 4. No interactive consent: this is library-owned fetch for the hardened path.
@@ -80,6 +80,6 @@ alignment/
 
 ## Public messaging
 
-- Everyone: `pip install asha-ai` (works offline, no models).
-- Hardened: `pip install asha-ai[hardened]` (models download automatically on first hardened detect).
+- Everyone: `pip install asha-si` (works offline, no models).
+- Hardened: `pip install asha-si[hardened]` (models download automatically on first hardened detect).
 - Never document exact threshold cutoffs or training recipes in public `docs/`.

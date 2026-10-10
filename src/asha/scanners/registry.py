@@ -18,7 +18,6 @@ Thread-safe ScannerRegistry for registering custom PII and sensitive token scann
 
 from __future__ import annotations
 
-import functools
 import threading
 from typing import Any, Callable, Dict, List, Optional, Type, Union
 

@@ -5,8 +5,15 @@ ASHA is a Python library for **mission-aware agent governance**, **Superintellig
 Licensed under the **Apache License 2.0**.
 
 !!! warning "Developer preview (v0.4.2)"
-    Pre-1.0: APIs may change. Install with `pip install asha-ai` (lite path; no API key or model download).
+    Pre-1.0: APIs may change. Install with `pip install asha-si` (lite path; no API key or model download).
     See **[status.md](status.md)** for what works vs preview vs experimental. Pin a version only when you need a frozen pilot.
+
+!!! note "Package name"
+    The package is published on PyPI as **`asha-si`**. If you used the earlier name `asha-ai`, see the [migration guide](migration-v0.4.md#renamed-from-asha-ai-to-asha-si). The Python import remains `import asha`.
+
+```bash
+pip install asha-si
+```
 
 ---
 
@@ -52,7 +59,7 @@ Understanding-oriented: design, rationale, and project direction.
 ## Support
 
 - [Support policy](support.md): channels, expectations, what to include in reports
-- [GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions) · [Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
+- [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions) · [Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
 - [FAQ](faq.md)
 - [Contributing](contributing.md)
 - [Status](status.md)

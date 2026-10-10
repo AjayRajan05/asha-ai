@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 # Official release asset for asha==0.4.2 detector weights (auto-fetched).
 DEFAULT_MODELS_URL = (
-    "https://github.com/AjayRajan05/ASHA/releases/download/"
+    "https://github.com/AjayRajan05/asha-si/releases/download/"
     "asha-models-0.4.2/asha-models-0.4.2.zip"
 )
 MODELS_BUNDLE_VERSION = "0.4.2"

@@ -1,4 +1,4 @@
-# Training hardened detection models (`asha-ai[hardened]`)
+# Training hardened detection models (`asha-si[hardened]`)
 
 This is the **real** training path for versioned classical ML/DL detectors.
 It is **not** the same as `scripts/bootstrap_models.py`, which only writes synthetic

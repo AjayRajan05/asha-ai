@@ -129,7 +129,7 @@ legacy = to_legacy_pipeline_dict(process("prompt", include_legacy_detail=True))
 
 1. **Rule-based** patterns in `core/security/`: always available
 2. **Multi-phase pipeline** in `core/pii_pipeline/`: normalization → detection → verification → scoring → masking
-3. **Hybrid ML**: optional via `pip install asha-ai[ml]`
+3. **Hybrid ML**: optional via `pip install asha-si[ml]`
 
 Public docs describe the defense shape (layered detection, calibrated fail-closed behavior), not internal scoring mechanics.
 
@@ -138,7 +138,7 @@ Public docs describe the defense shape (layered detection, calibrated fail-close
 ## Observability
 
 - `process(..., trace=True)` / `debug=True`
-- Optional OpenTelemetry via `pip install asha-ai[otel]`
+- Optional OpenTelemetry via `pip install asha-si[otel]`
 
 ---
 

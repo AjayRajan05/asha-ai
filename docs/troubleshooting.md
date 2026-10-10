@@ -9,7 +9,7 @@
 ### ImportError: No module named 'asha'
 
 ```bash
-pip install asha-ai
+pip install asha-si
 # or
 pip install -e .
 ```
@@ -40,7 +40,7 @@ from asha import process
 from asha.core.policy_config import PolicyConfig
 
 process(prompt, mode="strict")
-process(prompt, policy=PolicyConfig(pii_mode="hybrid"))  # needs asha-ai[ml]
+process(prompt, policy=PolicyConfig(pii_mode="hybrid"))  # needs asha-si[ml]
 ```
 
 Check `mode="off"` is not set. Check output via `result.output`, not raw input.
@@ -50,7 +50,7 @@ Check `mode="off"` is not set. Check output via `result.output`, not raw input.
 ## ML / hybrid PII fails
 
 ```bash
-pip install asha-ai[ml]
+pip install asha-si[ml]
 ```
 
 Without ML deps, `pii_mode="hybrid"` falls back to `rule`.
@@ -83,7 +83,7 @@ str(result)            # works
 agent = Agent(model="mock")  # no API key needed for tests
 ```
 
-For real providers, set `OPENAI_API_KEY` etc. and `pip install asha-ai[openai]`.
+For real providers, set `OPENAI_API_KEY` etc. and `pip install asha-si[openai]`.
 
 ---
 
@@ -120,7 +120,7 @@ pytest tests -q
 ## Still stuck?
 
 - [FAQ](faq.md) · [Support policy](support.md)
-- [GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions)
+- [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions)
 - [ASHA Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
 
 ## Related

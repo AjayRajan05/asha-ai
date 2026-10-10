@@ -215,7 +215,9 @@ def get_bands(
 
 def _read_yaml(path: Path) -> Dict[str, Any]:
     try:
-        import yaml
+        import importlib
+
+        yaml: Any = importlib.import_module("yaml")
     except ImportError:
         # Minimal subset parser for our flat YAML (no PyYAML required in lite).
         return _parse_simple_yaml(path.read_text(encoding="utf-8"))

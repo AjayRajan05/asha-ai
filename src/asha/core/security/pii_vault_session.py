@@ -37,7 +37,7 @@ from __future__ import annotations
 import re
 import threading
 import time
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # Ordered regex patterns for PII detection: most specific first
 _PII_PATTERNS: List[Tuple[str, str]] = [

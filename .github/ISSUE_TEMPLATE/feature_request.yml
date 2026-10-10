@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Large features should be discussed first in [GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions). See also [SUPPORT.md](https://github.com/AjayRajan05/ASHA/blob/main/SUPPORT.md) and [CONTRIBUTING.md](https://github.com/AjayRajan05/ASHA/blob/main/CONTRIBUTING.md).
+        Large features should be discussed first in [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions). See also [SUPPORT.md](https://github.com/AjayRajan05/asha-si/blob/main/SUPPORT.md) and [CONTRIBUTING.md](https://github.com/AjayRajan05/asha-si/blob/main/CONTRIBUTING.md).
   - type: textarea
     id: problem
     attributes:

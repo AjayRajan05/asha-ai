@@ -38,7 +38,7 @@ def _ensemble_env(monkeypatch: pytest.MonkeyPatch):
     if not hardened_injection_available():
         pytest.skip(
             "Hardened injection required for these tests. "
-            "Install: pip install asha-ai[hardened] ; "
+            "Install: pip install asha-si[hardened] ; "
             "Train: python -m training.injection.train"
         )
     get_encoder(reset=True)

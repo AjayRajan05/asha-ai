@@ -87,16 +87,16 @@ from asha.core.policy_config import PolicyConfig
 
 process("Contact john@example.com", policy=PolicyConfig(pii_mode="rule"))
 process("...", policy=PolicyConfig(pii_mode="lite"))     # alias of rule-style lite path
-process("...", policy=PolicyConfig(pii_mode="hybrid"))   # default; needs asha-ai[ml] for full NER
+process("...", policy=PolicyConfig(pii_mode="hybrid"))   # default; needs asha-si[ml] for full NER
 ```
 
 | `pii_mode` | Description | Install |
 |------------|-------------|---------|
-| `hybrid` | Default: rules + ML when available; soft-falls back without ML deps | Core; full NER needs `asha-ai[ml]` |
+| `hybrid` | Default: rules + ML when available; soft-falls back without ML deps | Core; full NER needs `asha-si[ml]` |
 | `rule` / `lite` | Regex + heuristic only | Core only |
-| `ml_only` | Experimental ML-only path | `asha-ai[ml]` |
+| `ml_only` | Experimental ML-only path | `asha-si[ml]` |
 
-For stronger classical ML detectors, install `asha-ai[hardened]`. Detector weights **download automatically** on first use into a local cache (no permission prompt). Override with `ASHA_MODELS_DIR` for air-gapped installs, or set `ASHA_DISABLE_MODEL_DOWNLOAD=1` to force lite fallbacks. Base installs need no model files, which is the path meant for everyone.
+For stronger classical ML detectors, install `asha-si[hardened]`. Detector weights **download automatically** on first use into a local cache (no permission prompt). Override with `ASHA_MODELS_DIR` for air-gapped installs, or set `ASHA_DISABLE_MODEL_DOWNLOAD=1` to force lite fallbacks. Base installs need no model files, which is the path meant for everyone.
 
 ---
 

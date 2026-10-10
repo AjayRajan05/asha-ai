@@ -86,7 +86,7 @@ result = process(
 )
 ```
 
-Full NER requires `pip install asha-ai[ml]`; without ML deps, hybrid soft-falls back.
+Full NER requires `pip install asha-si[ml]`; without ML deps, hybrid soft-falls back.
 
 ---
 
@@ -209,7 +209,7 @@ report = recommend_local_model(
 print(report.top_pick)
 ```
 
-Requires `pip install asha-ai[local-advisor]`. See [experimental-features.md](experimental-features.md).
+Requires `pip install asha-si[local-advisor]`. See [experimental-features.md](experimental-features.md).
 
 ---
 
@@ -224,7 +224,7 @@ streamlit run examples/showcase/streamlit_app.py
 
 Covers security console, ANCHOR mission control, document scrubber, live LLM, playground, architecture, and benchmarks (using the same APIs as the snippets above).
 
-Details: [`examples/showcase/README.md`](https://github.com/AjayRajan05/ASHA/blob/main/examples/showcase/README.md).
+Details: [`examples/showcase/README.md`](https://github.com/AjayRajan05/asha-si/blob/main/examples/showcase/README.md).
 
 ## Related
 

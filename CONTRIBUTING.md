@@ -13,7 +13,7 @@ Thank you for your interest in contributing to ASHA!
 ASHA is an infrastructure utility layer, not a conceptual prototype or an academic demo. Every line of code merged into this repository must reinforce our core tenets:
 
 * **Real-World Utility Over Artificial Metrics**: We do not write superficial "test-to-pass" assertions (`assert result is not None`) just to artificially pump test coverage numbers. Every test must validate genuine user-facing behavior, contract boundaries, deterministic outputs, or security invariants.
-* **Strict Zero-Heavy-Dependency Core**: The base installation (`pip install asha-ai`) must stay remarkably fast, lightweight, and dependency-minimal (requiring only `pydantic`, `tiktoken`, `requests`, `click`, `pypdf`, `python-docx`). Heavy ML frameworks (PyTorch, Transformers, Scikit-learn, LangChain, FastAPI) belong exclusively in optional install extras (`[hardened]`, `[anchor]`, `[fastapi]`). Sub-second cold import times are a core feature.
+* **Strict Zero-Heavy-Dependency Core**: The base installation (`pip install asha-si`) must stay remarkably fast, lightweight, and dependency-minimal (requiring only `pydantic`, `tiktoken`, `requests`, `click`, `pypdf`, `python-docx`). Heavy ML frameworks (PyTorch, Transformers, Scikit-learn, LangChain, FastAPI) belong exclusively in optional install extras (`[hardened]`, `[anchor]`, `[fastapi]`). Sub-second cold import times are a core feature.
 * **Non-Mutating & Safe Defaults**: Proxies and client wrappers (`SecureLLM`, `wrap_llm`, `patch_context`) must never mutate underlying client objects in place. Default profiles fail closed on critical security violations.
 * **Semantic & Syntactic Fidelity**: Optimization and preprocessing must never strip code formatting, destroy user intent, or inject hallucinated assistant boilerplate into user prompts.
 * **Documentation is Non-Negotiable**: Code without clear, accurate documentation is incomplete. If developers cannot clearly understand how to use a feature from the documentation, the feature is not ready to be merged.
@@ -129,7 +129,7 @@ We actively encourage contributors to drop as many creative ideas as possible to
 * **Observability & Enterprise Export**: OpenTelemetry AI security spans, Datadog/Splunk SIEM integrations, and structured audit logs.
 * **Framework Ecosystem**: New adapters for emerging agentic runtimes and MCP server implementations.
 
-💡 **How to propose ideas:** Open a discussion thread under [GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions) with the `[RFC]` prefix. Outline the motivation, proposed API surface, dependency impact, and real-world use case.
+💡 **How to propose ideas:** Open a discussion thread under [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions) with the `[RFC]` prefix. Outline the motivation, proposed API surface, dependency impact, and real-world use case.
 
 ---
 
@@ -142,7 +142,7 @@ We actively encourage contributors to drop as many creative ideas as possible to
 ### 2. Environment Setup
 ```bash
 # Clone repository
-git clone https://github.com/AjayRajan05/ASHA.git
+git clone https://github.com/AjayRajan05/asha-si.git
 cd ASHA
 
 # Create and activate virtual environment
@@ -234,8 +234,8 @@ Before opening a pull request, verify each of the following:
 
 ## 7. Community & Getting Help
 
-* **Architecture & Ideas**: [GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions): pitch RFCs, brainstorm features, and discuss v1.0.0 milestones.
-* **Bug Reports**: [GitHub Issues](https://github.com/AjayRajan05/ASHA/issues): submit bugs with minimal reproducible scripts.
+* **Architecture & Ideas**: [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions): pitch RFCs, brainstorm features, and discuss v1.0.0 milestones.
+* **Bug Reports**: [GitHub Issues](https://github.com/AjayRajan05/asha-si/issues): submit bugs with minimal reproducible scripts.
 * **Community Chat**: [ASHA Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw): chat with fellow contributors.
 * **Security Disclosures**: Please review [SECURITY.md](SECURITY.md) for responsible disclosure procedures (do not open public issues for vulnerabilities).
 * **Code of Conduct**: Respectful collaboration is mandatory. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

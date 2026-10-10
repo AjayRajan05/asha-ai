@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Keep core deps auditable for the lite `pip install asha-ai` path.
+  # Keep core deps auditable for the lite `pip install asha-si` path.
   - package-ecosystem: pip
     directory: /
     schedule:

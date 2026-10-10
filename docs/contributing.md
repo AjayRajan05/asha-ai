@@ -6,10 +6,10 @@
 
 Support channels and expectations: [support.md](support.md).
 
-- **Architecture, RFCs & Ideas**: [GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions)
+- **Architecture, RFCs & Ideas**: [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions)
 - **Community Chat**: [ASHA Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
-- **Issue Tracker**: [GitHub Issues](https://github.com/AjayRajan05/ASHA/issues)
-- **Security Reports**: Follow [SECURITY.md](https://github.com/AjayRajan05/ASHA/blob/main/SECURITY.md) (never open public issues for security vulnerabilities).
+- **Issue Tracker**: [GitHub Issues](https://github.com/AjayRajan05/asha-si/issues)
+- **Security Reports**: Follow [SECURITY.md](https://github.com/AjayRajan05/asha-si/blob/main/SECURITY.md) (never open public issues for security vulnerabilities).
 
 ---
 
@@ -28,7 +28,7 @@ All contributors are encouraged to advance through these five progressive milest
 ## Setup
 
 ```bash
-git clone https://github.com/AjayRajan05/ASHA.git
+git clone https://github.com/AjayRajan05/asha-si.git
 cd ASHA
 pip install -e ".[dev]"
 ```

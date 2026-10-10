@@ -1,6 +1,6 @@
 # Release models bundle (maintainer)
 
-Upload `dist/asha-models-0.4.2.zip` so `asha-ai[hardened]` auto-download works.
+Upload `dist/asha-models-0.4.2.zip` so `asha-si[hardened]` auto-download works.
 
 ## One-time: log in
 
@@ -28,9 +28,9 @@ Verify:
 
 ```powershell
 gh release view asha-models-0.4.2
-# Browser: https://github.com/AjayRajan05/ASHA/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip
+# Browser: https://github.com/AjayRajan05/asha-si/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip
 ```
 
 Default download URL (must return HTTP 200):
 
-`https://github.com/AjayRajan05/ASHA/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`
+`https://github.com/AjayRajan05/asha-si/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`

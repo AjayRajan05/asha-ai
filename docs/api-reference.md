@@ -316,7 +316,7 @@ legacy = to_legacy_pipeline_dict(
 | `ASHA_ANCHOR_TELEMETRY` / `ASHA_ANCHOR_TELEMETRY_PATH` | Opt-in ANCHOR telemetry |
 | `ASHA_CACHE_DIR` | Local advisor catalog cache |
 
-`mode` is **not** read from env: set per call. See also [`.env.example`](https://github.com/AjayRajan05/ASHA/blob/main/.env.example).
+`mode` is **not** read from env: set per call. See also [`.env.example`](https://github.com/AjayRajan05/asha-si/blob/main/.env.example).
 
 ---
 

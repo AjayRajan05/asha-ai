@@ -1,7 +1,7 @@
 # Experimental features
 
 !!! warning "Experimental: API may change"
-    Everything on this page is **experimental** in ASHA v0.4.2. Expect breaking changes before 1.0 without a long deprecation cycle. Prefer the stable drop-in API (`process`, `sanitize`, `optimize`, `wrap_llm`). Install with `pip install asha-ai`. See [status.md](status.md).
+    Everything on this page is **experimental** in ASHA v0.4.2. Expect breaking changes before 1.0 without a long deprecation cycle. Prefer the stable drop-in API (`process`, `sanitize`, `optimize`, `wrap_llm`). Install with `pip install asha-si`. See [status.md](status.md).
 
     Calling these APIs emits ``ASHAExperimentalWarning`` at runtime.
 
@@ -15,8 +15,8 @@
 Recommends local LLMs for a prompt workload and hardware profile.
 
 ```bash
-pip install asha-ai[local-advisor]
-pip install asha-ai[local-advisor-gpu]   # optional NVIDIA VRAM detection
+pip install asha-si[local-advisor]
+pip install asha-si[local-advisor-gpu]   # optional NVIDIA VRAM detection
 ```
 
 ```python
@@ -137,12 +137,12 @@ Import from **`asha.integrations`**, not the package root.
 
 | Provider | Extra | Env var |
 |----------|-------|---------|
-| OpenAI | `asha-ai[openai]` | `OPENAI_API_KEY` |
-| Anthropic | `asha-ai[anthropic]` | `ANTHROPIC_API_KEY` |
-| Gemini | `asha-ai[gemini]` | `GOOGLE_API_KEY` |
+| OpenAI | `asha-si[openai]` | `OPENAI_API_KEY` |
+| Anthropic | `asha-si[anthropic]` | `ANTHROPIC_API_KEY` |
+| Gemini | `asha-si[gemini]` | `GOOGLE_API_KEY` |
 | Grok | none | `GROK_API_KEY` |
 | Ollama | none | local server |
-| HuggingFace | `asha-ai[transformers]` | none |
+| HuggingFace | `asha-si[transformers]` | none |
 | Mock | none | testing only |
 
 ### Agent

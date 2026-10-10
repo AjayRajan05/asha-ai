@@ -18,7 +18,7 @@ File paths / bytes are coerced to text (PDF/DOCX/plaintext) before engines run.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import BinaryIO, Optional, Union
+from typing import Any, BinaryIO, Optional, Union
 
 import difflib
 

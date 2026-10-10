@@ -13,7 +13,7 @@ The primary short-term objective is:
 Rather than rushing to add speculative features or inflate superficial test counts, development focuses on five core pillars:
 
 1. **Test Integrity**: Eliminate test-to-pass evasions and replace artificial coverage tests with end-to-end user workflow suites (`tests/use_cases/`).
-2. **Zero-Heavy-Dependency Core**: Maintain strict discipline so `pip install asha-ai` requires only minimal lightweight libraries (`pydantic`, `tiktoken`, `requests`, `click`, `pypdf`, `python-docx`), ensuring sub-second import times.
+2. **Zero-Heavy-Dependency Core**: Maintain strict discipline so `pip install asha-si` requires only minimal lightweight libraries (`pydantic`, `tiktoken`, `requests`, `click`, `pypdf`, `python-docx`), ensuring sub-second import times.
 3. **Transparent Ergonomics**: Ensure transparent client proxying (`SecureLLM`), zero-config presets (`Profile.BALANCED()`, `Profile.STRICT()`), and multi-turn session privacy (`PIIVault`).
 4. **Truthful Documentation**: Keep all docstrings, tutorials, and examples 100% faithful to the actual implementation.
 5. **Community Feedback Loop**: Actively invite developer review through the interactive Control Center showcase (`streamlit run examples/showcase/app.py`).
@@ -35,7 +35,7 @@ ASHA will reach **v1.0.0** when all of the following architectural and operation
 ## 3. Milestones & Progress
 
 ### Shipped in Preview (v0.4.x)
-- [x] Package rename and brand consolidation to `asha-ai`
+- [x] Package rename and brand consolidation to `asha-si`
 - [x] Public facade lazy loading in `src/asha/__init__.py`
 - [x] High-level `SecureLLM` client proxy with automatic bidirectional PII rehydration
 - [x] Reversible multi-turn `PIIVault` with session isolation and TTL cleanup
