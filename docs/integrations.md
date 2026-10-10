@@ -41,8 +41,8 @@ Globally monkey-patches SDKs. Prefer per-client `wrap_llm()` in production.
 ## Framework middleware
 
 ```bash
-pip install asha-ai[integrations]
-# or specific: asha-ai[fastapi], asha-ai[langchain], etc.
+pip install asha-si[integrations]
+# or specific: asha-si[fastapi], asha-si[langchain], etc.
 ```
 
 | Framework | Module |
@@ -55,7 +55,7 @@ pip install asha-ai[integrations]
 | Instructor | `asha.integrations.composition_strategy` |
 | OpenTelemetry | `asha.integrations.otel` |
 
-Middleware uses `mode="balanced"` or `mode="off"` — not a removed `privacy=` kwarg.
+Middleware uses `mode="balanced"` or `mode="off"` (not a removed `privacy=` kwarg).
 
 ---
 
@@ -77,7 +77,7 @@ Requires optional deps (`instructor`, `langchain`).
 Integration tests skip when optional deps are missing:
 
 ```bash
-pip install asha-ai[integrations]
+pip install asha-si[integrations]
 pytest tests/test_fastapi_integration.py -q
 ```
 

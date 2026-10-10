@@ -12,11 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Suite-wide fixtures (no forced lite/ML-off defaults — those hid real failures)."""
+"""Suite-wide fixtures (no forced lite/ML-off defaults: those hid real failures)."""
 
 from __future__ import annotations
 
 import pytest
+
+@pytest.fixture(scope="session", autouse=True)
+def preload_minilm_once() -> None:
+    """
+    Load MiniLM once before any test can pollute torch/numpy.
+    Some CLI/transformers background threads cause ACCESS_VIOLATION on Windows
+    if torch/numpy is initialized off the main thread first.
+    """
+    try:
+        from asha.core.ml.embeddings import get_encoder
+        get_encoder().ensure_loaded()
+    except Exception:
+        pass
+
+    try:
+        import numpy  # noqa: F401
+    except ImportError:
+        pass
+
+    try:
+        import docx  # noqa: F401
+    except ImportError:
+        pass
 
 # Modules that need hardened models, optional frameworks, or heavy ML deps.
 # Publish CI selects ``-m "not slow"``; default local runs still include these
@@ -50,7 +73,9 @@ _SLOW_PATH_FRAGMENTS = (
 )
 
 
-def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
     slow = pytest.mark.slow
     for item in items:
         path = item.nodeid.replace("\\", "/")

@@ -59,7 +59,7 @@ class DetectionStage(BaseStage):
         config = dict(self.detection_config)
         config.update(context.config.get("detection", {}))
 
-        # Locale detection (non-generative) — stored for downstream stages.
+        # Locale detection (non-generative): stored for downstream stages.
         try:
             from ...security.locale_detect import detect_locale
 
@@ -95,9 +95,31 @@ class DetectionStage(BaseStage):
         else:
             all_entities = self._run_sequential_detection(text, config)
 
+        # Run registered custom scanner plugins
+        try:
+            from ....scanners.registry import ScannerRegistry
+
+            for scanner in ScannerRegistry.get_all():
+                try:
+                    for match in scanner.scan(text):
+                        all_entities.append(
+                            PIIEntity(
+                                text=match.text,
+                                start=match.start,
+                                end=match.end,
+                                pii_type=match.pii_type,
+                                confidence=match.confidence,
+                                context="",
+                                metadata={"scanner": scanner.name},
+                            )
+                        )
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
         # Deduplicate entities
-        deduplicated_entities = self._deduplicate_entities(
-            all_entities, config)
+        deduplicated_entities = self._deduplicate_entities(all_entities, config)
 
         # Never mask teaching/example.com addresses (or fragments thereof).
         deduplicated_entities = self._drop_example_email_overlaps(
@@ -143,8 +165,7 @@ class DetectionStage(BaseStage):
             futures = {}
 
             if config.get("enable_regex", True):
-                futures["regex"] = executor.submit(
-                    self.regex_detector.detect, text)
+                futures["regex"] = executor.submit(self.regex_detector.detect, text)
 
             if config.get("enable_heuristics", True):
                 futures["heuristics"] = executor.submit(
@@ -276,8 +297,7 @@ class DetectionStage(BaseStage):
                     entity_length = entity.end - entity.start + 1
                     existing_length = existing.end - existing.start + 1
 
-                    overlap_ratio = overlap_length / \
-                        min(entity_length, existing_length)
+                    overlap_ratio = overlap_length / min(entity_length, existing_length)
 
                     if overlap_ratio > overlap_threshold:
                         # Keep the one with higher confidence
@@ -422,9 +442,9 @@ class HeuristicDetector:
 
         for pii_type, patterns in self.patterns.items():
             for pattern in patterns:
-                # Name heuristics MUST stay case-sensitive — IGNORECASE makes
+                # Name heuristics MUST stay case-sensitive; IGNORECASE makes
                 # "[A-Z][a-z]+ [A-Z][a-z]+" match any two English words
-                # ("Please help", "me with", …).
+                # ("Please help", "me with", etc.).
                 flags = 0 if pii_type == "name" else re.IGNORECASE
                 if pii_type == "name":
                     # finditer is non-overlapping; rejecting "Contact John"
@@ -448,7 +468,7 @@ class HeuristicDetector:
                                 end=end,
                                 pii_type=pii_type,
                                 confidence=0.6,
-                                context=text[max(0, start - 20): end + 20],
+                                context=text[max(0, start - 20) : end + 20],
                                 metadata={"detector": "heuristics"},
                             )
                         )
@@ -462,7 +482,7 @@ class HeuristicDetector:
                         end=match.end(),
                         pii_type=pii_type,
                         confidence=0.6,  # Medium confidence for heuristics
-                        context=text[max(0, match.start() - 20): match.end() + 20],
+                        context=text[max(0, match.start() - 20) : match.end() + 20],
                         metadata={"detector": "heuristics"},
                     )
                     entities.append(entity)
@@ -603,7 +623,7 @@ class DictionaryDetector:
                         end=match.end(),
                         pii_type="name",
                         confidence=0.7,
-                        context=text[max(0, match.start() - 20): match.end() + 20],
+                        context=text[max(0, match.start() - 20) : match.end() + 20],
                     )
                     entities.append(entity)
 

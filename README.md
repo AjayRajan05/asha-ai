@@ -1,54 +1,64 @@
-# ASHA
+# ASHA - Adaptive Security for Human-SI Systems
 
-**ASHA is the security layer that sits between your application and every LLM, protecting prompts before inference and governing agents after inference.**
+**ASHA: Governance, Alignment, and Security Runtime for Superintelligence (SI) and Autonomous Agent Networks. Provides configurable security, preprocessing, token optimization, and runtime controls for Python-based LLM applications.**
 
-> **Developer preview (v0.4.2).** Pre-1.0: APIs may change.
-> Install with `pip install asha-ai`. For long-lived pilots, pin the version you tested (see [docs/status.md](docs/status.md)).
+> **Developer preview (v0.4.2).** Pre-1.0: APIs may change.  
+> Install with `pip install asha-si`. For long-lived pilots, pin the version you tested (see [docs/status.md](docs/status.md)).
+>
+> **Security Notice:** ASHA is an application utility layer. It is not a replacement for provider-level safety systems, application authorization, operating-system sandboxing, network isolation, or secure software engineering practices. Review the [ASHA Threat Model](docs/security/threat-model.md).
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/)
-[![PyPI](https://img.shields.io/badge/pypi-0.4.2-orange)](https://pypi.org/project/asha-ai/)
+[![PyPI](https://img.shields.io/badge/pypi-0.4.2-orange)](https://pypi.org/project/asha-si/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-material-blue)](https://ajayrajan05.github.io/ASHA/)
-[![Discussions](https://img.shields.io/badge/GitHub-Discussions-black?logo=github)](https://github.com/AjayRajan05/ASHA/discussions)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-material-blue)](https://ajayrajan05.github.io/asha-si/)
+[![Discussions](https://img.shields.io/badge/GitHub-Discussions-black?logo=github)](https://github.com/AjayRajan05/asha-si/discussions)
 [![Slack](https://img.shields.io/badge/Slack-Join-4A154B?logo=slack&logoColor=white)](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
 
 ## Quickstart
 
 ```bash
-pip install asha-ai
+pip install asha-si
 ```
 
-PyPI distribution name is **`asha-ai`** (the name `asha` is taken by an unrelated project). Imports stay `from asha import ...`.
-
-No API key and no model download required for the quickstart.
+No API key and no heavy dependencies required for the core installation.
 
 ```python
-from asha import process
+from asha import process, SecureLLM, Profile
 
-result = process("Contact john@example.com for data analysis", mode="balanced")
-print(result.output)   # PII masked, prompt compiled + optimized
-print(result.security) # detection summary
-print(result.metrics)  # token / stage metrics
+# 1. Zero-dependency prompt sanitization and PII masking
+result = process("Contact john@example.com for quarterly financial analysis", profile=Profile.BALANCED())
+print(result.output)   # PII masked, original task and semantics preserved
+print(result.security) # detection summary (threats, PII tokens, safety verdict)
+print(result.metrics)  # honest token savings and processing latency
+
+# 2. Transparent single-line proxy for any LLM client (with automatic response rehydration)
+# client = SecureLLM(raw_openai_client, profile=Profile.BALANCED())
+# response = client.chat.completions.create(model="gpt-4o", messages=[...])
+
+# 3. Superintelligence (SI) and autonomous agent alignment
+# agent_client = SecureLLM(raw_openai_client, profile=Profile.SI_ALIGNMENT())
 ```
 
 ## Why ASHA
 
-- **Mission-scoped agent governance** — `anchor()` compiles an immutable mission contract and gates every tool call against it (`ALLOW` / `WARN` / `BLOCK` / `REVIEW`).
-- **Layered prompt-injection and PII defense** — fail-closed calibrated detection with heuristic fallbacks on a lite install, not a single regex list.
-- **Tool-execution sandbox (preview)** — in-process side-effect hooks by default (`isolation="auto"`); stronger child-process isolation with `isolation="hard"`. Container backends (`docker` / `bwrap`) are not implemented yet.
-- **Install-time cost control** — base install includes text-document extractors for PII masking; pay only for heavier extras you need (`fast`, `hardened`, providers, `asha-ai[anchor]`).
-- **One-line client wrapping** — `wrap_llm(openai.OpenAI())` preprocesses prompts and local file attachments without rewriting your app.
+- **Superintelligence (SI) agent containment**: provides runtime execution bounding (`AgentCostGuard`), memory poisoning defense, and strict tool authorization (`Profile.SI_ALIGNMENT()`) to prevent autonomous mission drift.
+- **Semantic-preserving preprocessing**: `process()` sanitizes PII and checks injections without destroying user intent or replacing code with generic assistant boilerplate.
+- **Honest token optimization**: `optimize()` guarantees that reported token savings reflect actual prompt reduction, enforcing configured `token_budget` values.
+- **Non-mutating client proxying**: `wrap_llm()` wraps OpenAI, Anthropic, Gemini, or Ollama clients without modifying the underlying client in-place.
+- **Mission-scoped agent governance**: `anchor()` compiles an immutable mission contract and gates every tool call against it (`ALLOW` / `WARN` / `BLOCK` / `REVIEW`), normalizing actions to prevent tool authorization bypasses.
+- **Unicode and indirect RAG injection defense**: canonicalizes zero-width spaces and confusables before evaluation, with dedicated RAG context scanning (`scan_rag_context()`).
+- **Provider compatibility**: supports OpenAI, Anthropic, Google Gemini (all models via modern `google-genai` and `google-generativeai`), Ollama (parameterized host/timeout), and llama.cpp (via OpenAI-compatible server endpoint).
 
 ## Install tiers
 
 | Install | What you get | Dependency cost |
 |---------|--------------|-----------------|
-| `pip install asha-ai` | **Recommended for everyone** — core APIs + lite/heuristic detectors + text PDF/DOCX extraction for PII masking | pydantic, tiktoken, requests, click, pypdf, python-docx |
-| `pip install asha-ai[fast]` | Faster pattern matching | + `pyahocorasick` |
-| `pip install asha-ai[hardened]` | Optional classical ML detectors (models auto-download on first use) | + torch / transformers / sklearn stack |
-| `pip install asha-ai[anchor]` | All ANCHOR framework adapters (CrewAI, LangChain, LangGraph, LlamaIndex, MCP) | + framework packages |
+| `pip install asha-si` | **Recommended for everyone**: core APIs, lite/heuristic detectors, and text PDF/DOCX extraction for PII masking | pydantic, tiktoken, requests, click, pypdf, python-docx |
+| `pip install asha-si[fast]` | Faster pattern matching | + `pyahocorasick` |
+| `pip install asha-si[hardened]` | Optional classical ML detectors (models auto-download on first use) | + torch / transformers / sklearn stack |
+| `pip install asha-si[anchor]` | All ANCHOR framework adapters (CrewAI, LangChain, LangGraph, LlamaIndex, MCP) | + framework packages |
 
-Other common extras: `asha-ai[openai]`, `asha-ai[integrations]`, `asha-ai[ml]`, or per-framework `asha-ai[crewai]` / `asha-ai[langchain]` / `asha-ai[langgraph]` / `asha-ai[llamaindex]` / `asha-ai[mcp]`. Hardened weights are **not** required for the default lite path. Adapter matrix: [docs/anchor.md](docs/anchor.md).
+Other common extras: `asha-si[openai]`, `asha-si[integrations]`, `asha-si[ml]`, or per-framework `asha-si[crewai]` / `asha-si[langchain]` / `asha-si[langgraph]` / `asha-si[llamaindex]` / `asha-si[mcp]`. Hardened weights are **not** required for the default lite path. Adapter matrix: [docs/anchor.md](docs/anchor.md).
 
 ## Mission governance (`anchor`)
 
@@ -102,30 +112,51 @@ agent = anchor(
 print(agent.run("Generate the monthly sales report"))
 ```
 
-## Live demos
+## Custom Scanner Plugins & Scoped Contexts
+
+Extend ASHA with enterprise PII rules or safely scope protection to code blocks:
+
+```python
+from asha import Profile
+from asha.scanners import PatternScanner, register_scanner
+from asha.integrations import patch_context
+
+# 1. Register domain-specific PII scanners
+badge_scanner = PatternScanner(
+    name="employee_badge",
+    pattern=r"\bEMP-\d{5}\b",
+    pii_type="employee_id",
+)
+register_scanner(badge_scanner)
+
+# 2. Scoped client context (cleanly unwraps on exit without monkey-patching)
+with patch_context(client=my_client, profile=Profile.BALANCED()) as client:
+    response = client.chat.completions.create(...)
+```
+
+## Live showcase
 
 ```bash
 pip install -e ".[demo]"
-streamlit run examples/showcase/streamlit_app.py
+streamlit run examples/showcase/app.py
 ```
 
-Interactive Streamlit app that runs the **real** ASHA APIs to show usefulness:
+Interactive developer control center running the **real** ASHA library:
 
-1. **Scrub** dirty prompts/files (`process` / `sanitize`) so PII, secrets, and injections do not reach the model  
-2. **Leash** agents with ANCHOR (ALLOW local tools, BLOCK email/cloud exfil)  
-3. **Drop in** via `wrap_llm` / `Agent` (mock offline; Gemini/Ollama optional)
-
-Full page-by-page workflows: [examples/showcase/README.md](examples/showcase/README.md).
+1. **Scrub** dirty prompts/files (`process` / `sanitize` / `PIIVault`) so PII, secrets, and injections never reach the model
+2. **Leash** agents with ANCHOR (ALLOW local tools, BLOCK unauthorized exfiltration)
+3. **Transparent Proxy** with `SecureLLM` (live Gemini / Ollama / OpenAI or offline mock mode)
+4. **RAG Context Guard** (`scan_rag_context`) to quarantine poisoned retrieved chunks
 
 ## Docs
 
-Full documentation (tutorial, how-tos, reference, explanation): **[docs site](https://ajayrajan05.github.io/ASHA/)** · [docs/index.md](docs/index.md) · [Status](docs/status.md) · [Roadmap](docs/roadmap.md)
+Full documentation (tutorial, how-tos, reference, explanation): **[docs site](https://ajayrajan05.github.io/asha-si/)** · [docs/index.md](docs/index.md) · [Status](docs/status.md) · [Roadmap](docs/roadmap.md)
 
 ### Migration from PrivySHA
 
 ```bash
 pip uninstall privysha -y
-pip install asha-ai==0.4.2
+pip install asha-si==0.4.2
 ```
 
 ```python
@@ -137,14 +168,14 @@ Env prefix is `ASHA_*`. Details: [docs/migration-v0.4.md](docs/migration-v0.4.md
 
 ## Community & support
 
-- **[GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions)** — questions, ideas, design talk (primary)
-- **[Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)** — optional community chat
-- **[GitHub Issues](https://github.com/AjayRajan05/ASHA/issues)** — bugs and feature requests
+- **[GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions)**: questions, ideas, and design talk (primary)
+- **[Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)**: community chat
+- **[GitHub Issues](https://github.com/AjayRajan05/asha-si/issues)**: bugs and feature requests
 - **Support policy:** [SUPPORT.md](SUPPORT.md)
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
+Apache 2.0 (see [LICENSE](LICENSE)).
 
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) · [docs/contributing.md](docs/contributing.md)
 - Code of conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)

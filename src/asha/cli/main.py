@@ -27,14 +27,13 @@ from ..utils.dropin import process
     is_flag=True,
     help="Enable trace output (same as --debug)",
 )
-def demo(
-    prompt: str, debug: bool, mode: str, context: str, debug_mode: bool
-) -> None:
+def demo(prompt: str, debug: bool, mode: str, context: str, debug_mode: bool) -> None:
     """Demo ASHA with any prompt."""
     try:
         context_config = None
         if context:
             import json
+
             context_config = json.loads(context)
 
         result = process(
@@ -91,8 +90,7 @@ def quick_test() -> None:
             result = process(str(test["prompt"]))
             assert isinstance(result, ProcessResult)
             pii_masked = (
-                result.security is not None
-                and len(result.security.masked_entities) > 0
+                result.security is not None and len(result.security.masked_entities) > 0
             ) or test["prompt"] not in result.output
             if pii_masked == test["should_mask"]:
                 print("PASS")
@@ -166,6 +164,7 @@ except ImportError:
 
 try:
     from .recommend_cli import recommend_cmd
+
     cli.add_command(recommend_cmd)
 except ImportError:
     pass

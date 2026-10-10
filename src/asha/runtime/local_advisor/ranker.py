@@ -45,9 +45,14 @@ def _workload_fit(model: ModelInfo, workload: WorkloadProfile) -> float:
     elif workload.avg_complexity < 0.4 and params_b <= 8:
         score += 0.1
 
-    if model.context_length and model.context_length >= workload.context_length_required:
+    if (
+        model.context_length
+        and model.context_length >= workload.context_length_required
+    ):
         score += 0.1
-    elif model.context_length and model.context_length < workload.context_length_required:
+    elif (
+        model.context_length and model.context_length < workload.context_length_required
+    ):
         score -= 0.2
 
     dominant = {i.value for i in workload.dominant_intents}

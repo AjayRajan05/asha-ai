@@ -56,7 +56,9 @@ def _detect_ram_bytes() -> int:
             stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
             windll = getattr(ctypes, "windll", None)
             kernel32 = getattr(windll, "kernel32", None) if windll is not None else None
-            if kernel32 is not None and kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
+            if kernel32 is not None and kernel32.GlobalMemoryStatusEx(
+                ctypes.byref(stat)
+            ):
                 return int(stat.ullTotalPhys)
         elif platform.system() == "Darwin":
             import subprocess
@@ -146,7 +148,9 @@ def _detect_apple_gpu() -> list[GPUInfo]:
     try:
         import subprocess
 
-        chip = subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"], text=True)
+        chip = subprocess.check_output(
+            ["sysctl", "-n", "machdep.cpu.brand_string"], text=True
+        )
         name = chip.strip()
         ram = _detect_ram_bytes()
         unified = int(ram * 0.75)
@@ -189,7 +193,11 @@ def _detect_windows_gpus() -> list[GPUInfo]:
             vram = int(item.get("AdapterRAM") or 0)
             if vram <= 0 or vram >= 4294967296:
                 vram = 8 * _GiB
-            vendor = "nvidia" if "NVIDIA" in name.upper() else "amd" if "AMD" in name.upper() else "intel"
+            vendor = (
+                "nvidia"
+                if "NVIDIA" in name.upper()
+                else "amd" if "AMD" in name.upper() else "intel"
+            )
             gpus.append(
                 GPUInfo(
                     name=name,
@@ -210,7 +218,15 @@ def _simulate_gpu(gpu_name: str, vram_gb: Optional[float] = None) -> GPUInfo:
     match = re.search(r"(\d+)\s*GB", upper)
     if match:
         vram = int(float(match.group(1)) * _GiB)
-    vendor = "apple" if "APPLE" in upper or "M1" in upper or "M2" in upper or "M3" in upper or "M4" in upper else "nvidia"
+    vendor = (
+        "apple"
+        if "APPLE" in upper
+        or "M1" in upper
+        or "M2" in upper
+        or "M3" in upper
+        or "M4" in upper
+        else "nvidia"
+    )
     if "AMD" in upper or "RADEON" in upper:
         vendor = "amd"
     return GPUInfo(
@@ -236,7 +252,7 @@ def detect_hardware(
     if gpu:
         simulated_gpus = [_simulate_gpu(gpu, vram_gb)]
         sim_vram = simulated_gpus[0].vram_bytes
-        # Simulated GPU implies a matching workstation host — use real machine
+        # Simulated GPU implies a matching workstation host; use real machine
         # resources only as a floor, not a cap that makes ranking empty.
         sim_ram = max(_detect_ram_bytes(), max(32 * _GiB, int(sim_vram * 1.5)))
         sim_disk = max(_detect_disk_free_bytes(), 200 * _GiB)

@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Canonical rule-based PII detector (domain layer)."""
+from __future__ import annotations
 
 import re
 import hashlib
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 
 from .patterns import is_example_email
@@ -36,8 +36,9 @@ class PIIMatch:
 class PIIDetector:
     """Intelligent PII detector with contextual analysis and multiple detection strategies."""
 
-    def __init__(self) -> None:
-        """Initialize PII detector with default patterns."""
+    def __init__(self, custom_scanners: Optional[List[Any]] = None) -> None:
+        """Initialize PII detector with default patterns and optional custom scanners."""
+        self.custom_scanners: List[Any] = list(custom_scanners or [])
         self.context_keywords = {
             "name": [
                 "name",
@@ -77,16 +78,21 @@ class PIIDetector:
             "gstin": ["gstin", "gst", "tax", "invoice", "business"],
             "zip_code": ["zip", "postal", "code"],
             "date_of_birth": ["birth", "born", "birthday", "dob", "age"],
-            "api_key": ["api key", "secret key", "api_key", "secret", "token", "credential"],
+            "api_key": [
+                "api key",
+                "secret key",
+                "api_key",
+                "secret",
+                "token",
+                "credential",
+            ],
             "jwt_token": ["jwt", "bearer", "authorization", "access token"],
         }
 
         self.patterns = {
             "email": [
                 re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"),
-                re.compile(
-                    r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
-                ),
+                re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
             ],
             "phone": [
                 re.compile(r"\+?\d{1,3}[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b"),
@@ -128,9 +134,7 @@ class PIIDetector:
                 re.compile(
                     r"\b\d+\s+[A-Z][a-z]+\s+[A-Z][a-z]+\s+(St|Street|Ave|Avenue|Rd|Road|Blvd|Boulevard|Ln|Lane|Dr|Drive|Ct|Court|Way|Place|Pl)\b"
                 ),
-                re.compile(
-                    r"\d+\s+[A-Za-z\s]+,\s*[A-Za-z\s]+,\s*[A-Z]{2}\s*\d{5}"
-                ),
+                re.compile(r"\d+\s+[A-Za-z\s]+,\s*[A-Za-z\s]+,\s*[A-Z]{2}\s*\d{5}"),
             ],
             "zip_code": [
                 re.compile(r"\b\d{5}(?:-\d{4})?\b"),
@@ -155,9 +159,7 @@ class PIIDetector:
                 ),
             ],
             "jwt_token": [
-                re.compile(
-                    r"\beyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b"
-                ),
+                re.compile(r"\beyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b"),
             ],
             "bearer_token": [
                 re.compile(r"(?i)Bearer\s+[a-zA-Z0-9._\-]{20,}"),
@@ -202,7 +204,9 @@ class PIIDetector:
         """Locate *literal* in *text* allowing zero-width / whitespace gaps."""
         if not literal:
             return None
-        pat = r"[\s\u200b-\u200d\ufeff\ufe00-\ufe0f]*".join(re.escape(c) for c in literal)
+        pat = r"[\s\u200b-\u200d\ufeff\ufe00-\ufe0f]*".join(
+            re.escape(c) for c in literal
+        )
         m = re.search(pat, text, re.IGNORECASE)
         if m:
             return m.start(), m.end()
@@ -252,19 +256,26 @@ class PIIDetector:
                             text, pii_type, start, end, confidence
                         )
 
-                        if pii_type == "credit_card" and not self._is_valid_credit_card(
-                            matched_literal
+                        if (
+                            pii_type == "credit_card"
+                            and not self._is_valid_credit_card(matched_literal)
                         ):
                             confidence *= 0.45
                         elif pii_type == "aadhaar" and not self._is_valid_aadhaar(
                             matched_literal
                         ):
                             confidence *= 0.45
-                        elif pii_type == "pan" and not self._is_valid_pan(matched_literal):
+                        elif pii_type == "pan" and not self._is_valid_pan(
+                            matched_literal
+                        ):
                             confidence *= 0.45
-                        elif pii_type == "gstin" and not self._is_valid_gstin(matched_literal):
+                        elif pii_type == "gstin" and not self._is_valid_gstin(
+                            matched_literal
+                        ):
                             confidence *= 0.45
-                        elif pii_type == "email" and not self._is_valid_email(matched_literal):
+                        elif pii_type == "email" and not self._is_valid_email(
+                            matched_literal
+                        ):
                             confidence *= 0.5
 
                         if pii_type == "ssn" and re.fullmatch(
@@ -282,6 +293,29 @@ class PIIDetector:
                                     confidence=confidence,
                                 )
                             )
+
+        # Incorporate registered custom scanners (plugins)
+        try:
+            from ...scanners.registry import ScannerRegistry
+
+            all_scanners = list(ScannerRegistry.get_all())
+            for cs in self.custom_scanners:
+                if cs not in all_scanners:
+                    all_scanners.append(cs)
+
+            for scanner in all_scanners:
+                try:
+                    for custom_match in scanner.scan(text):
+                        span_key = (custom_match.start, custom_match.end, custom_match.pii_type)
+                        if span_key in seen_spans:
+                            continue
+                        seen_spans.add(span_key)
+                        if custom_match.confidence > 0.3:
+                            matches.append(custom_match)
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
         return self._remove_overlaps(matches)
 
@@ -385,7 +419,7 @@ class PIIDetector:
         matches.sort(key=lambda x: x.start, reverse=True)
 
         for match in matches:
-            mask = self.masks.get(match.pii_type, "[PII_HASH]")
+            mask = self.masks.get(match.pii_type, f"[{match.pii_type.upper()}_HASH]")
             hash_suffix = hashlib.md5(
                 f"{match.text}{match.pii_type}".encode()
             ).hexdigest()[:8]
@@ -403,7 +437,7 @@ class PIIDetector:
         matches.sort(key=lambda x: x.start, reverse=True)
 
         for match in matches:
-            mask = self.masks.get(match.pii_type, "[PII_HASH]")
+            mask = self.masks.get(match.pii_type, f"[{match.pii_type.upper()}_HASH]")
             hash_suffix = hashlib.md5(
                 f"{match.text}{match.pii_type}".encode()
             ).hexdigest()[:8]

@@ -171,7 +171,9 @@ def load_isotonic_breakpoints(
         env = os.environ.get("ASHA_MODELS_DIR")
         if env:
             candidates.append(Path(env) / "alignment" / "isotonic_breakpoints.json")
-        candidates.append(Path.cwd() / "models" / "alignment" / "isotonic_breakpoints.json")
+        candidates.append(
+            Path.cwd() / "models" / "alignment" / "isotonic_breakpoints.json"
+        )
         repo = (
             Path(__file__).resolve().parents[4]
             / "models"
@@ -237,9 +239,7 @@ def calibrate_score(raw_score: float, calibrator: Any = None) -> float:
         return raw
     if isinstance(calibrator, list):
         try:
-            return float(
-                max(0.0, min(1.0, _interpolate_breakpoints(raw, calibrator)))
-            )
+            return float(max(0.0, min(1.0, _interpolate_breakpoints(raw, calibrator))))
         except Exception:
             return raw
     try:

@@ -1,4 +1,4 @@
-"""Security console — preserved APIs, premium visuals."""
+"""Security console: preserved APIs, premium visuals."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ def _chips(pii: List[str]) -> str:
 
 
 def render() -> None:
-    section_header("Security", "Security console", "Live before/after — process() and sanitize() unchanged.")
+    section_header("Security", "Security console", "Live before/after (process() and sanitize() unchanged).")
 
     mode = st.selectbox("Policy mode", ["balanced", "lite", "strict"], index=0)
     api = st.radio("API", ["process", "sanitize"], horizontal=True)

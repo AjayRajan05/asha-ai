@@ -26,7 +26,9 @@ class _StubAgent:
     def __init__(self) -> None:
         self.tools = [_StubTool()]
 
-    def invoke(self, inputs: Dict[str, Any], config: Any = None, **kwargs: Any) -> Dict[str, Any]:
+    def invoke(
+        self, inputs: Dict[str, Any], config: Any = None, **kwargs: Any
+    ) -> Dict[str, Any]:
         return {"result": "ok", "input": inputs}
 
 

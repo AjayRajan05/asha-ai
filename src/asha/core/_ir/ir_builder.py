@@ -462,12 +462,12 @@ class IRBuilder:
             parser = PromptParser()
             ast = parser.parse(prompt)
             if hasattr(ast, "intent"):
-                primary_object = ast.objects[0] if getattr(ast, "objects", None) else None
+                primary_object = (
+                    ast.objects[0] if getattr(ast, "objects", None) else None
+                )
                 return {
                     "intent": (
-                        ast.intent.value
-                        if hasattr(ast.intent, "value")
-                        else ast.intent
+                        ast.intent.value if hasattr(ast.intent, "value") else ast.intent
                     ),
                     "object": (
                         primary_object.value
@@ -568,6 +568,9 @@ class IRBuilder:
         self, prompt: str, ast_analysis: Optional[Dict[str, Any]] = None
     ) -> IntentType:
         """Extract primary intent; abstain when confidence is below safe_max."""
+        if not prompt.strip():
+            return IntentType.ABSTAIN
+
         ast_hint = None
         if ast_analysis and ast_analysis.get("intent"):
             ast_hint = str(ast_analysis["intent"])
@@ -667,8 +670,7 @@ class IRBuilder:
         # Extract numbers
         numbers = re.findall(r"\b\d+\.?\d*\b", prompt)
         if numbers:
-            parameters["numbers"] = [
-                float(n) if "." in n else int(n) for n in numbers]
+            parameters["numbers"] = [float(n) if "." in n else int(n) for n in numbers]
 
         # Extract quotes (could be specific values)
         quotes = re.findall(r'"([^"]*)"', prompt)
@@ -719,8 +721,7 @@ class IRBuilder:
 
     def _determine_urgency(self, prompt: str) -> Optional[str]:
         """Determine urgency level."""
-        urgent_keywords = ["urgent", "asap",
-                           "immediately", "quickly", "fast", "now"]
+        urgent_keywords = ["urgent", "asap", "immediately", "quickly", "fast", "now"]
         high_keywords = ["important", "priority", "critical"]
 
         if any(keyword in prompt for keyword in urgent_keywords):

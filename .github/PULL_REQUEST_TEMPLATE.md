@@ -1,6 +1,6 @@
 ## Summary
 
-<!-- 1–3 bullets: why this change exists -->
+<!-- 1-3 bullets: why this change exists -->
 
 ## Test plan
 

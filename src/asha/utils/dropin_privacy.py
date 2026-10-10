@@ -117,7 +117,9 @@ def finalize_privacy_output(result: Dict[str, Any], privacy: bool) -> str:
         return output
 
     if _output_needs_security_scrub(output, privacy=privacy):
-        return run_security_only(output, security_level=SecurityLevel.MEDIUM).sanitized_content
+        return run_security_only(
+            output, security_level=SecurityLevel.MEDIUM
+        ).sanitized_content
     return output
 
 

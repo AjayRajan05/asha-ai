@@ -159,7 +159,7 @@ class SafetyConstraints:
                 f"Logic operators removed: {original_logic - optimized_logic} - STRUCTURE RISK"
             )
 
-        # Semantic similarity check (HIGH) — MiniLM cosine vs calibrated floor
+        # Semantic similarity check (HIGH): MiniLM cosine vs calibrated floor
         sim = self._similarity_result(original, optimized)
         if not sim.is_safe:
             violations.append(

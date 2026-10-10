@@ -2,7 +2,7 @@
 
 **ANCHOR** is ASHA's mission-aware governance layer for autonomous agents. It keeps agents aligned with a compiled mission contract, gates dangerous tool calls, detects suspicious action chains, validates plan outputs, and enforces OS-level side-effect constraints during tool execution.
 
-Governance runs at **runtime** — agents and prompts do not need to mention ANCHOR.
+Governance runs at **runtime**: agents and prompts do not need to mention ANCHOR.
 
 !!! note "Developer preview"
     ANCHOR is preview in v0.4.2. Pin `asha==0.4.2` and validate on your agent stack. See [status.md](status.md).
@@ -37,15 +37,15 @@ from asha.runtime.anchor.adapters import (
 )
 ```
 
-Install only what you need (lite `pip install asha-ai` stays free of framework deps):
+Install only what you need (lite `pip install asha-si` stays free of framework deps):
 
 ```bash
-pip install asha-ai[crewai]
-pip install asha-ai[langchain]
-pip install asha-ai[langgraph]
-pip install asha-ai[llamaindex]
-pip install asha-ai[mcp]
-pip install asha-ai[anchor]   # all of the above
+pip install asha-si[crewai]
+pip install asha-si[langchain]
+pip install asha-si[langgraph]
+pip install asha-si[llamaindex]
+pip install asha-si[mcp]
+pip install asha-si[anchor]   # all of the above
 ```
 
 ---
@@ -54,15 +54,15 @@ pip install asha-ai[anchor]   # all of the above
 
 | Framework | Tier | Install | Entry point |
 |-----------|------|---------|-------------|
-| CrewAI | Supported (golden) | `asha-ai[crewai]` | `anchor_crewai()` |
-| LangChain | Supported (golden) | `asha-ai[langchain]` | `anchor_langchain()` |
-| LangGraph | Supported (golden) | `asha-ai[langgraph]` | `anchor_graph()` |
-| LlamaIndex | Best-effort | `asha-ai[llamaindex]` | `anchor_llamaindex()` |
-| MCP | Best-effort | `asha-ai[mcp]` | `anchor_mcp()` |
+| CrewAI | Supported (golden) | `asha-si[crewai]` | `anchor_crewai()` |
+| LangChain | Supported (golden) | `asha-si[langchain]` | `anchor_langchain()` |
+| LangGraph | Supported (golden) | `asha-si[langgraph]` | `anchor_graph()` |
+| LlamaIndex | Best-effort | `asha-si[llamaindex]` | `anchor_llamaindex()` |
+| MCP | Best-effort | `asha-si[mcp]` | `anchor_mcp()` |
 | AutoGen | Experimental | (duck-typed) | `anchor_autogen()` |
 | Generic | Experimental | (stdlib) | `anchor_generic()` / `anchor_any()` |
 
-CI installs `asha-ai[anchor]` and runs golden-path + mission-drift gates headless (`ASHA_ANCHOR_INTERACTIVE=0`, `ASHA_ANCHOR_WARN_POLICY=strict`). Interactive ANCHOR demo: `streamlit run examples/showcase/streamlit_app.py` (Rogue agent page).
+CI installs `asha-si[anchor]` and runs golden-path + mission-drift gates headless (`ASHA_ANCHOR_INTERACTIVE=0`, `ASHA_ANCHOR_WARN_POLICY=strict`). Interactive ANCHOR demo: `streamlit run examples/showcase/streamlit_app.py` (Rogue agent page).
 
 ---
 
@@ -87,7 +87,7 @@ CI installs `asha-ai[anchor]` and runs golden-path + mission-drift gates headles
 | **MCP** | `anchor_mcp()` | call_tool / acall_tool (non-destructive proxy) |
 | **Generic** | `anchor_generic()` | any run/invoke + tools |
 
-Adapters are duck-typed. Missing optional packages raise a clear `pip install asha-ai[...]` hint when the target module requires that framework.
+Adapters are duck-typed. Missing optional packages raise a clear `pip install asha-si[...]` hint when the target module requires that framework.
 
 ---
 
@@ -162,7 +162,7 @@ from langgraph.graph import StateGraph
 from asha.runtime.anchor.adapters import anchor_graph
 
 graph = StateGraph(...)
-# wrap before or after compile — both work
+# wrap before or after compile (both work)
 app = anchor_graph(graph.compile(), risk_tolerance="LOW", interactive=False)
 app.invoke({"messages": [...]})
 ```
@@ -206,7 +206,7 @@ result = server.call_tool("read_file", {"path": "data/trends.csv"})
 | Mode | Behavior |
 |------|----------|
 | `off` | No sandbox enforcement |
-| `auto` (default) | In-process hooks: guarded `open()`, blocked network modules (best-effort — not a full OS jail) |
+| `auto` (default) | In-process hooks: guarded `open()`, blocked network modules (best-effort, not a full OS jail) |
 | `hard` / `subprocess` | Tool runs in an isolated child process |
 
 ```python
@@ -216,7 +216,7 @@ agent = anchor(Agent(provider="mock", model="mock"), isolation="hard", interacti
 ```
 
 Supported modes: `off`, `auto` (in-process hooks), `hard` / `subprocess` (child process).  
-This is **preview isolation**, not a container/seccomp jail. Container backends (`docker`, `bwrap`) raise a clear error and are deferred to 0.5.x — use `hard` today when you need process isolation.
+This is **preview isolation**, not a container/seccomp jail. Container backends (`docker`, `bwrap`) raise a clear error and are deferred to 0.5.x; use `hard` today when you need process isolation.
 
 ---
 
@@ -277,7 +277,7 @@ Public docs describe the governance shape, not internal detector scores or calib
 | `ASHA_ANCHOR_INTERACTIVE` | auto (TTY) | `0` disables human approval prompts |
 | `ASHA_ANCHOR_WARN_POLICY` | permissive (headless) | `strict` escalates WARN / REVIEW more aggressively |
 | `ASHA_ANCHOR_TELEMETRY` | off | `1` enables local JSONL telemetry (opt-in) |
-| `ASHA_ANCHOR_TELEMETRY_PATH` | — | Explicit telemetry file path (also enables logging) |
+| `ASHA_ANCHOR_TELEMETRY_PATH` | none | Explicit telemetry file path (also enables logging) |
 
 ---
 

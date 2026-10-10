@@ -109,8 +109,7 @@ class BenchmarkHarness:
         Args:
             output_dir: Directory to save benchmark results
         """
-        self.output_dir = Path(
-            output_dir) if output_dir else Path.cwd() / "benchmarks"
+        self.output_dir = Path(output_dir) if output_dir else Path.cwd() / "benchmarks"
         self.output_dir.mkdir(exist_ok=True)
         self.results: List[BenchmarkResult] = []
 
@@ -244,8 +243,7 @@ class BenchmarkHarness:
         print("-" * 50)
 
         for i, test_case in enumerate(self.test_cases, 1):
-            print(
-                f"Running test {i}/{len(self.test_cases)}: {test_case['name']}")
+            print(f"Running test {i}/{len(self.test_cases)}: {test_case['name']}")
 
             result = self._run_single_test(test_case, test_function, config)
             self.results.append(result)
@@ -269,8 +267,7 @@ class BenchmarkHarness:
         print("Benchmark Summary:")
         print(f"  Passed: {summary.passed_tests}/{summary.total_tests}")
         print(f"  Avg Latency: {summary.avg_latency_ms:.1f}ms")
-        print(
-            f"  Avg Token Reduction: {summary.avg_token_reduction_percentage:.1f}%")
+        print(f"  Avg Token Reduction: {summary.avg_token_reduction_percentage:.1f}%")
         print(f"  False Positive Rate: {summary.false_positive_rate:.2f}")
         print(f"  Total Time: {benchmark_time:.1f}ms")
 
@@ -339,8 +336,7 @@ class BenchmarkHarness:
             else:
                 # String result
                 output_prompt = result
-                token_reduction = len(prompt.split()) - \
-                    len(output_prompt.split())
+                token_reduction = len(prompt.split()) - len(output_prompt.split())
                 token_reduction_percentage = (
                     (token_reduction / len(prompt.split())) * 100 if prompt else 0
                 )
@@ -408,11 +404,7 @@ class BenchmarkHarness:
     ) -> bool:
         """Check if test produced false positives."""
         # False positive if we detected more than expected
-        pii_fp = (
-            actual_pii > expected_pii + 1
-            if expected_pii > 0
-            else actual_pii > 0
-        )
+        pii_fp = actual_pii > expected_pii + 1 if expected_pii > 0 else actual_pii > 0
         threat_fp = (
             actual_threats > expected_threats + 1
             if expected_threats > 0
@@ -429,9 +421,7 @@ class BenchmarkHarness:
         successful_results = [r for r in self.results if not r.error]
 
         if successful_results:
-            latencies = sorted(
-                [r.processing_time_ms for r in successful_results]
-            )
+            latencies = sorted([r.processing_time_ms for r in successful_results])
             avg_latency = statistics.mean(latencies)
             avg_token_reduction = statistics.mean(
                 [r.token_reduction for r in successful_results]
@@ -709,8 +699,7 @@ def run_benchmark_cli() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="ASHA Benchmark Harness")
-    parser.add_argument("--output-dir", "-o",
-                        help="Output directory for results")
+    parser.add_argument("--output-dir", "-o", help="Output directory for results")
     parser.add_argument(
         "--config", "-c", help="Policy configuration (balanced/strict/lite/off)"
     )

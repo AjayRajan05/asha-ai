@@ -135,8 +135,7 @@ class HybridPIIDetector:
 
         # Get processing time
         processing_summary = result.get("processing_summary", {})
-        processing_time_ms = processing_summary.get(
-            "total_execution_time_ms", 0.0)
+        processing_time_ms = processing_summary.get("total_execution_time_ms", 0.0)
 
         # Create method breakdown
         method_breakdown = {

@@ -64,8 +64,16 @@ _PATTERN_HIT_PROB = 0.85
 def _artifact_candidates(filename: str) -> List[Path]:
     candidates = [
         Path.cwd() / "models" / "memory_guard" / "lite" / filename,
-        Path(__file__).resolve().parents[4] / "models" / "memory_guard" / "lite" / filename,
-        Path(__file__).resolve().parents[3] / "models" / "memory_guard" / "lite" / filename,
+        Path(__file__).resolve().parents[4]
+        / "models"
+        / "memory_guard"
+        / "lite"
+        / filename,
+        Path(__file__).resolve().parents[3]
+        / "models"
+        / "memory_guard"
+        / "lite"
+        / filename,
     ]
     env = os.environ.get("ASHA_MODELS_DIR")
     if env:
@@ -119,6 +127,10 @@ class LitePoisoningClassifier:
                     "you are now",
                     "system prompt",
                     "new instructions",
+                    "override agent memory",
+                    "override memory",
+                    "disable security checks",
+                    "disable security",
                 )
             )
         ]
@@ -154,9 +166,7 @@ class LitePoisoningClassifier:
                 bloom_path = _resolve_artifact("poison_bloom.bin")
                 if bloom_path is not None:
                     try:
-                        self._bloom = BloomFilter.from_bytes(
-                            bloom_path.read_bytes()
-                        )
+                        self._bloom = BloomFilter.from_bytes(bloom_path.read_bytes())
                     except Exception:
                         self._bloom = None
             self._ready = True

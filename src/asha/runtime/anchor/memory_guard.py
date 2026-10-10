@@ -17,8 +17,8 @@
 Protects runtime cognitive integrity against poisoning and secret leakage.
 
 Detection stack (writes):
-  1. Keyword fast-path — literal known-bad strings → instant BLOCK
-  2. Embedding poisoning classifier — paraphrases / multilingual / obfuscation
+  1. Keyword fast-path: literal known-bad strings -> instant BLOCK
+  2. Embedding poisoning classifier: paraphrases / multilingual / obfuscation
   3. Sensitive-keyword scan + Shannon-entropy secret scanner (parallel)
 
 Decision bands come from ``config/thresholds.yaml`` (memory_poisoning /
@@ -40,8 +40,10 @@ def _hardened_poison_model_available() -> bool:
     from asha.core.ml.model_store import ensure_models, resolve_model_file
 
     ensure_models()
-    return resolve_model_file("memory_guard", "poisoning_rf.joblib", ensure=False) is not None
-
+    return (
+        resolve_model_file("memory_guard", "poisoning_rf.joblib", ensure=False)
+        is not None
+    )
 
 
 def _embedding_stack_available() -> bool:
@@ -68,7 +70,7 @@ class MemoryGuard:
             sensitive_keywords
             or ("password", "secret", "token", "api_key", "credentials")
         )
-        # Kept as fast-path only — not the sole poisoning signal.
+        # Kept as fast-path only: not the sole poisoning signal.
         self.poison_keywords = list(
             poison_keywords
             or (
@@ -77,6 +79,10 @@ class MemoryGuard:
                 "you are now",
                 "system prompt",
                 "new instructions",
+                "override agent memory",
+                "override memory",
+                "disable security checks",
+                "disable security",
             )
         )
         self.allow_hash_fallback = allow_hash_fallback
@@ -89,7 +95,7 @@ class MemoryGuard:
             from .poisoning_classifier import PoisoningClassifier
 
             # Prefer hardened MiniLM classifier when joblib exists; otherwise
-            # still construct PoisoningClassifier (centroids) — train artifacts
+            # still construct PoisoningClassifier (centroids); train artifacts
             # with ``python -m training.memory_guard.train`` for calibrated RF.
             # Explicit lite-only callers use LitePoisoningClassifier directly.
             if _hardened_poison_model_available() or _embedding_stack_available():
@@ -142,7 +148,10 @@ class MemoryGuard:
         content_lower = full_content.lower()
 
         # Check scope matching
-        if event.scope not in contract.allowed_memory_scopes and event.scope != "session":
+        if (
+            event.scope not in contract.allowed_memory_scopes
+            and event.scope != "session"
+        ):
             return MemoryVerdict(
                 Verdict.BLOCK,
                 f"Memory scope '{event.scope}' not permitted by mission contract.",
@@ -175,7 +184,7 @@ class MemoryGuard:
                 # never silent ALLOW.
                 verdict = Verdict.REVIEW
                 reason = (
-                    "Possible memory poisoning — review required "
+                    "Possible memory poisoning: review required "
                     f"(p={poison.probability:.3f})."
                 )
                 risk_score = max(risk_score, poison.probability)
@@ -184,9 +193,7 @@ class MemoryGuard:
             if contract.risk_tolerance == "LOW" and event.scope != "session":
                 if verdict == Verdict.ALLOW:
                     verdict = Verdict.REVIEW
-                    reason = (
-                        "Persistent memory write requires review under LOW risk tolerance."
-                    )
+                    reason = "Persistent memory write requires review under LOW risk tolerance."
                     risk_score = max(risk_score, 0.6)
 
             # Secret leakage on write: keyword OR entropy/shape scanner
@@ -196,9 +203,7 @@ class MemoryGuard:
             max_secret_conf = secret_hits[0].confidence if secret_hits else 0.0
 
             try:
-                secret_bands = get_bands(
-                    "secret_entropy", thresholds=load_thresholds()
-                )
+                secret_bands = get_bands("secret_entropy", thresholds=load_thresholds())
             except Exception:
                 from asha.core.ml.calibration import ThresholdBands
 
@@ -219,7 +224,7 @@ class MemoryGuard:
                 shape = secret_hits[0].shape if secret_hits else "unknown"
                 reason = (
                     f"Possible secret in memory write (shape={shape}, "
-                    f"p={max_secret_conf:.3f}) — review required."
+                    f"p={max_secret_conf:.3f}): review required."
                 )
                 risk_score = max(risk_score, max_secret_conf)
 

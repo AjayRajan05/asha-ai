@@ -264,8 +264,7 @@ class SemanticCompressor:
     def _find_preserved_keywords(self, text: str) -> List[str]:
         """Find important keywords that should be preserved."""
         words = re.findall(r"\b\w+\b", text.lower())
-        preserved = [
-            word for word in words if word in self.preservation_keywords]
+        preserved = [word for word in words if word in self.preservation_keywords]
         return list(set(preserved))
 
     def _preserve_sentence_structure(self, text: str) -> str:

@@ -128,7 +128,7 @@ class StructureBuilder:
     ) -> Dict[str, str]:
         """Build structured components from intent and original prompt."""
         components = {
-            "object": intent_result.object,
+            "object": original_prompt,
             "constraints": (
                 ", ".join(intent_result.constraints)
                 if intent_result.constraints
@@ -193,8 +193,7 @@ class StructureBuilder:
             score += 0.4
 
         # Check for multiple components
-        components = len(re.findall(
-            r"^\w+:\s*.+", structured_prompt, re.MULTILINE))
+        components = len(re.findall(r"^\w+:\s*.+", structured_prompt, re.MULTILINE))
         if components >= 3:
             score += 0.3
         elif components >= 2:

@@ -37,7 +37,7 @@ _LABEL_MAP = {
     "FAC": "address",
 }
 
-# Common English tokens spaCy often mislabels as PERSON — never mask these.
+# Common English tokens spaCy often mislabels as PERSON; never mask these.
 _NER_STOP = frozenset(
     {
         "please",

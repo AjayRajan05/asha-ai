@@ -69,7 +69,9 @@ class RegexDetector:
                 scan_texts.append(view)
 
         for scan_text in scan_texts:
-            entities.extend(self._detect_on_text(scan_text, text, validate_pii_checksum))
+            entities.extend(
+                self._detect_on_text(scan_text, text, validate_pii_checksum)
+            )
 
         return self._dedupe_entities(entities)
 
@@ -87,7 +89,9 @@ class RegexDetector:
     def _find_flexible_span(self, text: str, literal: str) -> Optional[Tuple[int, int]]:
         if not literal:
             return None
-        pat = r"[\s\u200b-\u200d\ufeff\ufe00-\ufe0f]*".join(re.escape(c) for c in literal)
+        pat = r"[\s\u200b-\u200d\ufeff\ufe00-\ufe0f]*".join(
+            re.escape(c) for c in literal
+        )
         m = re.search(pat, text, re.IGNORECASE)
         if m:
             return m.start(), m.end()
@@ -149,7 +153,9 @@ class RegexDetector:
                             or algo == "none"
                             or pii_type
                             not in ("credit_card", "aadhaar", "pan", "gstin"),
-                            "scan_view": "canonical" if not use_original_offsets else "raw",
+                            "scan_view": (
+                                "canonical" if not use_original_offsets else "raw"
+                            ),
                         },
                     )
                     entities.append(entity)

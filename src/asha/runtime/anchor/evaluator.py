@@ -50,11 +50,19 @@ class AlignmentEvaluator:
         hard_block = False
 
         action_type = action.action_type
-        tool_name = (
-            str(action.payload.get("tool_name", ""))
-            if action_type == "tool_call"
-            else ""
+        payload = action.payload if isinstance(action.payload, dict) else {}
+        tool_name = str(
+            payload.get("tool_name")
+            or payload.get("tool")
+            or payload.get("name")
+            or payload.get("function")
+            or ""
         )
+        if not tool_name and action_type not in frozenset(
+            {"lifecycle", "start", "stop", "think", "thought", "message", "plan", "state_update", "finish"}
+        ):
+            tool_name = action_type
+            action_type = "tool_call"
 
         def _hard(msg: str) -> None:
             nonlocal score, hard_block
@@ -72,9 +80,17 @@ class AlignmentEvaluator:
         # High-risk / network-egress under local-only (name helpers + capabilities)
         if action_type == "tool_call" and tool_name and not hard_block:
             caps = get_tool_capabilities(tool_name)
-            local_restricted = contract.local_only or contract.forbid_network_exfiltration
-            high_risk = is_high_risk_tool(tool_name) or caps.network_egress or caps.destructive
-            if local_restricted and high_risk and not is_mission_local_tool(tool_name, contract):
+            local_restricted = (
+                contract.local_only or contract.forbid_network_exfiltration
+            )
+            high_risk = (
+                is_high_risk_tool(tool_name) or caps.network_egress or caps.destructive
+            )
+            if (
+                local_restricted
+                and high_risk
+                and not is_mission_local_tool(tool_name, contract)
+            ):
                 _hard(
                     f"Tool '{tool_name}' performs external or destructive side-effects "
                     "and is blocked under the current mission scope."
@@ -105,11 +121,7 @@ class AlignmentEvaluator:
         metadata = extract_inspection_metadata(action.payload)
 
         # Resource-scope violation → hard block
-        if (
-            not hard_block
-            and action_type == "tool_call"
-            and tool_name
-        ):
+        if not hard_block and action_type == "tool_call" and tool_name:
             scope_violation = validate_resource_scope(tool_name, metadata, contract)
             if scope_violation is not None:
                 _hard(
@@ -134,9 +146,11 @@ class AlignmentEvaluator:
             forbidden_matches = find_forbidden_metadata_matches(
                 metadata,
                 contract.forbidden_actions,
-                network_only_tokens=contract.forbidden_network_tokens
-                if contract.forbid_network_exfiltration
-                else None,
+                network_only_tokens=(
+                    contract.forbidden_network_tokens
+                    if contract.forbid_network_exfiltration
+                    else None
+                ),
             )
         else:
             forbidden_matches = find_forbidden_metadata_matches(
@@ -151,7 +165,9 @@ class AlignmentEvaluator:
             explanations.append("Metadata policy violations: " + "; ".join(details))
             triggers.extend(details)
 
-        if any(keyword in action_type for keyword in ["write", "update", "delete", "send"]):
+        if any(
+            keyword in action_type for keyword in ["write", "update", "delete", "send"]
+        ):
             if contract.risk_tolerance == "LOW":
                 score *= 0.7
                 explanations.append(

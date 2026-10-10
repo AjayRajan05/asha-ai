@@ -57,7 +57,12 @@ def _normalize_one(item: ToolInput) -> Optional[AgentTool]:
         return AgentTool(name=name, description=f"Tool: {name}", runner=_stub_runner)
     if isinstance(item, dict):
         name = str(item.get("name") or item.get("tool_name") or "")
-        fn = item.get("fn") or item.get("func") or item.get("callable") or item.get("run")
+        fn = (
+            item.get("fn")
+            or item.get("func")
+            or item.get("callable")
+            or item.get("run")
+        )
         if name and callable(fn):
             return AgentTool(
                 name=name,
@@ -66,6 +71,7 @@ def _normalize_one(item: ToolInput) -> Optional[AgentTool]:
                 args_schema=item.get("args_schema"),
             )
         if name:
+
             def _stub(**_kwargs: Any) -> str:
                 return f"Tool '{name}' has no implementation."
 
@@ -116,7 +122,9 @@ def build_tool_system_prompt(tools: Sequence[AgentTool]) -> str:
     for tool in tools:
         lines.append(f"- {tool.name}: {tool.description or 'No description'}")
     lines.append("")
-    lines.append("When the task is complete, respond with the final answer only (no TOOL_CALL).")
+    lines.append(
+        "When the task is complete, respond with the final answer only (no TOOL_CALL)."
+    )
     return "\n".join(lines)
 
 
@@ -187,8 +195,7 @@ def run_tool_loop(
             result = f"Tool error: {exc}"
 
         conversation += (
-            f"\n\nAssistant:\n{response}\n\n"
-            f"Tool result ({tool_name}):\n{result}"
+            f"\n\nAssistant:\n{response}\n\n" f"Tool result ({tool_name}):\n{result}"
         )
 
     return generate(conversation)

@@ -56,12 +56,8 @@ def test_mission_intent_prefer_joblib_when_present():
 
     mission_joblib = Path.cwd() / "models" / "mission" / "domain_clf.joblib"
     intent_joblib = Path.cwd() / "models" / "intent" / "intent_clf.joblib"
-    assert mission_joblib.is_file(), (
-        f"missing checked-in artifact: {mission_joblib}"
-    )
-    assert intent_joblib.is_file(), (
-        f"missing checked-in artifact: {intent_joblib}"
-    )
+    assert mission_joblib.is_file(), f"missing checked-in artifact: {mission_joblib}"
+    assert intent_joblib.is_file(), f"missing checked-in artifact: {intent_joblib}"
 
     domain = DomainClassifier()
     domain.predict("Analyze campus marketplace transaction trends")

@@ -125,8 +125,7 @@ class TemplateEngine:
         templated_prompt = self._fill_template(selected_template, components)
 
         # Calculate coverage score
-        coverage_score = self._calculate_coverage(
-            selected_template, components)
+        coverage_score = self._calculate_coverage(selected_template, components)
 
         return TemplateResult(
             templated_prompt=templated_prompt,
@@ -175,8 +174,7 @@ class TemplateEngine:
 
         for placeholder, value in components.items():
             if value:
-                filled_template = filled_template.replace(
-                    f"{{{placeholder}}}", value)
+                filled_template = filled_template.replace(f"{{{placeholder}}}", value)
 
         return filled_template
 

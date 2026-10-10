@@ -1,4 +1,4 @@
-"""ASHA Agent adapter for ANCHOR — full tool-loop governance."""
+"""ASHA Agent adapter for ANCHOR: full tool-loop governance."""
 
 from __future__ import annotations
 
@@ -59,7 +59,9 @@ class _AnchoredASHAAgentProxy:
             initialize_mission(self._runtime, prompt, names)
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
-        prompt = extract_prompt_from_input(kwargs.get("prompt") or (args[0] if args else ""))
+        prompt = extract_prompt_from_input(
+            kwargs.get("prompt") or (args[0] if args else "")
+        )
         phase = self._runtime.state.baseline_mission is not None
         self._bind_mission(prompt, phase=phase)
         try:
@@ -104,7 +106,9 @@ def anchor_asha_agent(
         agent.run("Analyze trends locally.")
     """
     if not is_asha_agent(target):
-        raise TypeError(f"anchor_asha_agent() expects asha.Agent, got {type(target).__name__}.")
+        raise TypeError(
+            f"anchor_asha_agent() expects asha.Agent, got {type(target).__name__}."
+        )
     runtime = runtime or AnchorRuntime(
         risk_tolerance=risk_tolerance,
         warn_policy=warn_policy,

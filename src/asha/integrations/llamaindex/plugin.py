@@ -15,7 +15,7 @@
 """
 LlamaIndex Integration for ASHA
 
-This module provides seamless integration with LlamaIndex components,
+This module provides direct integration with LlamaIndex components,
 allowing ASHA to secure and optimize queries and prompts within
 LlamaIndex pipelines.
 """
@@ -282,7 +282,9 @@ class ASHALLM(CustomLLM):
         else:
             optimized_prompt = _coerce_process_output(
                 process(
-                    prompt, mode=("balanced" if self.privacy else "off"), token_budget=self.token_budget
+                    prompt,
+                    mode=("balanced" if self.privacy else "off"),
+                    token_budget=self.token_budget,
                 ),
                 prompt,
             )
@@ -633,9 +635,7 @@ class ASHAPostProcessor:
         self.debug_metrics = debug_metrics
         self._last_metrics: Optional[Dict[str, Any]] = None
 
-    def postprocess_nodes(
-        self, nodes: List[Any], **kwargs: Any
-    ) -> List[Any]:
+    def postprocess_nodes(self, nodes: List[Any], **kwargs: Any) -> List[Any]:
         """
         Apply ASHA processing to document nodes.
 
@@ -738,7 +738,6 @@ def create_asha_index(
     asha_llm = wrap_llm(llm, privacy, token_budget, debug_metrics)
 
     # Create index with ASHA-enhanced LLM
-    index = VectorStoreIndex.from_documents(
-        documents, llm=asha_llm, **index_kwargs)
+    index = VectorStoreIndex.from_documents(documents, llm=asha_llm, **index_kwargs)
 
     return cast(VectorStoreIndex, index)

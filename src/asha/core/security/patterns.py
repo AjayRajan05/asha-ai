@@ -32,7 +32,7 @@ PII_PATTERN_STRINGS: Dict[str, List[str]] = {
     ],
     "phone": [
         r"\b\d{3}-\d{3}-\d{4}\b",
-        # Parentheses are non-word chars — \b before '(' fails after whitespace.
+        # Parentheses are non-word chars; \b before '(' fails after whitespace.
         r"(?<![\w)])\(\d{3}\)\s*\d{3}[-.]?\d{4}\b",
         r"\b\d{3}\.\d{3}\.\d{4}\b",
         r"\b\d{10}\b",
@@ -74,8 +74,8 @@ PII_PATTERN_STRINGS: Dict[str, List[str]] = {
         r"\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b",
     ],
     "url": [
-        r'https?://[^\s<>"{}|\\^`\[\]]+',
-        r'www\.[^\s<>"{}|\\^`\[\]]+',
+        # Only URLs containing embedded credentials (user:pass@host) are considered sensitive/PII
+        r'[a-zA-Z0-9+_-]+://[^\s:@/]+:[^\s@]+@[^\s<>"{}|\\^`\[\]]+',
     ],
     "zip_code": [
         r"\b\d{5}\b",
@@ -86,6 +86,8 @@ PII_PATTERN_STRINGS: Dict[str, List[str]] = {
         r"\bsk-proj-[a-zA-Z0-9_-]{20,}\b",
         r"\bAKIA[0-9A-Z]{16}\b",
         r"(?i)(?:api[_-]?key|secret[_-]?key)\s*[:=]\s*['\"]?[a-zA-Z0-9_\-]{16,}",
+        r"(?i)(?:password|passwd|pwd)\s*[:=]\s*['\"]?[^\s'\"]{6,}",
+        r'[a-zA-Z0-9+_-]+://[^\s:@/]+:[^\s@]+@[^\s<>"{}|\\^`\[\]]+',
     ],
     "jwt_token": [
         r"\beyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b",

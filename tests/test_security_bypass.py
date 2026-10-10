@@ -1,4 +1,4 @@
-"""Security bypass and adversarial prompt tests — real SecurityLayer paths."""
+"""Security bypass and adversarial prompt tests: real SecurityLayer paths."""
 
 import base64
 

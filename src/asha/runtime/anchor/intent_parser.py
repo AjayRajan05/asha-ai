@@ -62,10 +62,14 @@ def _normalize_path(path: str) -> str:
 
 
 def _extract_paths(prompt: str) -> List[str]:
-    return list(dict.fromkeys(_normalize_path(match) for match in _PATH_PATTERN.findall(prompt)))
+    return list(
+        dict.fromkeys(_normalize_path(match) for match in _PATH_PATTERN.findall(prompt))
+    )
 
 
-def parse_mission_intent(prompt: str, context: Dict[str, Any] | None = None) -> ParsedMissionIntent:
+def parse_mission_intent(
+    prompt: str, context: Dict[str, Any] | None = None
+) -> ParsedMissionIntent:
     """
     Parse explicit mission intents from prompt text.
 
@@ -83,7 +87,8 @@ def parse_mission_intent(prompt: str, context: Dict[str, Any] | None = None) -> 
         or any(phrase in prompt_lower for phrase in _LOCAL_ONLY_PHRASES)
     )
     forbid_network_exfiltration = local_only or any(
-        phrase in prompt_lower for phrase in ("do not send", "not send data", "externally")
+        phrase in prompt_lower
+        for phrase in ("do not send", "not send data", "externally")
     )
 
     write_requested = any(phrase in prompt_lower for phrase in _WRITE_PHRASES) or any(
@@ -91,8 +96,12 @@ def parse_mission_intent(prompt: str, context: Dict[str, Any] | None = None) -> 
     )
 
     extracted_paths = _extract_paths(prompt)
-    context_read_paths = [_normalize_path(p) for p in context.get("allowed_read_paths", [])]
-    context_write_paths = [_normalize_path(p) for p in context.get("allowed_write_paths", [])]
+    context_read_paths = [
+        _normalize_path(p) for p in context.get("allowed_read_paths", [])
+    ]
+    context_write_paths = [
+        _normalize_path(p) for p in context.get("allowed_write_paths", [])
+    ]
 
     read_paths = list(
         dict.fromkeys(
@@ -101,18 +110,23 @@ def parse_mission_intent(prompt: str, context: Dict[str, Any] | None = None) -> 
     )
     write_paths = list(
         dict.fromkeys(
-            [p for p in extracted_paths if p.startswith("output/")] + context_write_paths
+            [p for p in extracted_paths if p.startswith("output/")]
+            + context_write_paths
         )
     )
 
     if write_requested and not write_paths:
         write_paths = ["output/"]
 
-    if not read_paths and any(token in prompt_lower for token in ("load", "read", "dataset", "local data")):
+    if not read_paths and any(
+        token in prompt_lower for token in ("load", "read", "dataset", "local data")
+    ):
         read_paths = ["data/"]
 
     expected_outcomes: List[str] = list(context.get("expected_outcomes", []))
-    completion_criteria: List[str] = list(context.get("completion_criteria", ["Goal explicitly satisfied"]))
+    completion_criteria: List[str] = list(
+        context.get("completion_criteria", ["Goal explicitly satisfied"])
+    )
 
     for path in write_paths:
         if path.endswith(".txt") or path.endswith(".json") or path.endswith(".md"):
@@ -123,7 +137,10 @@ def parse_mission_intent(prompt: str, context: Dict[str, Any] | None = None) -> 
             if criterion not in completion_criteria:
                 completion_criteria.append(criterion)
 
-    if write_requested and "Deliverable written to local storage" not in expected_outcomes:
+    if (
+        write_requested
+        and "Deliverable written to local storage" not in expected_outcomes
+    ):
         expected_outcomes.append("Deliverable written to local storage")
 
     forbidden_network_tokens = list(_NETWORK_FORBIDDEN_TOKENS)

@@ -100,7 +100,7 @@ def normalize_aadhaar(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# PAN (structural — no public checksum)
+# PAN (structural, no public checksum)
 # ---------------------------------------------------------------------------
 
 _PAN_RE = re.compile(r"^[A-Z]{5}[0-9]{4}[A-Z]$")
@@ -113,13 +113,11 @@ def pan_validate(text: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# GSTIN (base-36 weighted check digit — best-effort documented algorithm)
+# GSTIN (base-36 weighted check digit, best-effort documented algorithm)
 # ---------------------------------------------------------------------------
 
 _GST_CHARSET = string.digits + string.ascii_uppercase
-_GSTIN_RE = re.compile(
-    r"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z]Z[0-9A-Z]$"
-)
+_GSTIN_RE = re.compile(r"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z]Z[0-9A-Z]$")
 
 
 def gstin_check_digit(gstin_14: str) -> str:

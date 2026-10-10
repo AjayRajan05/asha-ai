@@ -1,13 +1,13 @@
 # Tutorial
 
-**Goal:** install ASHA, process one prompt end-to-end, wrap an LLM client pattern, and run a governed mock agent. About five minutes. (v0.4.2 developer preview — pin `asha==0.4.2`.)
+**Goal:** install ASHA, process one prompt end-to-end, wrap an LLM client pattern, and run a governed mock agent. About five minutes. (v0.4.2 developer preview; pin `asha-si==0.4.2`.)
 
 ---
 
 ## 1. Install
 
 ```bash
-pip install asha-ai
+pip install asha-si
 ```
 
 Python **3.10+** required. No API key and no model download are needed for this tutorial.
@@ -45,10 +45,10 @@ Sensitive values are masked (emails, phones, SSNs, API keys, and related pattern
 
 | Mode | Behavior |
 |------|----------|
-| `balanced` | Default — security + optimization; fail-open on total failure |
-| `strict` | Fail-closed — raises on total failure |
+| `balanced` | Default: security + optimization; fail-open on total failure |
+| `strict` | Fail-closed: raises on total failure |
 | `lite` | Minimal policy features |
-| `off` | Passthrough — prompt unchanged |
+| `off` | Passthrough (prompt unchanged) |
 
 ```python
 process("...", mode="strict")
@@ -68,7 +68,7 @@ print(optimize("Please carefully and thoroughly analyze the following dataset").
 
 ## 3. Wrap an LLM client (optional)
 
-Requires `pip install asha-ai[openai]` and `OPENAI_API_KEY`. Skip this step if you only want local preprocessing.
+Requires `pip install asha-si[openai]` and `OPENAI_API_KEY`. Skip this step if you only want local preprocessing.
 
 ```python
 from asha.integrations import wrap_llm
@@ -143,8 +143,8 @@ except ASHAAnchorBlocked as err:
 
 ## 5. Next steps
 
-1. [Status](status.md) — stable vs experimental
-2. [Core concepts](core-concepts.md) — results, modes, `PolicyConfig`
-3. [ANCHOR](anchor.md) — mission contracts, isolation, adapters
-4. [API reference](api-reference.md) — full signatures
-5. [Security](security.md) — PII and fail-closed behavior
+1. [Status](status.md): stable vs experimental
+2. [Core concepts](core-concepts.md): results, modes, `PolicyConfig`
+3. [ANCHOR](anchor.md): mission contracts, isolation, adapters
+4. [API reference](api-reference.md): full signatures
+5. [Security](security.md): PII and fail-closed behavior

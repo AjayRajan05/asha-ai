@@ -151,7 +151,9 @@ class PIIPipeline:
                 if key not in self.config[stage_name]:
                     self.config[stage_name][key] = value
 
-    def process(self, text: str, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def process(
+        self, text: str, config: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Process text through the complete PII pipeline.
 
@@ -209,9 +211,7 @@ class PIIPipeline:
 
             if not result.success:
                 if self.debug_enabled:
-                    print(
-                        f"[PII Pipeline] Stage {stage_name} failed: {result.error}"
-                    )
+                    print(f"[PII Pipeline] Stage {stage_name} failed: {result.error}")
 
                 # Attempt stage fallback before failing
                 if hasattr(stage, "fallback"):
@@ -314,9 +314,7 @@ class PIIPipeline:
             "original_text": original_text,
             "masked_text": original_text,  # Return original on error
             "entities": [],
-            "stage_results": (
-                self._compile_stage_results(context) if context else {}
-            ),
+            "stage_results": (self._compile_stage_results(context) if context else {}),
             "verification_report": None,
             "processing_summary": {
                 "total_stages": len(context.stage_results) if context else 0,
@@ -380,12 +378,10 @@ class PIIPipeline:
         """
         result = self.process(text)
 
-        entities = [PIIEntity(**entity)
-                    for entity in result.get("entities", [])]
+        entities = [PIIEntity(**entity) for entity in result.get("entities", [])]
 
         if pii_types:
-            entities = [
-                entity for entity in entities if entity.pii_type in pii_types]
+            entities = [entity for entity in entities if entity.pii_type in pii_types]
 
         return entities
 

@@ -66,7 +66,9 @@ def test_layer_does_not_import_forbidden_modules(layer: str) -> None:
     forbidden = FORBIDDEN_IMPORTS[layer]
     violations: list[str] = []
     for path in _py_files_under(layer):
-        bad = (_read_absolute_imports(path) | _read_relative_forbidden(path, layer)) & forbidden
+        bad = (
+            _read_absolute_imports(path) | _read_relative_forbidden(path, layer)
+        ) & forbidden
         if bad:
             rel = path.relative_to(SRC)
             violations.append(f"{rel} imports forbidden {sorted(bad)}")

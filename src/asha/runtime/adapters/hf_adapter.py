@@ -123,12 +123,11 @@ class HuggingFaceAdapter(BaseAdapter):
                     pad_token_id=self.tokenizer.eos_token_id,
                 )
 
-                response = self.tokenizer.decode(
-                    outputs[0], skip_special_tokens=True)
+                response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
 
                 # Remove the original prompt from the response
                 if response.startswith(prompt):
-                    response = response[len(prompt):].strip()
+                    response = response[len(prompt) :].strip()
 
             return str(response).strip()
 

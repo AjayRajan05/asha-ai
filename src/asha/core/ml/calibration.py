@@ -15,7 +15,7 @@
 """Calibration helpers and threshold-band loading.
 
 Thresholds live in ``config/thresholds.yaml`` (or the packaged copy under
-``asha.config``). Call sites must not hardcode magic cutoffs — load bands
+``asha.config``). Call sites must not hardcode magic cutoffs; load bands
 from config and bucket calibrated probabilities instead.
 """
 
@@ -141,7 +141,9 @@ def _candidate_threshold_paths() -> List[Path]:
         if candidate not in paths:
             paths.append(candidate)
     # Packaged default shipped with the wheel.
-    pkg_cfg = Path(__file__).resolve().parent.parent.parent / "config" / "thresholds.yaml"
+    pkg_cfg = (
+        Path(__file__).resolve().parent.parent.parent / "config" / "thresholds.yaml"
+    )
     if pkg_cfg not in paths:
         paths.append(pkg_cfg)
     return paths
@@ -176,7 +178,7 @@ def load_thresholds(
             return data
 
     # Absolute last resort: built-in fail-closed defaults (no magic production
-    # cutoffs — these only apply when the YAML file is missing entirely).
+    # cutoffs: these only apply when the YAML file is missing entirely).
     data = _builtin_fail_closed_defaults()
     _THRESHOLDS_CACHE = data
     return data
@@ -213,7 +215,9 @@ def get_bands(
 
 def _read_yaml(path: Path) -> Dict[str, Any]:
     try:
-        import yaml  # type: ignore
+        import importlib
+
+        yaml: Any = importlib.import_module("yaml")
     except ImportError:
         # Minimal subset parser for our flat YAML (no PyYAML required in lite).
         return _parse_simple_yaml(path.read_text(encoding="utf-8"))

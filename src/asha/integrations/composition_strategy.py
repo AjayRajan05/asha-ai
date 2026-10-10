@@ -80,7 +80,9 @@ class ToolChain:
         self.tools: List[Dict[str, Any]] = []
         self.results: List[Dict[str, Any]] = []
 
-    def add_tool(self, tool: Callable[..., Any], name: str, **kwargs: Any) -> "ToolChain":
+    def add_tool(
+        self, tool: Callable[..., Any], name: str, **kwargs: Any
+    ) -> "ToolChain":
         """Add tool to chain."""
         self.tools.append({"tool": tool, "name": name, "kwargs": kwargs})
         return self
@@ -220,8 +222,7 @@ class ASHAInstructorComposer:
 
             # Process with ASHA
             processed_text = _coerce_process_output(
-                process(
-                    result_text, mode=self.config.policy_mode                ),
+                process(result_text, mode=self.config.policy_mode),
                 result_text,
             )
 
@@ -328,7 +329,9 @@ class OpenAIComposer:
 
         return OpenAIWrapper(config=cast(Any, self.config), **kwargs)
 
-    def enhance_api_call(self, api_function: Callable[..., Any], **api_kwargs: Any) -> Callable[..., Any]:
+    def enhance_api_call(
+        self, api_function: Callable[..., Any], **api_kwargs: Any
+    ) -> Callable[..., Any]:
         """Enhance OpenAI API function with ASHA."""
 
         def enhanced_function(**kwargs: Any) -> Any:
@@ -400,8 +403,7 @@ class UniversalComposer:
             for arg in args:
                 if isinstance(arg, str):
                     processed_arg = _coerce_process_output(
-                        process(
-                            arg, mode=self.config.policy_mode                        ),
+                        process(arg, mode=self.config.policy_mode),
                         arg,
                     )
                     processed_args.append(processed_arg)

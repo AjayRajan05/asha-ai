@@ -71,7 +71,7 @@ def test_safety_classifier_fallback_print_mentions_hardened() -> None:
     )
     text = src.read_text(encoding="utf-8")
     assert "asha[hardened]" in text
-    assert 'Install with: pip install asha[hardened]' in text
+    assert "Install with: pip install asha[hardened]" in text
     # Exact legacy runtime string must not remain as a live print/warn argument.
     assert (
         'print(\n        "Warning: Transformers not available, using rule-based safety detection only"'

@@ -93,7 +93,9 @@ def _dict_to_model(data: dict[str, Any]) -> ModelInfo:
         for v in data.get("gguf_variants", [])
     ]
     model_id = data["id"]
-    params = int(data.get("parameter_count") or _extract_size_hint(model_id) or 7_000_000_000)
+    params = int(
+        data.get("parameter_count") or _extract_size_hint(model_id) or 7_000_000_000
+    )
     active = data.get("parameter_count_active")
     if active is None:
         active = _KNOWN_MOE_ACTIVE.get(model_id) or _extract_active_hint(model_id)
@@ -110,8 +112,11 @@ def _dict_to_model(data: dict[str, Any]) -> ModelInfo:
         downloads=int(data.get("downloads", 0)),
         likes=int(data.get("likes", 0)),
         gguf_variants=variants,
-        specialization_tags=data.get("specialization_tags") or _infer_tags(model_id, arch),
-        instruction_following_score=float(data.get("instruction_following_score", 0.75)),
+        specialization_tags=data.get("specialization_tags")
+        or _infer_tags(model_id, arch),
+        instruction_following_score=float(
+            data.get("instruction_following_score", 0.75)
+        ),
         ollama_name=data.get("ollama_name"),
     )
 
@@ -153,7 +158,8 @@ def _parse_hf_model(item: dict[str, Any]) -> Optional[dict[str, Any]]:
         "id": model_id,
         "name": model_id.split("/")[-1],
         "parameter_count": params,
-        "parameter_count_active": _KNOWN_MOE_ACTIVE.get(model_id) or _extract_active_hint(model_id),
+        "parameter_count_active": _KNOWN_MOE_ACTIVE.get(model_id)
+        or _extract_active_hint(model_id),
         "is_moe": bool(_extract_active_hint(model_id)),
         "context_length": 32768,
         "architecture": str(arch),
@@ -187,7 +193,9 @@ def fetch_live_catalog(limit: int = 80) -> List[ModelInfo]:
                 model_id = item.get("id")
                 if not model_id or model_id in seen:
                     continue
-                detail_resp = requests.get(f"{HF_API_BASE}/models/{model_id}", timeout=20)
+                detail_resp = requests.get(
+                    f"{HF_API_BASE}/models/{model_id}", timeout=20
+                )
                 if detail_resp.status_code != 200:
                     continue
                 detail = detail_resp.json()
@@ -241,7 +249,9 @@ def get_catalog(*, refresh: bool = False) -> tuple[List[ModelInfo], str]:
     return load_fallback_catalog(), "fallback"
 
 
-def pick_best_variant(model: ModelInfo, preferred_quant: Optional[str] = None) -> Optional[GGUFVariant]:
+def pick_best_variant(
+    model: ModelInfo, preferred_quant: Optional[str] = None
+) -> Optional[GGUFVariant]:
     if not model.gguf_variants:
         return None
     if preferred_quant:

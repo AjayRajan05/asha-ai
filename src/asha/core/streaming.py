@@ -159,8 +159,7 @@ def replace_prompt_in_kwargs(kwargs: Dict[str, Any], new_prompt: str) -> Dict[st
                 # Handle message format
                 if isinstance(value[0], dict) and "content" in value[0]:
                     new_kwargs[key] = [
-                        {"content": new_prompt,
-                            "role": value[0].get("role", "user")}
+                        {"content": new_prompt, "role": value[0].get("role", "user")}
                     ]
                 elif isinstance(value[0], str):
                     new_kwargs[key] = [new_prompt]
@@ -197,16 +196,14 @@ class StreamingGuard:
                     # Split large chunks if needed
                     chunk_str = str(chunk)
                     for i in range(0, len(chunk_str), self.max_chunk_size):
-                        yield chunk_str[i: i + self.max_chunk_size]
+                        yield chunk_str[i : i + self.max_chunk_size]
                 else:
                     yield chunk
         except Exception:
             # Fail-safe: yield empty chunk
             yield ""
 
-    async def guard_async_stream(
-        self, response: Any
-    ) -> AsyncGenerator[Any, None]:
+    async def guard_async_stream(self, response: Any) -> AsyncGenerator[Any, None]:
         """
         Guard an async streaming response.
 
@@ -222,7 +219,7 @@ class StreamingGuard:
                     # Split large chunks if needed
                     chunk_str = str(chunk)
                     for i in range(0, len(chunk_str), self.max_chunk_size):
-                        yield chunk_str[i: i + self.max_chunk_size]
+                        yield chunk_str[i : i + self.max_chunk_size]
                 else:
                     yield chunk
         except Exception:

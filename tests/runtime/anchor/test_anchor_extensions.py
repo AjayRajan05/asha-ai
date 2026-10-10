@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from asha.runtime.anchor.adapters.autogen import anchor_autogen, is_autogen_group_chat
-from asha.runtime.anchor.adapters.llamaindex import anchor_llamaindex, is_llamaindex_agent
+from asha.runtime.anchor.adapters.llamaindex import (
+    anchor_llamaindex,
+    is_llamaindex_agent,
+)
 from asha.runtime.anchor.runtime import AnchorRuntime
 
 

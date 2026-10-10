@@ -43,7 +43,10 @@ def resolve_templates(text: str, inputs: Dict[str, Any]) -> str:
 
 
 def is_wrapped(tool: Any) -> bool:
-    return bool(getattr(tool, "_anchor_wrapped", False) or getattr(tool, "_anchor_runtime", None))
+    return bool(
+        getattr(tool, "_anchor_wrapped", False)
+        or getattr(tool, "_anchor_runtime", None)
+    )
 
 
 def block_message(runtime: AnchorRuntime, tool_name: str) -> str:

@@ -1,4 +1,4 @@
-"""Generic duck-typed ANCHOR adapter — production parity with CrewAI."""
+"""Generic duck-typed ANCHOR adapter: production parity with CrewAI."""
 
 from __future__ import annotations
 
@@ -61,12 +61,16 @@ class AnchoredAgentProxy:
             finalize_session(self._runtime)
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
-        prompt = extract_prompt_from_input(kwargs.get("prompt") or (args[0] if args else ""))
+        prompt = extract_prompt_from_input(
+            kwargs.get("prompt") or (args[0] if args else "")
+        )
         if not hasattr(self._inner, "run"):
             raise AttributeError("Anchored agent has no run() method.")
         return self._execute(prompt, self._inner.run, *args, **kwargs)
 
-    def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+    def invoke(
+        self, input: Any, config: Any = None, **kwargs: Any
+    ) -> Any:  # noqa: A002
         prompt = extract_prompt_from_input(input)
         if not hasattr(self._inner, "invoke"):
             raise AttributeError("Anchored agent has no invoke() method.")
@@ -74,7 +78,9 @@ class AnchoredAgentProxy:
             return self._execute(prompt, self._inner.invoke, input, config, **kwargs)
         return self._execute(prompt, self._inner.invoke, input, **kwargs)
 
-    async def ainvoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+    async def ainvoke(
+        self, input: Any, config: Any = None, **kwargs: Any
+    ) -> Any:  # noqa: A002
         prompt = extract_prompt_from_input(input)
         phase = self._runtime.state.baseline_mission is not None
         self._bind_mission(prompt, phase=phase)

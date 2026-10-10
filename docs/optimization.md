@@ -6,7 +6,7 @@ How to reduce prompt tokens with ASHA's optimizer, alone or as part of `process(
 
 ## Compress tokens only
 
-`optimize()` runs token compression only — no PII masking, no compile stage:
+`optimize()` runs token compression only (no PII masking, no compile stage):
 
 ```python
 from asha import optimize
@@ -73,7 +73,7 @@ print(m.tokens_saved)
 print(m.processing_time_ms)
 ```
 
-Token-reduction figures vary widely by input shape — measure with [performance.md](performance.md) rather than assuming a fixed percentage.
+Token-reduction figures vary widely by input shape; measure with [performance.md](performance.md) rather than assuming a fixed percentage.
 
 ---
 

@@ -10,13 +10,19 @@ import pytest
 from asha.runtime.anchor.runtime import AnchorRuntime
 from asha.runtime.anchor.tool_capabilities import register_tool
 
-_FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "anchor" / "mission_drift.jsonl"
+_FIXTURE = (
+    Path(__file__).resolve().parents[2] / "fixtures" / "anchor" / "mission_drift.jsonl"
+)
 
 # Ensure capability metadata matches fixture tool names for chain/action guards.
 _CAP_HINTS = {
     "send_email": {"network_egress": True, "category": "network_egress"},
     "upload_to_cloud": {"network_egress": True, "category": "network_egress"},
-    "delete_local_file": {"destructive": True, "writes_data": True, "category": "delete"},
+    "delete_local_file": {
+        "destructive": True,
+        "writes_data": True,
+        "category": "delete",
+    },
     "http_request": {"network_egress": True, "category": "network_egress"},
     "run_shell": {"destructive": True, "category": "shell"},
     "post_webhook": {"network_egress": True, "category": "network_egress"},
@@ -40,7 +46,9 @@ def test_mission_drift_block_never_allows(case: dict) -> None:
     if tool in _CAP_HINTS:
         register_tool(tool, **_CAP_HINTS[tool])
 
-    runtime = AnchorRuntime(warn_policy="strict", interactive=False, risk_tolerance="LOW")
+    runtime = AnchorRuntime(
+        warn_policy="strict", interactive=False, risk_tolerance="LOW"
+    )
     runtime.initialize_mission(
         case["mission"],
         context={

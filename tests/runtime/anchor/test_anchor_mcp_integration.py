@@ -18,7 +18,12 @@ class _StubMCP:
             {"name": "read_file", "_meta": {}},
             {
                 "name": "send_email",
-                "_meta": {"asha_capabilities": {"network_egress": True, "category": "network_egress"}},
+                "_meta": {
+                    "asha_capabilities": {
+                        "network_egress": True,
+                        "category": "network_egress",
+                    }
+                },
             },
         ]
 

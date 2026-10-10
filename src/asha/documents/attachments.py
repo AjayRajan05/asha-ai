@@ -67,7 +67,10 @@ def _mask_content_value(
     if isinstance(content, str):
         if _is_path_string(content):
             return _extract_and_mask(
-                content, filename=Path(content).name, mode=mode, token_budget=token_budget
+                content,
+                filename=Path(content).name,
+                mode=mode,
+                token_budget=token_budget,
             )
         return _mask_text(content, mode, token_budget=token_budget)
 
@@ -87,9 +90,7 @@ def _mask_content_value(
                     file_value if isinstance(file_value, dict) else {}
                 )
                 filename = (
-                    part.get("filename")
-                    or part.get("name")
-                    or file_obj.get("filename")
+                    part.get("filename") or part.get("name") or file_obj.get("filename")
                 )
                 filename_str = str(filename) if filename is not None else None
                 file_data = (
@@ -126,7 +127,7 @@ def _mask_content_value(
                     )
                     out.append({"type": "text", "text": masked})
                     continue
-                # Opaque file_id — cannot read; leave as-is (documented limitation)
+                # Opaque file_id: cannot read; leave as-is (documented limitation)
                 out.append(part)
                 continue
 
@@ -141,7 +142,9 @@ def _mask_content_value(
                             token_budget=token_budget,
                         )
                     else:
-                        part["text"] = _mask_text(text_val, mode, token_budget=token_budget)
+                        part["text"] = _mask_text(
+                            text_val, mode, token_budget=token_budget
+                        )
                 out.append(part)
                 continue
 
@@ -176,7 +179,9 @@ def prepare_llm_request_kwargs(
             if isinstance(item, (str, Path)) or isinstance(item, (bytes, bytearray)):
                 name = Path(item).name if isinstance(item, (str, Path)) else None
                 masked_texts.append(
-                    _extract_and_mask(item, filename=name, mode=mode, token_budget=token_budget)
+                    _extract_and_mask(
+                        item, filename=name, mode=mode, token_budget=token_budget
+                    )
                 )
             elif isinstance(item, dict):
                 path = item.get("path") or item.get("file_path") or item.get("filename")
@@ -184,14 +189,18 @@ def prepare_llm_request_kwargs(
                 if isinstance(path, str) and _is_path_string(path):
                     masked_texts.append(
                         _extract_and_mask(
-                            path, filename=Path(path).name, mode=mode, token_budget=token_budget
+                            path,
+                            filename=Path(path).name,
+                            mode=mode,
+                            token_budget=token_budget,
                         )
                     )
                 elif isinstance(data, (bytes, bytearray)):
                     masked_texts.append(
                         _extract_and_mask(
                             bytes(data),
-                            filename=str(item.get("filename") or item.get("name") or "") or None,
+                            filename=str(item.get("filename") or item.get("name") or "")
+                            or None,
                             mode=mode,
                             token_budget=token_budget,
                         )
@@ -221,7 +230,9 @@ def prepare_llm_request_kwargs(
         new_kwargs["messages"] = messages
 
     for key in ("prompt", "input", "text", "query", "content"):
-        if key in new_kwargs and isinstance(new_kwargs[key], (str, Path, bytes, bytearray)):
+        if key in new_kwargs and isinstance(
+            new_kwargs[key], (str, Path, bytes, bytearray)
+        ):
             val = new_kwargs[key]
             if isinstance(val, str) and not _is_path_string(val):
                 new_kwargs[key] = _mask_text(val, mode, token_budget=token_budget)

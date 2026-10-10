@@ -184,8 +184,7 @@ class ContextualDetector:
 
                             # Try to find specific patterns in this window
                             for pattern in rule["patterns"]:
-                                matches = re.finditer(
-                                    pattern, window, re.IGNORECASE)
+                                matches = re.finditer(pattern, window, re.IGNORECASE)
 
                                 for match in matches:
                                     # Calculate contextual confidence
@@ -278,8 +277,7 @@ class ContextualDetector:
                     return 0.1  # Boost for possessive context
 
                 # Check if match is in a contact context
-                contact_indicators = ["contact",
-                                      "reach", "call", "email", "send"]
+                contact_indicators = ["contact", "reach", "call", "email", "send"]
                 if any(
                     indicator in sentence.lower() for indicator in contact_indicators
                 ):
@@ -326,7 +324,9 @@ class ContextualDetector:
                     rule["indicators"].append(indicator)
                     rule["confidence_boost"] = confidence_adjustment
 
-    def add_booster(self, pii_type: str, booster: str, confidence_boost: float = 0.1) -> None:
+    def add_booster(
+        self, pii_type: str, booster: str, confidence_boost: float = 0.1
+    ) -> None:
         """Add a confidence booster for a PII type."""
         if pii_type in self.contextual_rules:
             for rule in self.contextual_rules[pii_type]:

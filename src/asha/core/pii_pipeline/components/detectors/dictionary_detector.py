@@ -448,8 +448,7 @@ class DictionaryDetector:
 
                 if match:
                     # Check if it's in a name context
-                    context = self._get_context(
-                        text, match.start(), match.end())
+                    context = self._get_context(text, match.start(), match.end())
                     if self._is_name_context(context):
                         entity = PIIEntity(
                             text=match.group(),
@@ -494,7 +493,7 @@ class DictionaryDetector:
                     context = self._get_context(text, pos, pos + len(location))
                     if self._is_location_context(context):
                         # Get the actual text from original text (preserving case)
-                        actual_text = text[pos: pos + len(location)]
+                        actual_text = text[pos : pos + len(location)]
 
                         entity = PIIEntity(
                             text=actual_text,
@@ -532,7 +531,7 @@ class DictionaryDetector:
 
                     context = self._get_context(text, pos, pos + len(company))
                     if self._is_organization_context(context):
-                        actual_text = text[pos: pos + len(company)]
+                        actual_text = text[pos : pos + len(company)]
 
                         entity = PIIEntity(
                             text=actual_text,
@@ -560,10 +559,9 @@ class DictionaryDetector:
                     if pos == -1:
                         break
 
-                    context = self._get_context(
-                        text, pos, pos + len(job_title))
+                    context = self._get_context(text, pos, pos + len(job_title))
                     if self._is_job_title_context(context):
-                        actual_text = text[pos: pos + len(job_title)]
+                        actual_text = text[pos : pos + len(job_title)]
 
                         entity = PIIEntity(
                             text=actual_text,
@@ -645,8 +643,7 @@ class DictionaryDetector:
     def _is_name_context(self, context: str) -> bool:
         """Check if context indicates a name."""
         context_lower = context.lower()
-        name_indicators = ["name", "called",
-                           "known as", "my name", "i am", "contact"]
+        name_indicators = ["name", "called", "known as", "my name", "i am", "contact"]
         return any(indicator in context_lower for indicator in name_indicators)
 
     def _is_location_context(self, context: str) -> bool:
@@ -666,8 +663,7 @@ class DictionaryDetector:
     def _is_organization_context(self, context: str) -> bool:
         """Check if context indicates an organization."""
         context_lower = context.lower()
-        org_indicators = ["work", "company",
-                          "office", "job", "career", "business"]
+        org_indicators = ["work", "company", "office", "job", "career", "business"]
         return any(indicator in context_lower for indicator in org_indicators)
 
     def _is_job_title_context(self, context: str) -> bool:

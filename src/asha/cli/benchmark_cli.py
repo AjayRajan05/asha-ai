@@ -115,8 +115,7 @@ Examples:
     )
 
     # Behavior options
-    parser.add_argument("--verbose", "-v",
-                        action="store_true", help="Verbose output")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
     parser.add_argument(
         "--quiet", "-q", action="store_true", help="Quiet mode (minimal output)"
@@ -170,13 +169,11 @@ def run_benchmark(args: BenchmarkArgs) -> int:
         if args.format == "json":
             print(json.dumps(summary.__dict__, indent=2))
         elif args.format == "compact":
-            print(
-                f"Results: {summary.passed_tests}/{summary.total_tests} passed")
+            print(f"Results: {summary.passed_tests}/{summary.total_tests} passed")
             print(f"Avg Latency: {summary.avg_latency_ms:.1f}ms")
             print(f"P95 Latency: {summary.p95_latency_ms:.1f}ms")
             print(f"P99 Latency: {summary.p99_latency_ms:.1f}ms")
-            print(
-                f"Token Reduction: {summary.avg_token_reduction_percentage:.1f}%")
+            print(f"Token Reduction: {summary.avg_token_reduction_percentage:.1f}%")
             print(f"False Positive Rate: {summary.false_positive_rate:.2f}")
         else:  # readable
             print("\n" + "=" * 60)
@@ -185,15 +182,13 @@ def run_benchmark(args: BenchmarkArgs) -> int:
             print(f"Total Tests: {summary.total_tests}")
             print(f"Passed: {summary.passed_tests}")
             print(f"Failed: {summary.failed_tests}")
-            print(
-                f"Success Rate: {summary.passed_tests/summary.total_tests*100:.1f}%")
+            print(f"Success Rate: {summary.passed_tests/summary.total_tests*100:.1f}%")
             print()
             print("PERFORMANCE METRICS:")
             print(f"  Average Latency: {summary.avg_latency_ms:.1f}ms")
             print(f"  P95 Latency: {summary.p95_latency_ms:.1f}ms")
             print(f"  P99 Latency: {summary.p99_latency_ms:.1f}ms")
-            print(
-                f"  Token Reduction: {summary.avg_token_reduction_percentage:.1f}%")
+            print(f"  Token Reduction: {summary.avg_token_reduction_percentage:.1f}%")
             print(f"  Total PII Detected: {summary.total_pii_detected}")
             print(f"  Total Threats Blocked: {summary.total_threats_blocked}")
             print(f"  False Positive Rate: {summary.false_positive_rate:.2f}")

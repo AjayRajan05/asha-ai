@@ -69,7 +69,7 @@ def extract_text(
     Extract plain text from a supported document.
 
     Supported: ``.txt``, ``.md``, ``.csv``, ``.html``, ``.pdf``, ``.docx``.
-    No OCR — scanned/image-only PDFs return empty or sparse text.
+    No OCR: scanned/image-only PDFs return empty or sparse text.
     """
     path: Optional[Path] = None
     if isinstance(source, str):

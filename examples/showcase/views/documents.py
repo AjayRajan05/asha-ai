@@ -18,7 +18,7 @@ def render() -> None:
     section_header(
         "Documents",
         "Document scrubber",
-        "File paths, uploads, and bytes — same sanitize/process pipeline.",
+        "File paths, uploads, and bytes: same sanitize/process pipeline.",
     )
 
     source = st.radio(

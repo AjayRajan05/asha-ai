@@ -1,8 +1,8 @@
-"""LangChain adapter for ASHA ANCHOR — production parity with CrewAI."""
+"""LangChain adapter for ASHA ANCHOR: production parity with CrewAI."""
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterator, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Sequence
 
 from ..llm_guard import evaluate_llm_tool_calls
 from ..runtime import AnchorRuntime
@@ -20,12 +20,16 @@ from .base import (
     wrap_tool_list,
 )
 
-try:
+if TYPE_CHECKING:
     from langchain_core.callbacks import BaseCallbackHandler as _LCCallbackHandler
     from langchain_core.tools import BaseTool as _LangChainBaseTool
-except ImportError:  # pragma: no cover - optional dependency
-    _LCCallbackHandler = object  # type: ignore[misc, assignment]
-    _LangChainBaseTool = object  # type: ignore[misc, assignment]
+else:
+    try:
+        from langchain_core.callbacks import BaseCallbackHandler as _LCCallbackHandler
+        from langchain_core.tools import BaseTool as _LangChainBaseTool
+    except ImportError:  # pragma: no cover - optional dependency
+        _LCCallbackHandler = object
+        _LangChainBaseTool = object
 
 
 from .discovery import discover_tools
@@ -40,13 +44,10 @@ def is_langchain_agent(target: Any) -> bool:
     agent = getattr(target, "agent", None)
     if agent is not None and "langchain" in (type(agent).__module__ or ""):
         return True
-    return (
-        callable(getattr(target, "invoke", None))
-        and (
-            hasattr(target, "tools")
-            or hasattr(target, "agent")
-            or "Runnable" in type(target).__name__
-        )
+    return callable(getattr(target, "invoke", None)) and (
+        hasattr(target, "tools")
+        or hasattr(target, "agent")
+        or "Runnable" in type(target).__name__
     )
 
 
@@ -87,7 +88,9 @@ class _AnchorLangChainCallback(_LCCallbackHandler):
         if _LCCallbackHandler is not object:
             super().__init__()
 
-    def on_tool_start(self, serialized: Dict[str, Any], input_str: str, **kwargs: Any) -> None:
+    def on_tool_start(
+        self, serialized: Dict[str, Any], input_str: str, **kwargs: Any
+    ) -> None:
         tool_name = str(serialized.get("name", "") or "")
         if not tool_name:
             return
@@ -170,7 +173,9 @@ class _AnchoredLangChainProxy:
             return {**config, "callbacks": callbacks}
         return config
 
-    def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+    def invoke(
+        self, input: Any, config: Any = None, **kwargs: Any
+    ) -> Any:  # noqa: A002
         self._begin_step(input)
         config = self._inject_callbacks(config)
         try:
@@ -194,11 +199,17 @@ class _AnchoredLangChainProxy:
         finally:
             finalize_session(self._runtime)
 
-    async def ainvoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:  # noqa: A002
+    async def ainvoke(
+        self, input: Any, config: Any = None, **kwargs: Any
+    ) -> Any:  # noqa: A002
         self._begin_step(input)
         config = self._inject_callbacks(config)
         with bind_runtime(self._runtime):
-            result = await self._inner.ainvoke(input, config, **kwargs) if config else await self._inner.ainvoke(input, **kwargs)
+            result = (
+                await self._inner.ainvoke(input, config, **kwargs)
+                if config
+                else await self._inner.ainvoke(input, **kwargs)
+            )
         return self._end_step(result)
 
     def stream(
@@ -207,12 +218,18 @@ class _AnchoredLangChainProxy:
         self._begin_step(input)
         config = self._inject_callbacks(config)
         with bind_runtime(self._runtime):
-            chunks = list(self._inner.stream(input, config, **kwargs) if config else self._inner.stream(input, **kwargs))
+            chunks = list(
+                self._inner.stream(input, config, **kwargs)
+                if config
+                else self._inner.stream(input, **kwargs)
+            )
         if chunks:
             self._end_step(chunks[-1])
         return iter(chunks)
 
-    def batch(self, inputs: Sequence[Any], config: Any = None, **kwargs: Any) -> List[Any]:
+    def batch(
+        self, inputs: Sequence[Any], config: Any = None, **kwargs: Any
+    ) -> List[Any]:
         results = []
         for item in inputs:
             results.append(self.invoke(item, config=config, **kwargs))

@@ -54,6 +54,7 @@ else:
         from fastapi import FastAPI, Request, Response
         from fastapi.responses import JSONResponse
     except ImportError:
+
         class FastAPI:
             pass
 
@@ -71,6 +72,7 @@ else:
         from langchain.chains import LLMChain
         from langchain.llms.base import LLM
     except ImportError:
+
         class PromptTemplate:
             pass
 
@@ -84,6 +86,7 @@ else:
             @property
             def _llm_type(self) -> str:
                 return "llm"
+
 
 _F = TypeVar("_F", bound=Callable[..., Any])
 
@@ -167,7 +170,9 @@ class FastAPIMiddleware(BaseHTTPMiddleware):
         app.add_middleware(ASHAMiddleware, config=config)
     """
 
-    def __init__(self, app: FastAPI, config: Optional[IntegrationConfig] = None) -> None:
+    def __init__(
+        self, app: FastAPI, config: Optional[IntegrationConfig] = None
+    ) -> None:
         """Initialize FastAPI middleware."""
         if not FASTAPI_AVAILABLE:
             raise ImportError(
@@ -181,7 +186,9 @@ class FastAPIMiddleware(BaseHTTPMiddleware):
             SchemaValidationMode() if self.config.enable_schema_validation else None
         )
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[..., Any]
+    ) -> Response:
         """Process request through ASHA pipeline."""
         # Only process POST/PUT/PATCH requests with JSON body
         if request.method not in ["POST", "PUT", "PATCH"]:
@@ -298,8 +305,7 @@ class LangChainPromptTemplate(BasePromptTemplate):
         """Validate input variables."""
         missing_vars = set(self.input_variables) - set(kwargs.keys())
         if missing_vars:
-            raise ValueError(
-                f"Missing required input variables: {missing_vars}")
+            raise ValueError(f"Missing required input variables: {missing_vars}")
 
 
 class ASHALLM(LangChainLLM):
@@ -313,7 +319,9 @@ class ASHALLM(LangChainLLM):
         )
     """
 
-    def __init__(self, base_llm: LLM, config: Optional[IntegrationConfig] = None) -> None:
+    def __init__(
+        self, base_llm: LLM, config: Optional[IntegrationConfig] = None
+    ) -> None:
         """Initialize ASHA LLM wrapper."""
         if not LANGCHAIN_AVAILABLE:
             raise ImportError(
@@ -373,7 +381,9 @@ class ASHAInstructorClient:
         )
     """
 
-    def __init__(self, base_client: Any, config: Optional[IntegrationConfig] = None) -> None:
+    def __init__(
+        self, base_client: Any, config: Optional[IntegrationConfig] = None
+    ) -> None:
         """Initialize Instructor client."""
         if not INSTRUCTOR_AVAILABLE:
             raise ImportError(
@@ -403,8 +413,7 @@ class ASHAInstructorClient:
             for message in messages:
                 if isinstance(message, dict) and "content" in message:
                     processed_content = self._process_text(message["content"])
-                    processed_messages.append(
-                        {**message, "content": processed_content})
+                    processed_messages.append({**message, "content": processed_content})
                 else:
                     processed_messages.append(message)
 
@@ -439,8 +448,7 @@ class OpenAIWrapper:
     ) -> None:
         """Initialize OpenAI wrapper."""
         if not OPENAI_AVAILABLE:
-            raise ImportError(
-                "OpenAI not available. Install with: pip install openai")
+            raise ImportError("OpenAI not available. Install with: pip install openai")
 
         self.config = config or IntegrationConfig()
         self.policy_config = self.config.to_policy_config()
@@ -456,8 +464,7 @@ class OpenAIWrapper:
             for message in kwargs["messages"]:
                 if isinstance(message, dict) and "content" in message:
                     processed_content = self._process_text(message["content"])
-                    processed_messages.append(
-                        {**message, "content": processed_content})
+                    processed_messages.append({**message, "content": processed_content})
                 else:
                     processed_messages.append(message)
             kwargs["messages"] = processed_messages
@@ -532,9 +539,7 @@ def asha_process(
             for arg in args:
                 if isinstance(arg, str):
                     processed_args.append(
-                        _coerce_process_output(
-                            process(arg, mode=policy_mode), arg
-                        )
+                        _coerce_process_output(process(arg, mode=policy_mode), arg)
                     )
                 else:
                     processed_args.append(arg)

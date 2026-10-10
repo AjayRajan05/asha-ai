@@ -5,7 +5,7 @@ How to detect and mask PII, check prompt-injection patterns, and choose fail-clo
 Security is the first engine in `process()` and the only engine in `sanitize()`.
 
 !!! note "Developer preview"
-    Pin `asha==0.4.2`. Public docs describe *what* is defended against and the general shape of the defense (layered detection, calibrated fail-closed behavior) — not internal scoring mechanics.
+    Pin `asha==0.4.2`. Public docs describe *what* is defended against and the general shape of the defense (layered detection, calibrated fail-closed behavior), not internal scoring mechanics.
 
 ---
 
@@ -55,7 +55,7 @@ sanitize(raw_bytes, filename="memo.docx")
 
 Supported text documents on the base install: `.txt`, `.md`, `.csv`, `.html`, `.pdf`, `.docx`.
 
-With **`wrap_llm`**, local file attachments in the request (message file parts, `files=` / path kwargs the wrapper can see) are extracted and PII-masked **before** the call is sent to the provider. Opaque provider `file_id` uploads without local bytes cannot be read — upload masked text instead, or pass a local path/bytes the wrapper can see.
+With **`wrap_llm`**, local file attachments in the request (message file parts, `files=` / path kwargs the wrapper can see) are extracted and PII-masked **before** the call is sent to the provider. Opaque provider `file_id` uploads without local bytes cannot be read: upload masked text instead, or pass a local path/bytes the wrapper can see.
 
 ---
 
@@ -87,16 +87,16 @@ from asha.core.policy_config import PolicyConfig
 
 process("Contact john@example.com", policy=PolicyConfig(pii_mode="rule"))
 process("...", policy=PolicyConfig(pii_mode="lite"))     # alias of rule-style lite path
-process("...", policy=PolicyConfig(pii_mode="hybrid"))   # default; needs asha-ai[ml] for full NER
+process("...", policy=PolicyConfig(pii_mode="hybrid"))   # default; needs asha-si[ml] for full NER
 ```
 
 | `pii_mode` | Description | Install |
 |------------|-------------|---------|
-| `hybrid` | Default — rules + ML when available; soft-falls back without ML deps | Core; full NER needs `asha-ai[ml]` |
+| `hybrid` | Default: rules + ML when available; soft-falls back without ML deps | Core; full NER needs `asha-si[ml]` |
 | `rule` / `lite` | Regex + heuristic only | Core only |
-| `ml_only` | Experimental ML-only path | `asha-ai[ml]` |
+| `ml_only` | Experimental ML-only path | `asha-si[ml]` |
 
-For stronger classical ML detectors, install `asha-ai[hardened]`. Detector weights **download automatically** on first use into a local cache (no permission prompt). Override with `ASHA_MODELS_DIR` for air-gapped installs, or set `ASHA_DISABLE_MODEL_DOWNLOAD=1` to force lite fallbacks. Base installs need no model files — that is the path meant for everyone.
+For stronger classical ML detectors, install `asha-si[hardened]`. Detector weights **download automatically** on first use into a local cache (no permission prompt). Override with `ASHA_MODELS_DIR` for air-gapped installs, or set `ASHA_DISABLE_MODEL_DOWNLOAD=1` to force lite fallbacks. Base installs need no model files, which is the path meant for everyone.
 
 ---
 
@@ -126,7 +126,7 @@ result = sanitize(
 restored = unmask(llm_output, result.security.masking_map)
 ```
 
-Store `masking_map` securely — it can reverse pseudonymization.
+Store `masking_map` securely: it can reverse pseudonymization.
 
 ---
 

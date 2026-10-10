@@ -4,7 +4,7 @@
 
 | Version | Supported | Notes |
 | ------- | --------- | ----- |
-| 0.4.x   | :white_check_mark: | Current developer preview — pin exact version |
+| 0.4.x   | :white_check_mark: | Current developer preview (pin exact version) |
 | 0.3.x   | :x: | Superseded |
 | 1.0.x   | :x: | Retracted track (brief 2026-05 line; project returned to 0.x) |
 | < 0.3   | :x: | Unsupported |
@@ -54,7 +54,7 @@ ASHA follows these defaults:
 
 ## Best Practices for Users
 
-- Install with `pip install asha-ai`; pin a tested version (e.g. `asha==0.4.2`) for production pilots
+- Install with `pip install asha-si`; pin a tested version (e.g. `asha-si==0.4.2`) for production pilots
 - Use `mode="strict"` for sensitive workloads
 - Prefer `wrap_llm()` over `auto_patch()`
 - Run `pip audit` regularly on your environment

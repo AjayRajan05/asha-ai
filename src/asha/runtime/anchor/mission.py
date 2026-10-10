@@ -5,10 +5,12 @@ from .contracts import MissionContract
 from .domain_classifier import get_domain_classifier, restrictive_forbidden
 from .intent_parser import parse_mission_intent
 
+
 class MissionCompiler:
     """
     Compiles a user prompt and task context into an immutable MissionContract.
     """
+
     def __init__(self, default_risk_tolerance: str = "LOW"):
         self.default_risk_tolerance = default_risk_tolerance
         self._domain_clf = get_domain_classifier()
@@ -36,7 +38,9 @@ class MissionCompiler:
         allowed_tools = list(context.get("available_tools", []))
         allowed_domains: List[str] = []
         allowed_memory_scopes = ["session"]
-        required_resources = list(intent.allowed_read_paths + intent.allowed_write_paths)
+        required_resources = list(
+            intent.allowed_read_paths + intent.allowed_write_paths
+        )
         low_confidence = False
 
         prediction = self._domain_clf.predict(prompt)
@@ -61,11 +65,22 @@ class MissionCompiler:
 
         explicit_write = any(
             phrase in prompt.lower()
-            for phrase in ("write", "save", "persist", "output/", "to a text file", "to file")
+            for phrase in (
+                "write",
+                "save",
+                "persist",
+                "output/",
+                "to a text file",
+                "to file",
+            )
         )
         if explicit_write and "write" not in allowed_actions:
             allowed_actions.append("write")
-        elif not low_confidence and intent.write_requested and "write" not in allowed_actions:
+        elif (
+            not low_confidence
+            and intent.write_requested
+            and "write" not in allowed_actions
+        ):
             allowed_actions.append("write")
 
         local_only = intent.local_only

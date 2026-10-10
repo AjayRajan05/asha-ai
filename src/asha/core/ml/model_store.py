@@ -42,11 +42,24 @@ logger = logging.getLogger(__name__)
 
 # Official release asset for asha==0.4.2 detector weights (auto-fetched).
 DEFAULT_MODELS_URL = (
-    "https://github.com/AjayRajan05/ASHA/releases/download/"
+    "https://github.com/AjayRajan05/asha-si/releases/download/"
     "asha-models-0.4.2/asha-models-0.4.2.zip"
 )
 MODELS_BUNDLE_VERSION = "0.4.2"
 _MARKER_NAME = f".asha-models-{MODELS_BUNDLE_VERSION}.ok"
+
+# SHA-256 of the official asha-models-0.4.2.zip release asset.
+# Update this constant whenever a new model bundle is released.
+# Compute with: sha256sum asha-models-0.4.2.zip
+MODELS_BUNDLE_SHA256: str = "e9b61729eb27146bea194572165464af1059720941571e2a38f48d65a290efb5"
+
+# Only these URL prefixes are trusted for model downloads.
+# file: URIs are permitted for local/CI testing.
+_ALLOWED_URL_PREFIXES = (
+    "https://github.com/AjayRajan05/",
+    "https://raw.githubusercontent.com/AjayRajan05/",
+    "file:",
+)
 
 _lock = threading.Lock()
 _ensured = False
@@ -154,10 +167,24 @@ def _bundle_looks_populated(root: Path) -> bool:
     return any(p.is_file() for p in probes)
 
 
+def _validate_models_url(url: str) -> None:
+    """Raise ValueError if *url* is not from a trusted origin."""
+    for prefix in _ALLOWED_URL_PREFIXES:
+        if url.startswith(prefix):
+            return
+    raise ValueError(
+        f"ASHA: untrusted ASHA_MODELS_URL '{url}'. "
+        f"Allowed prefixes: {_ALLOWED_URL_PREFIXES}. "
+        "Set ASHA_DISABLE_MODEL_DOWNLOAD=1 to skip the download entirely."
+    )
+
+
 def ensure_models(root: Optional[Path] = None) -> Path:
     """Ensure detector artifacts exist under ``root`` (download if needed).
 
-    Never prompts the user. Safe to call from hot paths (locked, once).
+    Emits a WARNING log before any network egress so users are never
+    silently surprised. Set ``ASHA_DISABLE_MODEL_DOWNLOAD=1`` to opt out.
+    Safe to call from hot paths (thread-locked, downloads at most once).
     """
     global _ensured, _download_attempted
     target = (root or default_cache_models_dir()).expanduser().resolve()
@@ -179,8 +206,24 @@ def ensure_models(root: Optional[Path] = None) -> Path:
             return target
         _download_attempted = True
         url = models_url()
+        url_trusted = True
         try:
-            _download_and_extract(url, target)
+            _validate_models_url(url)
+        except ValueError as exc:
+            logger.error(str(exc))
+            url_trusted = False
+        if url_trusted:
+            logger.warning(
+                "ASHA: downloading ML detector models (~4 MB) from %s "
+                "to %s. Set ASHA_DISABLE_MODEL_DOWNLOAD=1 to skip.",
+                url,
+                target,
+            )
+        try:
+            if url_trusted:
+                _download_and_extract(url, target)
+            else:
+                raise ValueError("URL not trusted; skipping network fetch")
         except Exception as exc:
             # Dev convenience: use a locally built release zip if present.
             local_zip = _local_bundle_zip()
@@ -192,8 +235,8 @@ def ensure_models(root: Optional[Path] = None) -> Path:
                     logger.warning(
                         "ASHA could not install detector models from %s (%s) "
                         "or local bundle %s (%s). Continuing with lite/heuristic "
-                        "fallbacks — not a silent 'secure' guarantee for the "
-                        "hardened path.",
+                        "fallbacks (not a silent 'secure' guarantee for the "
+                        "hardened path).",
                         url,
                         exc,
                         local_zip,
@@ -203,8 +246,8 @@ def ensure_models(root: Optional[Path] = None) -> Path:
             else:
                 logger.warning(
                     "ASHA could not download detector models from %s (%s). "
-                    "Continuing with lite/heuristic fallbacks — not a silent "
-                    "'secure' guarantee for the hardened path.",
+                    "Continuing with lite/heuristic fallbacks (not a silent "
+                    "'secure' guarantee for the hardened path).",
                     url,
                     exc,
                 )
@@ -233,13 +276,36 @@ def _local_bundle_zip() -> Optional[Path]:
     return None
 
 
+def _verify_bundle_checksum(archive: Path) -> None:
+    """Verify SHA-256 of the downloaded archive when MODELS_BUNDLE_SHA256 is set.
+
+    Raises ``ValueError`` if the digest does not match.
+    Skips silently when MODELS_BUNDLE_SHA256 is empty (pre-release or CI override).
+    """
+    import hashlib
+
+    expected = MODELS_BUNDLE_SHA256.strip()
+    if not expected:
+        logger.debug(
+            "ASHA: MODELS_BUNDLE_SHA256 is not set; skipping checksum verification."
+        )
+        return
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    if digest != expected:
+        raise ValueError(
+            f"ASHA: model bundle checksum mismatch. "
+            f"Expected {expected!r}, got {digest!r}. "
+            "The downloaded file may be corrupt or tampered with."
+        )
+    logger.info("ASHA: model bundle checksum OK (%s)", digest[:16])
+
+
 def _download_and_extract(url: str, dest: Path) -> None:
     dest.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="asha-models-") as tmp:
         tmp_path = Path(tmp)
         archive = tmp_path / "asha-models.zip"
         logger.info("Downloading ASHA detector models from %s", url)
-        # No interactive permission — library-owned fetch for asha[hardened].
         if url.startswith("file:"):
             from urllib.parse import urlparse, unquote
 
@@ -254,20 +320,37 @@ def _download_and_extract(url: str, dest: Path) -> None:
                 url,
                 headers={"User-Agent": f"asha/{MODELS_BUNDLE_VERSION} model-store"},
             )
-            with urllib.request.urlopen(req, timeout=120) as resp, archive.open(
-                "wb"
-            ) as out:
+            with (
+                urllib.request.urlopen(req, timeout=120) as resp,
+                archive.open("wb") as out,
+            ):
                 shutil.copyfileobj(resp, out)
+        _verify_bundle_checksum(archive)
         _extract_zip(archive, dest)
 
 
 def _extract_zip(archive: Path, dest: Path) -> None:
+    """Extract *archive* into *dest* with Zip Slip prevention.
+
+    Each member path is resolved and validated to be inside *extract_root*
+    before extraction. An attacker-controlled zip with ``../../`` traversal
+    entries will raise ``ValueError`` and abort the extraction.
+    """
     dest.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="asha-models-x-") as tmp:
-        extract_root = Path(tmp) / "extracted"
+        extract_root = (Path(tmp) / "extracted").resolve()
         extract_root.mkdir()
         with zipfile.ZipFile(archive, "r") as zf:
-            zf.extractall(extract_root)
+            for member in zf.infolist():
+                member_dest = (extract_root / member.filename).resolve()
+                # Guard against Zip Slip path traversal.
+                if not str(member_dest).startswith(str(extract_root) + os.sep) and \
+                        member_dest != extract_root:
+                    raise ValueError(
+                        f"ASHA: Zip Slip detected: refusing to extract "
+                        f"'{member.filename}' outside of '{extract_root}'."
+                    )
+                zf.extract(member, extract_root)
         payload = _find_models_root(extract_root)
         _merge_tree(payload, dest)
 

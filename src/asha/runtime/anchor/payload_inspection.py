@@ -54,6 +54,11 @@ _RISKY_TOOL_SUBSTRINGS = (
     "_email",
     "smtp",
     "http_request",
+    "bash",
+    "shell",
+    "exec",
+    "terminal",
+    "command",
 )
 
 
@@ -68,7 +73,7 @@ def is_high_risk_tool(tool_name: str) -> bool:
 def is_mission_local_tool(tool_name: str, contract: MissionContract) -> bool:
     """Allowlisted local read/write tools that stay within mission scope.
 
-    Network-egress and destructive tools are never "local" even if allowlisted —
+    Network-egress and destructive tools are never "local" even if allowlisted;
     they still require hard-block / approval under local_only missions.
     """
     if tool_name not in contract.allowed_tools:
@@ -222,7 +227,8 @@ def validate_resource_scope(
     path_fields = [
         key
         for key in metadata
-        if key.endswith("path") or key in {"path", "filepath", "file_path", "filename", "output_path"}
+        if key.endswith("path")
+        or key in {"path", "filepath", "file_path", "filename", "output_path"}
     ]
 
     for field in path_fields:
@@ -268,11 +274,15 @@ def find_forbidden_metadata_matches(
         if field in NETWORK_METADATA_KEYS and network_tokens:
             tokens_to_check = network_tokens
         elif network_tokens and field not in NETWORK_METADATA_KEYS:
-            tokens_to_check = [t for t in forbidden_actions if t.lower() not in network_tokens]
+            tokens_to_check = [
+                t for t in forbidden_actions if t.lower() not in network_tokens
+            ]
 
         for forbidden in tokens_to_check:
             if contains_forbidden_term(value_lower, forbidden):
-                matches.append(ForbiddenMatch(term=str(forbidden), field=field, value=value))
+                matches.append(
+                    ForbiddenMatch(term=str(forbidden), field=field, value=value)
+                )
 
     return matches
 

@@ -312,8 +312,7 @@ class PromptParser:
         entities.extend(single_quoted)
 
         # Extract proper nouns (simplified)
-        proper_nouns = re.findall(
-            r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b", prompt)
+        proper_nouns = re.findall(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b", prompt)
         entities.extend(proper_nouns)
 
         return list(set(entities))  # Remove duplicates
@@ -355,8 +354,7 @@ class PromptParser:
         }
 
         words = re.findall(r"\b\w+\b", prompt.lower())
-        keywords = [
-            word for word in words if word not in stop_words and len(word) > 2]
+        keywords = [word for word in words if word not in stop_words and len(word) > 2]
 
         # Return most frequent words
         from collections import Counter

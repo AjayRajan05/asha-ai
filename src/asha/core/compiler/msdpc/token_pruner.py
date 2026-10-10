@@ -28,10 +28,7 @@ class TokenPruner:
             "a",
             "an",
             "the",
-            "and",
-            "or",
             "but",
-            "if",
             "while",
             "when",
             "where",
@@ -164,6 +161,20 @@ class TokenPruner:
 
         # Important content words to preserve
         self.preservation_words = {
+            "and",
+            "or",
+            "if",
+            "then",
+            "else",
+            "not",
+            "no",
+            "never",
+            "nor",
+            "because",
+            "since",
+            "therefore",
+            "unless",
+            "except",
             "analyze",
             "analysis",
             "examine",
@@ -283,18 +294,15 @@ class TokenPruner:
 
         # Step 2: Remove stopwords (conservative)
         if aggressive:
-            pruned_text, stopword_removals = self._remove_stopwords(
-                pruned_text)
+            pruned_text, stopword_removals = self._remove_stopwords(pruned_text)
             removed_categories["stopwords"] = stopword_removals
 
         # Step 3: Remove redundant modifiers
-        pruned_text, modifier_removals = self._remove_redundant_modifiers(
-            pruned_text)
+        pruned_text, modifier_removals = self._remove_redundant_modifiers(pruned_text)
         removed_categories["redundant_modifiers"] = modifier_removals
 
         # Step 4: Remove duplicate phrases
-        pruned_text, duplicate_removals = self._remove_duplicate_phrases(
-            pruned_text)
+        pruned_text, duplicate_removals = self._remove_duplicate_phrases(pruned_text)
         removed_categories["duplicate_phrases"] = duplicate_removals
 
         # Step 5: Clean up formatting

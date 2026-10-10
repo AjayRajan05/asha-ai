@@ -24,7 +24,9 @@ Implements deterministic behavior modes:
 This makes ASHA trustworthy, deterministic, and predictable.
 """
 
-from typing import Dict, Any, Optional, Union
+from __future__ import annotations
+
+from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass
 from enum import Enum
 
@@ -78,9 +80,20 @@ class PolicyConfig:
     reversible: bool = False
     preserve_intent: bool = False
     security_level: str = "medium"
+    custom_scanners: Optional[List[Any]] = None
 
     def __post_init__(self) -> None:
         """Validate configuration after initialization."""
+        # Register custom scanner plugins if provided
+        if self.custom_scanners:
+            try:
+                from ..scanners.registry import ScannerRegistry
+
+                for s in self.custom_scanners:
+                    ScannerRegistry.register(s)
+            except Exception:
+                pass
+
         # Validate ranges
         self.pii_strictness = max(0.0, min(1.0, self.pii_strictness))
         self.optimization_level = max(0.0, min(1.0, self.optimization_level))
@@ -137,7 +150,9 @@ class PolicyConfig:
             self.enable_context_analysis = False
 
     @classmethod
-    def from_mode(cls, mode: Union[str, PolicyMode], **overrides: Any) -> "PolicyConfig":
+    def from_mode(
+        cls, mode: Union[str, PolicyMode], **overrides: Any
+    ) -> "PolicyConfig":
         """
         Create PolicyConfig from mode with optional overrides.
 
@@ -229,7 +244,9 @@ class PolicyConfig:
             if isinstance(config_dict["mode"], str):
                 config_dict["mode"] = PolicyMode(config_dict["mode"])
 
-        return cls(**{k: v for k, v in config_dict.items() if k in cls.__dataclass_fields__})
+        return cls(
+            **{k: v for k, v in config_dict.items() if k in cls.__dataclass_fields__}
+        )
 
     def validate_behavior(self) -> Dict[str, Any]:
         """
@@ -281,8 +298,7 @@ class PolicyConfig:
             behaviors.append("No processing (passthrough)")
         else:
             if self.pii_masking:
-                behaviors.append(
-                    f"PII masking (strictness: {self.pii_strictness:.1f})")
+                behaviors.append(f"PII masking (strictness: {self.pii_strictness:.1f})")
 
             if self.enable_optimization:
                 behaviors.append(
@@ -330,3 +346,301 @@ def list_presets() -> Dict[str, str]:
         "compliance": "Strict security with full audit trail",
         "disabled": "No processing - complete passthrough",
     }
+
+
+class Profile:
+    """
+    Zero-config security profiles for common deployment scenarios.
+
+    A ``Profile`` wraps a :class:`PolicyConfig` with an opinionated, named
+    configuration that is ready to pass to :class:`~asha.integrations.SecureLLM`,
+    :func:`~asha.utils.dropin.process`, or any ASHA middleware without any extra
+    parameter tuning.
+
+    Examples:
+        >>> from asha import Profile, SecureLLM
+        >>> import openai
+        >>> client = SecureLLM(openai.OpenAI(), profile=Profile.BALANCED())
+        >>> # Production: hard blocks, aggressive PII masking, 15-step agent cap
+        >>> cfg = Profile.STRICT()
+        >>> # Local dev: verbose logging, all PII reported (never blocked)
+        >>> cfg = Profile.DEVELOPER()
+    """
+
+    def __init__(
+        self,
+        *,
+        mode: str = "balanced",
+        fail_closed: bool = True,
+        injection_threshold: float = 0.85,
+        token_budget: int = 2048,
+        max_agent_steps: int = 15,
+        rehydrate_pii: bool = True,
+        custom_scanners: Optional[List[Any]] = None,
+        verbose: bool = False,
+        debug: bool = False,
+        _name: str = "custom",
+    ) -> None:
+        """
+        Create a custom Profile with explicit parameters.
+
+        Args:
+            mode: Underlying policy mode ('strict', 'balanced', 'lite', 'off').
+            fail_closed: If True, block the prompt when processing fails.
+                If False, allow the prompt through (audit/permissive mode).
+            injection_threshold: Probability threshold above which a prompt is
+                classified as an injection attempt. Lower = more aggressive.
+            token_budget: Maximum tokens per prompt after optimization.
+            max_agent_steps: Maximum tool-call steps allowed per agent session.
+            rehydrate_pii: If True, :class:`~asha.integrations.SecureLLM`
+                automatically re-hydrates masked PII placeholders in the LLM
+                completion before returning it to the caller.
+            custom_scanners: Optional list of custom :class:`~asha.scanners.BaseScanner` plugins.
+            verbose: Emit detailed per-request logs to stdout.
+            debug: Include diff and trace data in every :class:`~asha.types.ProcessResult`.
+            _name: Internal display name (set automatically by classmethods).
+        """
+        self.mode = mode
+        self.fail_closed = fail_closed
+        self.injection_threshold = injection_threshold
+        self.token_budget = token_budget
+        self.max_agent_steps = max_agent_steps
+        self.rehydrate_pii = rehydrate_pii
+        self.custom_scanners = custom_scanners
+        if custom_scanners:
+            try:
+                from ..scanners.registry import ScannerRegistry
+
+                for s in custom_scanners:
+                    ScannerRegistry.register(s)
+            except Exception:
+                pass
+        self.verbose = verbose
+        self.debug = debug
+        self._name = _name
+
+    # ------------------------------------------------------------------
+    # Factory classmethods
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def STRICT(cls) -> "Profile":
+        """
+        Maximum-security profile for regulated or high-risk deployments.
+
+        Configuration:
+            - mode: ``'strict'``: deterministic, fail-closed
+            - injection_threshold: 0.65 (aggressive)
+            - token_budget: 1000
+            - max_agent_steps: 5
+            - fail_closed: True (hard blocks on any violation)
+
+        Returns:
+            Profile: A pre-configured strict security profile instance.
+
+        Examples:
+            >>> from asha import Profile, SecureLLM
+            >>> client = SecureLLM(my_openai_client, profile=Profile.STRICT())
+        """
+        return cls(
+            mode="strict",
+            fail_closed=True,
+            injection_threshold=0.65,
+            token_budget=1000,
+            max_agent_steps=5,
+            rehydrate_pii=True,
+            verbose=False,
+            debug=False,
+            _name="STRICT",
+        )
+
+    @classmethod
+    def BALANCED(cls) -> "Profile":
+        """
+        Default enterprise profile: balanced security and developer ergonomics.
+
+        This is the recommended starting point for most production deployments.
+
+        Configuration:
+            - mode: ``'balanced'``
+            - injection_threshold: 0.85
+            - token_budget: 2048
+            - max_agent_steps: 15
+            - fail_closed: True
+            - rehydrate_pii: True (transparent multi-turn PII restoration)
+
+        Returns:
+            Profile: A pre-configured balanced security profile instance.
+
+        Examples:
+            >>> from asha import SecureLLM, Profile
+            >>> client = SecureLLM(my_client, profile=Profile.BALANCED())
+        """
+        return cls(
+            mode="balanced",
+            fail_closed=True,
+            injection_threshold=0.85,
+            token_budget=2048,
+            max_agent_steps=15,
+            rehydrate_pii=True,
+            verbose=False,
+            debug=False,
+            _name="BALANCED",
+        )
+
+    @classmethod
+    def PERMISSIVE(cls) -> "Profile":
+        """
+        Audit/monitor profile: logs every violation without blocking traffic.
+
+        Use this to evaluate ASHA in production before switching to BALANCED
+        or STRICT. All detected threats and PII are reported in telemetry but
+        the prompt passes through untouched.
+
+        Configuration:
+            - mode: ``'lite'``
+            - fail_closed: False (never blocks, always passes through)
+            - injection_threshold: 0.95 (only high-confidence hits are logged)
+            - max_agent_steps: 50 (effectively unlimited for audit)
+
+        Returns:
+            Profile: A pre-configured permissive audit profile instance.
+
+        Examples:
+            >>> from asha import SecureLLM, Profile
+            >>> # Shadow-test ASHA against live traffic before enabling enforcement
+            >>> client = SecureLLM(my_client, profile=Profile.PERMISSIVE())
+        """
+        return cls(
+            mode="lite",
+            fail_closed=False,
+            injection_threshold=0.95,
+            token_budget=4096,
+            max_agent_steps=50,
+            rehydrate_pii=False,
+            verbose=False,
+            debug=False,
+            _name="PERMISSIVE",
+        )
+
+    @classmethod
+    def DEVELOPER(cls) -> "Profile":
+        """
+        Local development profile with rich terminal diagnostics.
+
+        Designed for interactive testing during development. Enables verbose
+        logging, diff output, full trace, and ``rich``-powered terminal reports
+        if the optional ``rich`` package is installed.
+
+        Configuration:
+            - mode: ``'balanced'``
+            - fail_closed: False (won't interrupt local iteration loops)
+            - verbose: True
+            - debug: True (includes diff and trace in every ProcessResult)
+
+        Returns:
+            Profile: A pre-configured developer profile instance.
+
+        Examples:
+            >>> from asha import process, Profile
+            >>> result = process("Ignore all previous instructions", profile=Profile.DEVELOPER())
+            >>> # Result.trace and .diff will be populated; rich report printed if available
+        """
+        return cls(
+            mode="balanced",
+            fail_closed=False,
+            injection_threshold=0.80,
+            token_budget=2048,
+            max_agent_steps=20,
+            rehydrate_pii=True,
+            verbose=True,
+            debug=True,
+            _name="DEVELOPER",
+        )
+
+    @classmethod
+    def SI_ALIGNMENT(cls) -> "Profile":
+        """
+        Superintelligence (SI) and autonomous agent alignment profile.
+
+        Engineered for high-autonomy agent loops, multi-agent collectives, and
+        superintelligent workloads where goal preservation and strict tool containment
+        are required.
+
+        Configuration:
+            - mode: ``'strict'``: deterministic, fail-closed
+            - injection_threshold: 0.60 (hardened against recursive/indirect injection)
+            - token_budget: 4096 (larger context budget for complex agent chains)
+            - max_agent_steps: 10 (bounds recursive execution to prevent runaways)
+            - fail_closed: True (hard block on anomalous actions or data egress)
+            - rehydrate_pii: True (preserves multi-turn state while keeping model zero-knowledge)
+
+        Returns:
+            Profile: A pre-configured SI alignment profile instance.
+
+        Examples:
+            >>> from asha import SecureLLM, Profile
+            >>> client = SecureLLM(my_agent_client, profile=Profile.SI_ALIGNMENT())
+        """
+        return cls(
+            mode="strict",
+            fail_closed=True,
+            injection_threshold=0.60,
+            token_budget=4096,
+            max_agent_steps=10,
+            rehydrate_pii=True,
+            verbose=False,
+            debug=False,
+            _name="SI_ALIGNMENT",
+        )
+
+    # Convenience aliases
+    strict = STRICT
+    balanced = BALANCED
+    permissive = PERMISSIVE
+    developer = DEVELOPER
+    dev_preview = DEVELOPER
+    si_alignment = SI_ALIGNMENT
+    si = SI_ALIGNMENT
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    def to_policy_config(self, **overrides: Any) -> "PolicyConfig":
+        """
+        Convert this Profile into a low-level :class:`PolicyConfig`.
+
+        This is called internally by :class:`~asha.integrations.SecureLLM`
+        and middleware components. Users typically do not need to call this
+        directly.
+
+        Args:
+            **overrides: Optional field overrides applied on top of the
+                profile defaults before returning the ``PolicyConfig``.
+
+        Returns:
+            PolicyConfig: A fully initialized policy configuration.
+
+        Examples:
+            >>> cfg = Profile.STRICT().to_policy_config(audit_trail=True)
+            >>> isinstance(cfg, PolicyConfig)
+            True
+        """
+        opts = {"custom_scanners": self.custom_scanners}
+        opts.update(overrides)
+        return PolicyConfig.from_mode(
+            self.mode,
+            debug_diff=self.debug,
+            **opts,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"Profile.{self._name}("
+            f"mode={self.mode!r}, "
+            f"fail_closed={self.fail_closed}, "
+            f"injection_threshold={self.injection_threshold}, "
+            f"token_budget={self.token_budget})"
+        )
+

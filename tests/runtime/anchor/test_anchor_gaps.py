@@ -17,7 +17,9 @@ def test_normalize_tools_from_strings_and_callables() -> None:
     def load_data() -> str:
         return "ok"
 
-    tools = normalize_tools(["email", load_data, {"name": "write_report", "fn": lambda: "w"}])
+    tools = normalize_tools(
+        ["email", load_data, {"name": "write_report", "fn": lambda: "w"}]
+    )
     assert len(tools) == 3
     assert tools[0].name == "email"
     assert tools[1].name == "load_data"
@@ -141,7 +143,9 @@ def test_graph_adapter_detection_and_invoke() -> None:
     graph = _LangGraphStub()
     assert is_agent_graph(graph)
     wrapped = anchor_graph(graph, interactive=False)
-    result = wrapped.invoke({"messages": [{"role": "user", "content": "Analyze locally."}]})
+    result = wrapped.invoke(
+        {"messages": [{"role": "user", "content": "Analyze locally."}]}
+    )
     assert result["result"] == "ok"
 
 

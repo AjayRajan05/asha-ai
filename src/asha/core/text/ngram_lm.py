@@ -16,7 +16,7 @@
 
 Loads a small JSON table of ``{trigram: log_probability}`` plus a
 smoothing constant for unseen n-grams. Provides whole-text and
-windowed-max perplexity — the latter catches injections buried mid-prompt.
+windowed-max perplexity (the latter catches injections buried mid-prompt).
 """
 
 from __future__ import annotations
@@ -41,7 +41,9 @@ class CharNgramLM:
         if n < 2 or n > 6:
             raise ValueError("n must be in [2, 6]")
         self.n = n
-        self.log_probs: Dict[str, float] = {str(k): float(v) for k, v in log_probs.items()}
+        self.log_probs: Dict[str, float] = {
+            str(k): float(v) for k, v in log_probs.items()
+        }
         # Unseen: log(1 / (V^n)) style fallback; caller may override.
         self.unseen_log_prob = float(unseen_log_prob)
         self.alphabet_hint = int(alphabet_hint)
@@ -84,11 +86,11 @@ class CharNgramLM:
         most = counts.most_common(top_k)
         vocab = len(most)
         total = sum(c for _, c in most) + add_k * vocab
-        log_probs = {
-            gram: math.log((c + add_k) / total) for gram, c in most
-        }
+        log_probs = {gram: math.log((c + add_k) / total) for gram, c in most}
         unseen = math.log(add_k / (total + add_k))
-        return cls(log_probs, n=n, unseen_log_prob=unseen, alphabet_hint=max(32, vocab // 10))
+        return cls(
+            log_probs, n=n, unseen_log_prob=unseen, alphabet_hint=max(32, vocab // 10)
+        )
 
     def to_dict(self) -> Dict[str, object]:
         return {
@@ -134,7 +136,10 @@ class CharNgramLM:
         best = 0.0
         for i in range(len(grams) - window + 1):
             chunk = grams[i : i + window]
-            nll = sum(-self.log_probs.get(g, self.unseen_log_prob) for g in chunk) / window
+            nll = (
+                sum(-self.log_probs.get(g, self.unseen_log_prob) for g in chunk)
+                / window
+            )
             nll = min(nll, 50.0)
             best = max(best, math.exp(nll))
         return best

@@ -100,11 +100,11 @@ class ChainGuard:
                 return ChainVerdict(v, reason, risk)
 
             if verdict_ml is MLVerdict.REVIEW:
-                reason = "Unusual tool-category sequence — review required"
+                reason = "Unusual tool-category sequence: review required"
                 if rarest:
                     reason = (
                         f"Unusual transition {rarest[0]}→{rarest[1]} "
-                        f"(p={min_p:.4f}) — review required"
+                        f"(p={min_p:.4f}): review required"
                     )
                 return ChainVerdict(Verdict.REVIEW, reason, max(0.6, 1.0 - min_p))
 
@@ -129,9 +129,9 @@ class ChainGuard:
 
         # Local-only + high-risk (legacy helper, still useful)
         if contract.local_only and len(tool_names) >= 2:
-            if any(is_read_tool(name) for name in tool_names[:-1]) and is_high_risk_tool(
-                tool_names[-1]
-            ):
+            if any(
+                is_read_tool(name) for name in tool_names[:-1]
+            ) and is_high_risk_tool(tool_names[-1]):
                 return ChainVerdict(
                     Verdict.BLOCK,
                     "Local data access followed by high-risk external tool.",
