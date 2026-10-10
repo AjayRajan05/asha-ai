@@ -171,7 +171,7 @@ otel = [
     "opentelemetry-sdk>=1.20.0,<3.0.0",
 ]
 local-advisor = [
-    "huggingface_hub>=0.20.0,<2.0.0",
+    "huggingface_hub>=0.20.0,<3.0.0",
 ]
 local-advisor-gpu = [
     "asha-si[local-advisor]",
