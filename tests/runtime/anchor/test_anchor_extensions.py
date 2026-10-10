@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from asha.runtime.anchor.adapters.autogen import anchor_autogen, is_autogen_group_chat
 from asha.runtime.anchor.adapters.llamaindex import (
     anchor_llamaindex,
@@ -60,6 +62,7 @@ def test_autogen_group_chat_wrapping() -> None:
 
 
 def test_llamaindex_workflow_run() -> None:
+    pytest.importorskip("llama_index.core", reason="requires llama-index-core")
     workflow = _LlamaWorkflow()
     assert is_llamaindex_agent(workflow)
     wrapped = anchor_llamaindex(workflow, interactive=False)

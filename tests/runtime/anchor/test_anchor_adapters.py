@@ -124,6 +124,7 @@ class _LangChainExecutor:
 
 
 def test_langchain_detection_and_wrapping() -> None:
+    pytest.importorskip("langchain_core", reason="requires langchain-core")
     executor = _LangChainExecutor()
     assert is_langchain_agent(executor)
     runtime = AnchorRuntime(interactive=False)
@@ -250,6 +251,7 @@ class _LlamaIndexAgent:
 
 
 def test_llamaindex_detection_and_wrapping() -> None:
+    pytest.importorskip("llama_index.core", reason="requires llama-index-core")
     agent = _LlamaIndexAgent()
     assert is_llamaindex_agent(agent)
     runtime = AnchorRuntime(interactive=False)
@@ -283,6 +285,7 @@ def test_anchored_tool_delegate_preserves_metadata() -> None:
 
 
 def test_anchor_any_dispatches_langchain() -> None:
+    pytest.importorskip("langchain_core", reason="requires langchain-core")
     wrapped = anchor_any(_LangChainExecutor(), interactive=False)
     result = wrapped.invoke({"input": "Analyze trends locally."})
     assert result["result"] == "ok"
@@ -306,6 +309,7 @@ def test_anchor_any_dispatches_autogen() -> None:
 
 
 def test_anchor_any_dispatches_llamaindex() -> None:
+    pytest.importorskip("llama_index.core", reason="requires llama-index-core")
     wrapped = anchor_any(_LlamaIndexAgent(), interactive=False)
     result = wrapped.query("Analyze trends locally.")
     assert "data loaded" in str(result)

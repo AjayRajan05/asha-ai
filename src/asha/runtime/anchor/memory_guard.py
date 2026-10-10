@@ -37,6 +37,8 @@ from .contracts import MissionContract
 
 
 def _hardened_poison_model_available() -> bool:
+    if not _embedding_stack_available():
+        return False
     from asha.core.ml.model_store import ensure_models, resolve_model_file
 
     ensure_models()
@@ -92,30 +94,16 @@ class MemoryGuard:
 
     def _classifier(self) -> Any:
         if self._poisoning_clf is None:
-            from .poisoning_classifier import PoisoningClassifier
-
-            # Prefer hardened MiniLM classifier when joblib exists; otherwise
-            # still construct PoisoningClassifier (centroids); train artifacts
-            # with ``python -m training.memory_guard.train`` for calibrated RF.
-            # Explicit lite-only callers use LitePoisoningClassifier directly.
             if _hardened_poison_model_available() or _embedding_stack_available():
+                from .poisoning_classifier import PoisoningClassifier
+
                 self._poisoning_clf = PoisoningClassifier(
                     allow_hash_fallback=False,
                     poison_keywords=self.poison_keywords,
                 )
             else:
-                from .memory_guard_lite import (
-                    LitePoisoningClassifier,
-                    lite_artifact_available,
-                )
+                from .memory_guard_lite import LitePoisoningClassifier
 
-                if not lite_artifact_available():
-                    raise ImportError(
-                        "Memory poisoning classifier requires asha[hardened] "
-                        "(MiniLM + models/memory_guard/poisoning_rf.joblib) or "
-                        "lite artifacts. Train with: "
-                        "python -m training.memory_guard.train"
-                    )
                 self._poisoning_clf = LitePoisoningClassifier(
                     poison_keywords=self.poison_keywords,
                 )

@@ -114,10 +114,16 @@ class SecurityLayer:
                 "description": "Direct instruction override attempt",
             },
             {
-                "pattern": r"(?i)(you\s+are\s+now|act\s+as|pretend\s+to\s+be|roleplay\s+as)\s+(a\s+)?(jailbreak|uncensored|unrestricted)",
+                "pattern": r"(?i)(you\s+are\s+now|act\s+as|pretend\s+(?:to\s+be|you\s+are)|roleplay\s+as)\s+(?:a\s+)?(jailbreak|uncensored|unrestricted|dan\b)",
                 "threat": ThreatType.INJECTION,
                 "severity": 0.95,
                 "description": "Jailbreak attempt",
+            },
+            {
+                "pattern": r"(?i)\bdo\s+anything\s+now\b",
+                "threat": ThreatType.INJECTION,
+                "severity": 0.95,
+                "description": "DAN jailbreak pattern",
             },
             {
                 "pattern": r"(?i)(?:(?:^|[\n;:\]])\s*(?:new\s+)?|(?:override|disregard|ignore|bypass|modify|alter)\s+(?:the\s+)?)(system|developer|admin|root)\s+(prompt|instruction|command)\b",

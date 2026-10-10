@@ -118,6 +118,7 @@ def test_mcp_stub_blocks_network_under_local_mission() -> None:
 
 
 def test_graph_stub_dispatch_via_anchor_any() -> None:
+    pytest.importorskip("langgraph", reason="requires langgraph")
     class _Graph:
         def __init__(self) -> None:
             self.tools = [_StubTool("read_file")]
