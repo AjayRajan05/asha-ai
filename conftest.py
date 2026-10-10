@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import sys
 from pathlib import Path
 from typing import Union
@@ -19,6 +20,11 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 ResultType = Union[ProcessResult, SanitizeResult, OptimizeResult, str, dict]
+
+# tests/showcase needs the optional ``demo`` extra (streamlit, plotly); CI installs only ``dev``.
+collect_ignore_glob: list[str] = []
+if any(importlib.util.find_spec(_m) is None for _m in ("streamlit", "plotly")):
+    collect_ignore_glob.append("tests/showcase/*")
 
 
 def output_of(result: ResultType) -> str:

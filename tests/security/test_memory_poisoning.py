@@ -11,7 +11,13 @@ from __future__ import annotations
 import time
 
 import pytest
-from asha.runtime.anchor.contracts import MissionContract
+
+pytest.importorskip(
+    "sentence_transformers",
+    reason="requires the optional 'hardened' extra (sentence-transformers)",
+)
+
+from asha.runtime.anchor.contracts import MissionContract  # noqa: E402
 from asha.runtime.anchor.memory_guard import MemoryGuard
 from asha.runtime.anchor.types import MemoryEvent
 from asha.runtime.anchor.verdicts import Verdict

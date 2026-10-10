@@ -20,7 +20,12 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
-from asha.runtime.adapters.gemini_adapter import GeminiAdapter
+pytest.importorskip(
+    "google.genai",
+    reason="requires the optional 'gemini' extra (google-genai)",
+)
+
+from asha.runtime.adapters.gemini_adapter import GeminiAdapter  # noqa: E402
 
 
 # ---------------------------------------------------------------------------

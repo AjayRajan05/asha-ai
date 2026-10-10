@@ -8,6 +8,8 @@ Phase 8: Unicode Canonicalization regression suite.
 
 from __future__ import annotations
 
+import importlib.util
+
 import pytest
 from asha import sanitize
 from asha.core.security.canonicalize import SecurityCanonicalizer
@@ -96,6 +98,10 @@ def test_mixed_script_injection():
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.skipif(
+    importlib.util.find_spec("sentence_transformers") is None,
+    reason="requires the optional 'hardened' extra (sentence-transformers)",
+)
 def test_clean_unicode_not_flagged():
     """Unicode in legitimate content (non-injection) must not be flagged."""
     # French with accents
