@@ -16,7 +16,7 @@
 
 Feature hashing: Weinberger et al., ICML 2009.
 Runtime loads flat weight arrays (JSON / array.array) produced by
-``training/*/train_lite.py`` — never imports sklearn/numpy at inference.
+``training/*/train_lite.py`` without importing sklearn/numpy at inference.
 """
 
 from __future__ import annotations
@@ -134,7 +134,9 @@ class HashedLinearClassifier:
     ) -> None:
         self.weights = array.array("f", weights)
         self.bias = float(bias)
-        self.n_bits = n_bits if n_bits is not None else int(math.log2(len(self.weights)))
+        self.n_bits = (
+            n_bits if n_bits is not None else int(math.log2(len(self.weights)))
+        )
         if (1 << self.n_bits) != len(self.weights):
             raise ValueError(
                 f"weights length {len(self.weights)} is not 2**n_bits "
@@ -190,7 +192,7 @@ class HashedLinearClassifier:
     def to_dict(self) -> Dict[str, object]:
         import base64
 
-        # Compact float32 payload keeps OvR artifacts in the 50–500 KB band.
+        # Compact float32 payload keeps OvR artifacts in the 50-500 KB band.
         payload = base64.b64encode(self.weights.tobytes()).decode("ascii")
         return {
             "weights_b64": payload,
@@ -251,7 +253,9 @@ class HashedOvRClassifier:
         if not self.labels:
             raise ValueError("labels must be non-empty")
         sample = next(iter(self.models.values()), None)
-        self.n_bits = n_bits if n_bits is not None else (sample.n_bits if sample else 14)
+        self.n_bits = (
+            n_bits if n_bits is not None else (sample.n_bits if sample else 14)
+        )
         self.ngram_range = ngram_range
 
     @classmethod

@@ -24,10 +24,13 @@ def merge_mission_with_baseline(
     )
     network_tokens = list(
         dict.fromkeys(
-            list(baseline.forbidden_network_tokens) + list(phase.forbidden_network_tokens)
+            list(baseline.forbidden_network_tokens)
+            + list(phase.forbidden_network_tokens)
         )
     )
-    allowed_tools = list(dict.fromkeys(list(baseline.allowed_tools) + list(phase.allowed_tools)))
+    allowed_tools = list(
+        dict.fromkeys(list(baseline.allowed_tools) + list(phase.allowed_tools))
+    )
     # When baseline is low-confidence, refresh must not silently loosen restrictions
     # by unioning phase send/write permissions onto the read/list-only floor.
     if baseline.low_confidence:
@@ -69,12 +72,16 @@ class MissionSession:
     def baseline(self) -> MissionContract | None:
         return self._baseline
 
-    def initialize(self, prompt: str, context: Dict[str, Any] | None = None) -> MissionContract:
+    def initialize(
+        self, prompt: str, context: Dict[str, Any] | None = None
+    ) -> MissionContract:
         mission = self._compiler.compile(prompt, context)
         self._baseline = mission
         return mission
 
-    def refresh_phase(self, prompt: str, context: Dict[str, Any] | None = None) -> MissionContract:
+    def refresh_phase(
+        self, prompt: str, context: Dict[str, Any] | None = None
+    ) -> MissionContract:
         phase = self._compiler.compile(prompt, context)
         if self._baseline is None:
             self._baseline = phase

@@ -1,6 +1,6 @@
 # Secret rotation checklist (Phase 0)
 
-Do this once per exposed credential. ASHA maintainers cannot revoke cloud keys from the repo — you must do it in the provider console.
+Do this once per exposed credential. ASHA maintainers cannot revoke cloud keys from the repo; you must do it in the provider console.
 
 ## Known exposure (2026-07)
 

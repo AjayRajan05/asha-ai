@@ -26,11 +26,7 @@ def test_process_reversible_returns_map():
     prompt = "Contact bob@test.org about order 123"
     result = process(prompt, policy=PolicyConfig(reversible=True))
     assert isinstance(result, ProcessResult)
-    masking_map = (
-        result.security.masking_map
-        if result.security
-        else None
-    )
+    masking_map = result.security.masking_map if result.security else None
     assert masking_map
     assert "bob@test.org" in masking_map.values()
     assert "bob@test.org" not in result.output
@@ -46,7 +42,9 @@ def test_default_not_reversible():
 def test_masking_map_not_in_trace_json(capsys):
     """Vault contents must not appear in console trace output."""
     prompt = "SSN 123-45-6789 email d@e.com"
-    result = process(prompt, policy=PolicyConfig(reversible=True), trace=True, log_output="json")
+    result = process(
+        prompt, policy=PolicyConfig(reversible=True), trace=True, log_output="json"
+    )
     captured = capsys.readouterr()
     combined = captured.out + captured.err
     assert "123-45-6789" not in combined

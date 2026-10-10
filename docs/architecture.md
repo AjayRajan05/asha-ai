@@ -1,6 +1,6 @@
 # Architecture
 
-**ASHA v0.4.2** — compiler-inspired prompt processing with strict layer boundaries, plus a separate ANCHOR runtime for agent governance.
+**ASHA v0.4.2**: compiler-inspired prompt processing with strict layer boundaries, plus a separate ANCHOR runtime for agent governance.
 
 This page explains the current mental model. It is not a how-to and not an API reference.
 
@@ -58,9 +58,9 @@ src/asha/
 │   ├── policy_config.py
 │   ├── security/
 │   ├── compiler/
-│   └── _ir/                 # internal — not a public API
+│   └── _ir/                 # internal, not a public API
 ├── runtime/                 # orchestration
-│   ├── processor.py         # PromptProcessor — sole prompt orchestrator
+│   ├── processor.py         # PromptProcessor: sole prompt orchestrator
 │   ├── agent.py
 │   ├── adapters/
 │   ├── routing/             # experimental smart routing
@@ -83,8 +83,8 @@ src/asha/
 | `runtime/` | `core`, `types` | `integrations`, `compat` |
 | `types/` | `core` (minimal) | `compat`, `runtime`, `integrations` |
 | `utils/` | `runtime`, `core`, `types` | `compat` |
-| `integrations/` | `runtime`, `core`, `utils` | — |
-| `compat/` | anything | — (legacy helpers only) |
+| `integrations/` | `runtime`, `core`, `utils` | none |
+| `compat/` | anything | none (legacy helpers only) |
 
 Enforced by `tests/architecture/test_boundaries.py`.
 
@@ -100,7 +100,7 @@ Primary adoption is `process()`, `sanitize()`, `optimize()`. Client wrapping liv
 
 | Mode | Behavior |
 |------|----------|
-| `strict` | Fail-closed — raises on total failure |
+| `strict` | Fail-closed: raises on total failure |
 | `balanced` | Fail-open with rule-based fallback (default) |
 | `lite` | Minimal policy features; fail-open like balanced |
 | `off` | Passthrough |
@@ -127,9 +127,9 @@ legacy = to_legacy_pipeline_dict(process("prompt", include_legacy_detail=True))
 
 ## PII detection shape
 
-1. **Rule-based** patterns in `core/security/` — always available
-2. **Multi-phase pipeline** in `core/pii_pipeline/` — normalization → detection → verification → scoring → masking
-3. **Hybrid ML** — optional via `pip install asha-ai[ml]`
+1. **Rule-based** patterns in `core/security/`: always available
+2. **Multi-phase pipeline** in `core/pii_pipeline/`: normalization → detection → verification → scoring → masking
+3. **Hybrid ML**: optional via `pip install asha-si[ml]`
 
 Public docs describe the defense shape (layered detection, calibrated fail-closed behavior), not internal scoring mechanics.
 
@@ -138,7 +138,7 @@ Public docs describe the defense shape (layered detection, calibrated fail-close
 ## Observability
 
 - `process(..., trace=True)` / `debug=True`
-- Optional OpenTelemetry via `pip install asha-ai[otel]`
+- Optional OpenTelemetry via `pip install asha-si[otel]`
 
 ---
 

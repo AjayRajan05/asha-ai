@@ -1,4 +1,4 @@
-﻿# Copyright 2026 Ajay Rajan
+# Copyright 2026 Ajay Rajan
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 
@@ -10,6 +10,15 @@ import concurrent.futures as cf
 import time
 import uuid
 from typing import Any, Dict, Optional
+
+# Module-level executor for timed process() calls.
+# Avoids spawning + tearing down a thread pool on every invocation under load.
+# max_workers=4 covers typical async-gateway concurrency without over-allocating.
+_TIMEOUT_EXECUTOR: cf.ThreadPoolExecutor = cf.ThreadPoolExecutor(
+    max_workers=4, thread_name_prefix="asha-proc"
+)
+import atexit as _atexit
+_atexit.register(_TIMEOUT_EXECUTOR.shutdown, wait=False)
 
 from ..core.engines import compile_prompt, optimize_tokens
 from ..core.ml_utils import check_pii_mode_feasibility, validate_pii_mode
@@ -168,8 +177,14 @@ class PromptProcessor:
             for attempt in range(max_retries + 1):
                 try:
                     if timeout_seconds is not None:
-                        with cf.ThreadPoolExecutor(max_workers=1) as pool:
-                            return pool.submit(_execute).result(timeout=timeout_seconds)
+                        fut = _TIMEOUT_EXECUTOR.submit(_execute)
+                        try:
+                            return fut.result(timeout=timeout_seconds)
+                        except cf.TimeoutError:
+                            fut.cancel()
+                            raise TimeoutError(
+                                f"process() timed out after {timeout_seconds}s"
+                            ) from None
                     return _execute()
                 except cf.TimeoutError:
                     raise TimeoutError(
@@ -221,7 +236,9 @@ class PromptProcessor:
                 optimized=fallback,
                 latency_ms=0,
                 success=False,
-                pii_detected=_extract_pii_types(None, prompt, privacy and security_flag),
+                pii_detected=_extract_pii_types(
+                    None, prompt, privacy and security_flag
+                ),
             )
             return build_process_result(
                 output=fallback,
@@ -308,9 +325,7 @@ class PromptProcessor:
                 working = compiled
             except Exception as exc:
                 if should_raise_on_failure(safety):
-                    raise ASHAProcessingError(
-                        "ASHA compile stage failed."
-                    ) from exc
+                    raise ASHAProcessingError("ASHA compile stage failed.") from exc
                 if fail_closed:
                     compiled = SECURITY_FAIL_CLOSED_PLACEHOLDER
                     working = compiled
@@ -382,9 +397,7 @@ class PromptProcessor:
             return run_security(prompt, policy_dict)
         except Exception as exc:
             if should_raise_on_failure(safety):
-                raise ASHAProcessingError(
-                    "ASHA security processing failed."
-                ) from exc
+                raise ASHAProcessingError("ASHA security processing failed.") from exc
             if fail_closed:
                 return SecurityResult(
                     is_safe=False,
@@ -439,12 +452,16 @@ class PromptProcessor:
         )
         threats = _security_field(security_result, "detected_threats", []) or []
         preserve = preserve_intent and not pii_types and len(threats) == 0
-        output = prompt if preserve else _finalize_privacy_output(
-            pipeline_result, effective_privacy and security
+        output = (
+            prompt
+            if preserve
+            else _finalize_privacy_output(
+                pipeline_result, effective_privacy and security
+            )
         )
 
-        privacy_applied = security and effective_privacy and not pipeline_result.get(
-            "passthrough"
+        privacy_applied = (
+            security and effective_privacy and not pipeline_result.get("passthrough")
         )
         if security_result is not None:
             privacy_applied = privacy_applied and bool(

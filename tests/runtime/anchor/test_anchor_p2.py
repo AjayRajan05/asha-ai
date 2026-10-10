@@ -33,15 +33,23 @@ def test_intent_parser_extracts_explicit_outcomes_and_paths() -> None:
     )
     intent = parse_mission_intent(
         prompt,
-        {"available_tools": ["load_trend_data", "write_trend_report"], "local_only": True},
+        {
+            "available_tools": ["load_trend_data", "write_trend_report"],
+            "local_only": True,
+        },
     )
 
     assert intent.local_only is True
     assert intent.forbid_network_exfiltration is True
     assert "data/sample_trends.json" in intent.allowed_read_paths
     assert "output/trend_analysis.txt" in intent.allowed_write_paths
-    assert any("output/trend_analysis.txt" in outcome for outcome in intent.expected_outcomes)
-    assert any("output/trend_analysis.txt" in criterion for criterion in intent.completion_criteria)
+    assert any(
+        "output/trend_analysis.txt" in outcome for outcome in intent.expected_outcomes
+    )
+    assert any(
+        "output/trend_analysis.txt" in criterion
+        for criterion in intent.completion_criteria
+    )
 
 
 def test_intent_parser_does_not_treat_send_in_prose_as_policy_token() -> None:

@@ -8,6 +8,13 @@ from __future__ import annotations
 
 import concurrent.futures as cf
 from typing import TYPE_CHECKING, Any, Optional
+import atexit as _atexit
+
+# Shared executor for timed engine calls to avoid per-call thread churn.
+_TIMEOUT_EXECUTOR: cf.ThreadPoolExecutor = cf.ThreadPoolExecutor(
+    max_workers=4, thread_name_prefix="asha-eng"
+)
+_atexit.register(_TIMEOUT_EXECUTOR.shutdown, wait=False)
 
 if TYPE_CHECKING:
     from ..core.safety import SafetyMode
@@ -31,7 +38,11 @@ def sanitize_text(
     pii_mode: str = "hybrid",
 ) -> SanitizeResult:
     """Security-only sanitization (PII masking, threat detection)."""
-    from ..core.safety import is_fail_closed, resolve_safety_mode, should_raise_on_failure
+    from ..core.safety import (
+        is_fail_closed,
+        resolve_safety_mode,
+        should_raise_on_failure,
+    )
     from ..exceptions import ASHAProcessingError
     from ..utils.dropin_privacy import SECURITY_FAIL_CLOSED_PLACEHOLDER
     from ..utils.result_builders import build_sanitize_result
@@ -57,10 +68,14 @@ def sanitize_text(
         for attempt in range(max_retries + 1):
             try:
                 if timeout_seconds is not None:
-                    with cf.ThreadPoolExecutor(max_workers=1) as pool:
-                        security_result = pool.submit(_run).result(
-                            timeout=timeout_seconds
-                        )
+                    fut = _TIMEOUT_EXECUTOR.submit(_run)
+                    try:
+                        security_result = fut.result(timeout=timeout_seconds)
+                    except cf.TimeoutError:
+                        fut.cancel()
+                        raise TimeoutError(
+                            f"sanitize_text() timed out after {timeout_seconds}s"
+                        ) from None
                 else:
                     security_result = _run()
                 break
@@ -85,9 +100,7 @@ def sanitize_text(
         )
     except Exception as exc:
         if should_raise_on_failure(safety):
-            raise ASHAProcessingError(
-                "ASHA security processing failed."
-            ) from exc
+            raise ASHAProcessingError("ASHA security processing failed.") from exc
         if fail_closed:
             return SanitizeResult(
                 output=SECURITY_FAIL_CLOSED_PLACEHOLDER,
@@ -132,7 +145,7 @@ def optimize_tokens(
     ir = builder.parse(prompt)
     optimizer = PromptOptimizer(use_msdpc=True)
     try:
-        output, metrics = optimizer.optimize(prompt, ir)
+        output, metrics = optimizer.optimize(prompt, ir, token_budget=token_budget)
         reduction = float(metrics.get("token_reduction_percentage", 0))
         orig_tok = int(metrics.get("original_tokens", len(prompt.split())))
         opt_tok = int(metrics.get("optimized_tokens", len(output.split())))

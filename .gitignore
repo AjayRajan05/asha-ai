@@ -1,39 +1,44 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
 *.pyd
 .Python
 
 # Virtual environments
-venv/
 .venv/
+venv/
 .venv-*/
-.venv-prod/
-.venv-testpypi/
-.venv-ci/
-.venv-ci-clean/
-.venv-pub/
-.venv_asha_clean_test/
-.venv-mypy-ci/
+.venv/
+.venv-docs/
+.venv-llm/
+.venv-bench/
+.venv-integration/
 
-# IDE / editor
+# IDE & Editor artifacts
 .idea/
 .vscode/
-*.swp
-*.swo
+.streamlit/
+*.sw[op]
+*~
+.DS_Store
+Thumbs.db
 
-# Secrets — never commit
+# Secrets & Environment variables (never commit)
 .env
 .env.*
 !.env.example
+.pypi_token*
+.pypirc*
 
-# Build / packaging
+
+# Packaging & Distribution
 dist/
 build/
 *.egg-info/
 *.egg
 
-# Test / coverage artifacts
+# Test & Coverage artifacts
 .pytest_cache/
 .mypy_cache/
 .coverage
@@ -41,83 +46,28 @@ build/
 coverage.xml
 coverage_report.json
 htmlcov/
-flake8_report*.txt
 test_output.txt
 
-# Docs build
+# Documentation build output
 site/
 
-# Benchmark outputs (baseline is committed)
-benchmarks/output/
-
-# Logs
+# Logs & Telemetry
 logs/
 *.log
+*anchor_telemetry.jsonl
 
-# ANCHOR runtime telemetry (generated locally; opt-in only)
-anchor_telemetry.jsonl
-**/anchor_telemetry.jsonl
+# Benchmarks output
+benchmarks/output/
 
-# Local suite / scratch logs (never ship)
-_*.txt
-_*.xml
-_failed_*.txt
-_full_suite_*
-_suite_*
-fake_tests_report.json
-find_empty_tests.py
-_parse_junit.py
-_tmp_*.py
-_tmp_*/
-
-# Maintainer-only working notes (optional local)
-docs_detail.md
-
-# ---------------------------------------------------------------------------
-# Local-only: keep on disk for training / pilots; never push to GitHub
-# (library publish / public surface must stay free of these)
-# ---------------------------------------------------------------------------
-
-# Detector weights + local datasets
-data/
-models/
-/config/
+# Safety barriers for offline maintainer corpora (never track)
+/data/
+/models/
+/training/
+/jailbreak_llms/
+/asha_training_data_generators/
 *.joblib
-
-# Training pipeline + corpora (local maintainer workspace)
-training/
-asha_training_data_generators/
-asha_training_data_generators.zip
-llm_augment.py
-build_asha_dataset.py
-build_best_dataset.py
-improve_data_quality.py
-Data_README.md.md
-To-Do.md
-
-# Local red-team / public corpus staging
-jailbreak_llms/
-injection_malicious.jsonl
-injection_benign.jsonl
-sample_data_output/
-
-# Generated model release bundles (rebuild with training/train_hardened.py --pack)
-dist/asha-models-*/
-dist/asha-models-*.zip
-
-# Local private checkout symlink / clone
 .private-artifacts/
 asha-private-artifacts/
 
-# Local PyPI upload helpers / tokens (never commit)
-.pypi_token
-.pypi_token.*
-.pypirc
-*.pypirc
-
-# Ephemeral release / auth scratch (local only)
-.release-notes-*.md
-.gh-auth-*.txt
-.gh-auth-out.txt
-.gh-auth-err.txt
-
+# Package manager locks (local development)
+uv.lock

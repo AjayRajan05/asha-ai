@@ -16,7 +16,7 @@ def render() -> None:
     section_header(
         "Inference",
         "Live LLM",
-        "Mock by default. Gemini/Ollama when configured — wrap_llm / Agent preserved.",
+        "Mock by default. Gemini/Ollama when configured (wrap_llm / Agent preserved).",
     )
 
     backend = st.selectbox("Backend", ["mock", "gemini", "ollama"], index=0)
@@ -76,7 +76,7 @@ def render() -> None:
         try:
             if active == "gemini":
                 if not gemini_api_key() or wrap_llm is None:
-                    st.warning("Gemini unavailable — falling back to mock.")
+                    st.warning("Gemini unavailable; falling back to mock.")
                     active = "mock"
                 else:
                     import google.generativeai as genai
@@ -89,7 +89,7 @@ def render() -> None:
                     note = f"Gemini via wrap_llm ({model_name})"
             if active == "ollama":
                 if not ollama_reachable():
-                    st.warning("Ollama unreachable — falling back to mock.")
+                    st.warning("Ollama unreachable; falling back to mock.")
                     active = "mock"
                 else:
                     model = os.getenv("ASHA_DEMO_OLLAMA_MODEL", "llama3.2")
@@ -109,6 +109,6 @@ def render() -> None:
             reply = str(traced.response)
             note = "Mock fallback"
 
-        st.markdown(f"#### Model response — {note}")
+        st.markdown(f"#### Model response: {note}")
         st.write(reply)
         st.caption("Estimated cost: demo-only (provider pricing varies). Threats handled pre-inference.")

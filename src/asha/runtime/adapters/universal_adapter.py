@@ -32,6 +32,7 @@ class UniversalModelAdapter(BaseAdapter):
         model: Optional[str] = None,
         timeout: int = 10,
         retries: int = 3,
+        base_url: Optional[str] = None,
     ) -> None:
         """
         Initialize universal adapter with provider-specific configuration.
@@ -42,11 +43,13 @@ class UniversalModelAdapter(BaseAdapter):
             model: Model name
             timeout: Request timeout in seconds
             retries: Number of retry attempts
+            base_url: Optional base URL for OpenAI-compatible endpoints (e.g. llama.cpp)
         """
         self.provider = provider.lower()
         self.model = model
         self.timeout = timeout
         self.retries = retries
+        self.base_url = base_url
         self.logger = logging.getLogger(__name__)
 
         # Initialize provider-specific client
@@ -78,10 +81,17 @@ class UniversalModelAdapter(BaseAdapter):
         try:
             from openai import OpenAI
 
-            key = api_key or os.getenv("OPENAI_API_KEY")
+            key = (
+                api_key
+                or os.getenv("OPENAI_API_KEY")
+                or ("llama-cpp" if self.base_url else None)
+            )
             if not key:
                 raise ValueError("OpenAI API key not found")
-            return OpenAI(api_key=key)
+            client_kwargs: Dict[str, Any] = {"api_key": key}
+            if self.base_url:
+                client_kwargs["base_url"] = self.base_url
+            return OpenAI(**client_kwargs)
         except ImportError:
             raise ImportError(
                 "OpenAI library not installed. Install with: pip install openai"
@@ -117,18 +127,24 @@ class UniversalModelAdapter(BaseAdapter):
 
     def _init_gemini_client(self, api_key: Optional[str] = None) -> Any:
         """Initialize Google Gemini client."""
+        key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if not key:
+            raise ValueError("Google API key not found")
         try:
-            import google.generativeai as genai
+            from google import genai
 
-            key = api_key or os.getenv(
-                "GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-            if not key:
-                raise ValueError("Google API key not found")
-            genai.configure(api_key=key)
-            return genai
+            return genai.Client(api_key=key)
+        except ImportError:
+            pass
+
+        try:
+            import google.generativeai as genai_legacy
+
+            genai_legacy.configure(api_key=key)
+            return genai_legacy
         except ImportError:
             raise ImportError(
-                "Google Generative AI library not installed. Install with: pip install google-generativeai"
+                "Google Generative AI library not installed. Install with: pip install google-genai"
             )
 
     def _init_hf_client(self, api_key: Optional[str] = None) -> Any:
@@ -157,7 +173,7 @@ class UniversalModelAdapter(BaseAdapter):
         elif self.provider == "grok" and not self.model:
             self.model = "grok-beta"
         elif self.provider == "gemini" and not self.model:
-            self.model = "gemini-1.5-flash"
+            self.model = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
         elif self.provider == "huggingface" and not self.model:
             self.model = "microsoft/DialoGPT-medium"
         elif self.provider == "mock" and not self.model:
@@ -238,17 +254,28 @@ class UniversalModelAdapter(BaseAdapter):
 
     def _gemini_generate(self, prompt: str) -> str:
         """Generate using Google Gemini."""
+        if hasattr(self.client, "models"):
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+            )
+            try:
+                return str(response.text)
+            except Exception:
+                return ""
         model = self.client.GenerativeModel(self.model)
         response = model.generate_content(prompt)
-        return str(response.text)
+        try:
+            return str(response.text)
+        except Exception:
+            return ""
 
     def _hf_generate(self, prompt: str) -> str:
         """Generate using HuggingFace pipeline."""
         # Note: This is a simplified implementation
         # In production, you'd want to handle different model types appropriately
         try:
-            generator = self.client["pipeline"](
-                "text-generation", model=self.model)
+            generator = self.client["pipeline"]("text-generation", model=self.model)
             result = generator(prompt, max_length=100, num_return_sequences=1)
             return str(result[0]["generated_text"])
         except Exception as e:
@@ -284,8 +311,7 @@ class UniversalModelAdapter(BaseAdapter):
                         self.logger.info(f"Trying fallback model {i+1}")
                         return fallback.generate(prompt)
                     except Exception as fallback_error:
-                        self.logger.warning(
-                            f"Fallback {i+1} failed: {fallback_error}")
+                        self.logger.warning(f"Fallback {i+1} failed: {fallback_error}")
                         continue
 
             raise Exception("All providers failed")

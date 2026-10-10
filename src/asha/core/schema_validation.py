@@ -161,8 +161,7 @@ class JSONRepairEngine:
                 repaired = self._apply_repairs(json_str, error_msg)
                 if repaired != json_str:
                     json_str = repaired
-                    repair_log.append(
-                        f"Applied repairs to attempt {attempt + 1}")
+                    repair_log.append(f"Applied repairs to attempt {attempt + 1}")
                 else:
                     repair_log.append(
                         f"No repairs applicable for attempt {attempt + 1}"
@@ -171,8 +170,7 @@ class JSONRepairEngine:
                 # If this is the last attempt, try aggressive repair
                 if attempt == max_attempts - 1:
                     json_str = self._aggressive_repair(json_str)
-                    repair_log.append(
-                        "Applied aggressive repair on final attempt")
+                    repair_log.append("Applied aggressive repair on final attempt")
 
         return json_str, repair_log, False
 
@@ -191,8 +189,7 @@ class JSONRepairEngine:
         # Apply error-specific repairs
         for error_pattern, fix_desc in self.common_errors.items():
             if error_pattern in error_msg:
-                repaired = self._apply_error_specific_repair(
-                    repaired, error_pattern)
+                repaired = self._apply_error_specific_repair(repaired, error_pattern)
                 break
 
         return repaired
@@ -283,8 +280,7 @@ class SchemaValidator:
 
             # Validate against schema if provided
             if schema:
-                self._validate_against_schema(
-                    parsed_json, schema, errors, warnings)
+                self._validate_against_schema(parsed_json, schema, errors, warnings)
 
             if not errors:
                 status = ValidationStatus.VALID
@@ -408,14 +404,12 @@ class SchemaValidator:
                 repaired_content = model_instance.json()
 
             except ValidationError as e:
-                errors.extend(
-                    [f"Validation error: {error}" for error in e.errors()])
+                errors.extend([f"Validation error: {error}" for error in e.errors()])
 
                 # Try to repair and revalidate
                 if self.config.enable_auto_repair:
                     repaired_content, repair_log, success = (
-                        self._attempt_pydantic_repair(
-                            content, model_class, e.errors())
+                        self._attempt_pydantic_repair(content, model_class, e.errors())
                     )
                     retry_count = len(repair_log)
 
@@ -435,8 +429,7 @@ class SchemaValidator:
             # Try to repair JSON first, then validate with Pydantic
             if self.config.enable_auto_repair:
                 repaired_json, repair_log, json_success = (
-                    self.repair_engine.repair_json(
-                        content, self.config.max_retries)
+                    self.repair_engine.repair_json(content, self.config.max_retries)
                 )
                 retry_count = len(repair_log)
 
@@ -452,8 +445,7 @@ class SchemaValidator:
                         self.validation_stats["failures"] += 1
                         if isinstance(e, ValidationError):
                             errors.extend(
-                                [f"Validation error: {error}" for error in e.errors(
-                                )]
+                                [f"Validation error: {error}" for error in e.errors()]
                             )
                 else:
                     status = ValidationStatus.FAILED
@@ -490,8 +482,7 @@ class SchemaValidator:
 
             jsonschema.validate(data, schema)
         except ImportError:
-            warnings.append(
-                "jsonschema not available, skipping schema validation")
+            warnings.append("jsonschema not available, skipping schema validation")
         except jsonschema.ValidationError as e:
             errors.append(f"Schema validation error: {e.message}")
 
@@ -510,11 +501,9 @@ class SchemaValidator:
         if success and schema:
             try:
                 parsed_json = json.loads(repaired_content)
-                self._validate_against_schema(
-                    parsed_json, schema, repair_log, [])
+                self._validate_against_schema(parsed_json, schema, repair_log, [])
             except Exception as e:
-                repair_log.append(
-                    f"Schema validation failed after repair: {e}")
+                repair_log.append(f"Schema validation failed after repair: {e}")
                 success = False
 
         return repaired_content, repair_log, success
@@ -546,12 +535,10 @@ class SchemaValidator:
                 # Simple field repairs (can be enhanced)
                 if "missing" in str(error.get("type", "")).lower():
                     # Add missing field with default value
-                    self._add_missing_field(
-                        parsed_json, field_path, repair_log)
+                    self._add_missing_field(parsed_json, field_path, repair_log)
                 elif "type" in str(error.get("type", "")).lower():
                     # Fix type mismatch
-                    self._fix_type_mismatch(
-                        parsed_json, field_path, repair_log)
+                    self._fix_type_mismatch(parsed_json, field_path, repair_log)
 
             # Try validation again
             model_instance = model_class(**parsed_json)

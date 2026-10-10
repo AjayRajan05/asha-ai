@@ -14,9 +14,9 @@
 
 """Chain guard capability + Markov transition tests (step 5)."""
 
-from __future__ import annotations
-
 import time
+
+import pytest
 
 from asha.runtime.anchor.chain_guard import ChainGuard
 from asha.runtime.anchor.contracts import MissionContract

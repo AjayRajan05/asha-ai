@@ -14,7 +14,7 @@ def render() -> None:
     section_header(
         "ANCHOR",
         "Mission control",
-        "Agent tool governance — AnchorRuntime APIs unchanged.",
+        "Agent tool governance: AnchorRuntime APIs unchanged.",
     )
 
     mission = st.text_area(
@@ -107,7 +107,7 @@ def render() -> None:
         events = []
         for label, tool, arguments, _expect in scenarios:
             if tool not in tools:
-                events.append(("INFO", label, f"Skipped — {tool} not in available_tools"))
+                events.append(("INFO", label, f"Skipped: {tool} not in available_tools"))
                 continue
             status, detail = evaluate_tool(runtime, tool, arguments, raise_on_block=True)
             if status == "ALLOW":

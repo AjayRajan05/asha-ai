@@ -10,7 +10,7 @@ import pytest
 
 from asha.types.results import OptimizeResult, ProcessResult, SanitizeResult
 
-# Do NOT set ASHA_DISABLE_ML here — that previously skipped rule-based safety.
+# Do NOT set ASHA_DISABLE_ML here (doing so previously skipped rule-based safety).
 # HF toxic-bert is opt-in via ASHA_ENABLE_HF_SAFETY=1.
 
 ROOT = Path(__file__).resolve().parent

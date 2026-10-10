@@ -87,9 +87,9 @@ def test_memory_not_growing_over_repeated_calls():
     print(f"Memory growth over 30 calls: {total_growth_mb:.2f} MB")
 
     # Gate: less than 50 MB of net allocations
-    assert total_growth_mb < 50, (
-        f"Memory grew by {total_growth_mb:.1f} MB over 30 calls - possible leak"
-    )
+    assert (
+        total_growth_mb < 50
+    ), f"Memory grew by {total_growth_mb:.1f} MB over 30 calls - possible leak"
 
 
 def test_sanitize_memory_stable():
@@ -202,7 +202,9 @@ def test_sustained_load_sanitize_100_calls():
     errors = 0
     for i in range(100):
         try:
-            result = sanitize(f"My SSN is 123-45-678{i % 10} and email user{i}@test.com")
+            result = sanitize(
+                f"My SSN is 123-45-678{i % 10} and email user{i}@test.com"
+            )
             assert isinstance(result, SanitizeResult)
             assert output_of(result)
         except Exception:

@@ -142,8 +142,7 @@ class IntentExtractor:
             matches = 0
 
             for pattern in patterns:
-                pattern_matches = len(re.findall(
-                    pattern, prompt, re.IGNORECASE))
+                pattern_matches = len(re.findall(pattern, prompt, re.IGNORECASE))
                 if pattern_matches > 0:
                     matches += 1
                     score += pattern_matches * 10  # Weight by number of matches
@@ -169,8 +168,7 @@ class IntentExtractor:
                 return str(matches[0])
 
         # Fallback: look for nouns after intent verbs
-        intent_words = ["analyze", "summarize",
-                        "generate", "extract", "classify"]
+        intent_words = ["analyze", "summarize", "generate", "extract", "classify"]
         for word in intent_words:
             pattern = rf"{word}\s+(\w+)"
             match = re.search(pattern, prompt, re.IGNORECASE)

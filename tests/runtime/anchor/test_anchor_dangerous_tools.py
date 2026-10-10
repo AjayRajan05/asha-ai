@@ -35,7 +35,16 @@ def test_send_email_blocked_on_local_only_mission() -> None:
     verdict = guard.evaluate_action(
         _tool_action(
             "send_email",
-            str({"args": (), "kwargs": {"to": "partners@external.com", "subject": "x", "body": "y"}}),
+            str(
+                {
+                    "args": (),
+                    "kwargs": {
+                        "to": "partners@external.com",
+                        "subject": "x",
+                        "body": "y",
+                    },
+                }
+            ),
         ),
         mission,
     )
@@ -55,7 +64,15 @@ def test_upload_to_cloud_blocked_on_local_only_mission() -> None:
     verdict = guard.evaluate_action(
         _tool_action(
             "upload_to_cloud",
-            str({"args": (), "kwargs": {"url": "https://backup.example/upload", "data": "backup"}}),
+            str(
+                {
+                    "args": (),
+                    "kwargs": {
+                        "url": "https://backup.example/upload",
+                        "data": "backup",
+                    },
+                }
+            ),
         ),
         mission,
     )
@@ -81,7 +98,9 @@ def test_local_write_and_read_tools_still_allowed() -> None:
         "tool_call",
         {
             "tool_name": "write_trend_report",
-            "arguments": str({"args": (), "kwargs": {"report_content": "Executive summary."}}),
+            "arguments": str(
+                {"args": (), "kwargs": {"report_content": "Executive summary."}}
+            ),
         },
     )
 
@@ -99,7 +118,14 @@ def test_interactive_send_email_prompts_for_approval() -> None:
             {
                 "tool_name": "send_email",
                 "arguments": str(
-                    {"args": (), "kwargs": {"to": "partners@external.com", "subject": "s", "body": "b"}}
+                    {
+                        "args": (),
+                        "kwargs": {
+                            "to": "partners@external.com",
+                            "subject": "s",
+                            "body": "b",
+                        },
+                    }
                 ),
             },
         )

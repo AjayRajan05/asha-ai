@@ -17,7 +17,13 @@
 from __future__ import annotations
 
 from ..constants import MIN_COMPUTE_CAPABILITY_OLLAMA, _GiB
-from ..types import CompatibilityResult, GGUFVariant, GPUInfo, HardwareProfile, ModelInfo
+from ..types import (
+    CompatibilityResult,
+    GGUFVariant,
+    GPUInfo,
+    HardwareProfile,
+    ModelInfo,
+)
 from .performance import estimate_tok_per_sec
 from .quantization import estimate_weight_bytes
 from .vram import estimate_vram
@@ -34,9 +40,7 @@ def _uses_shared_pool(gpu: GPUInfo) -> bool:
 
 
 def _fit_candidate_gpus(gpus: list[GPUInfo]) -> list[GPUInfo]:
-    has_dedicated = any(
-        not _uses_shared_pool(g) and g.vram_bytes > 0 for g in gpus
-    )
+    has_dedicated = any(not _uses_shared_pool(g) and g.vram_bytes > 0 for g in gpus)
     if not has_dedicated:
         return gpus
     return [g for g in gpus if not _uses_shared_pool(g)]

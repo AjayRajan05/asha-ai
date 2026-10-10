@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Bloom filter (Bloom, 1970) — stdlib-only bit-array membership test.
+"""Bloom filter (Bloom, 1970): stdlib-only bit-array membership test.
 
 Sizing (standard optimal formulas; not arbitrary constants):
 
@@ -57,9 +57,7 @@ class BloomFilter:
             # m = -n ln(p) / (ln 2)^2
             m = int(
                 math.ceil(
-                    -expected_items
-                    * math.log(false_positive_rate)
-                    / (math.log(2) ** 2)
+                    -expected_items * math.log(false_positive_rate) / (math.log(2) ** 2)
                 )
             )
             m = max(m, 64)
@@ -114,9 +112,7 @@ class BloomFilter:
     def from_bytes(cls, data: bytes) -> "BloomFilter":
         if len(data) < 24:
             raise ValueError("bloom payload too short")
-        num_bits, num_hashes, expected, fpr, count = struct.unpack(
-            ">IIIdI", data[:24]
-        )
+        num_bits, num_hashes, expected, fpr, count = struct.unpack(">IIIdI", data[:24])
         body = data[24:]
         expected_len = num_bits // 8
         if len(body) != expected_len:

@@ -102,3 +102,26 @@ def test_active_vault_initially_none_or_vault():
     """Active vault is either None or a MaskingVault - never an unexpected type."""
     v = get_active_vault()
     assert v is None or isinstance(v, MaskingVault)
+
+
+def test_vault_collision_safe_same_entity_same_token():
+    """Verify that looking up the same registered token returns the exact original value."""
+    vault = MaskingVault()
+    t1 = "[EMAIL_abc123]"
+    vault.register(t1, "user@example.com")
+    first_lookup = vault.lookup(t1)
+    second_lookup = vault.lookup(t1)
+    assert first_lookup == "user@example.com"
+    assert first_lookup == second_lookup
+    assert vault.lookup("[UNKNOWN_TOKEN]") is None
+
+
+def test_vault_collision_safe_different_entities_distinct_tokens():
+    """Verify that different entities maintain separate tokens and mappings in the vault."""
+    vault = MaskingVault()
+    t1 = "[EMAIL_aaa111]"
+    t2 = "[EMAIL_bbb222]"
+    vault.register(t1, "alice@example.com")
+    vault.register(t2, "bob@example.com")
+    assert vault.lookup(t1) != vault.lookup(t2)
+    assert len(vault) == 2

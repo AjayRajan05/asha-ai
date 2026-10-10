@@ -11,6 +11,7 @@ gitignored; this check only fails if they are *tracked* or not ignored
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -23,7 +24,7 @@ FORBIDDEN_DIRS = (
     "asha_training_data_generators",
     "data",
     "models",
-    "config",  # root config/ only — packaged thresholds live under src/asha/config/
+    "config",  # root config/ only: packaged thresholds live under src/asha/config/
     ".private-artifacts",
     "asha-private-artifacts",
     "jailbreak_llms",
@@ -62,11 +63,9 @@ SKIP_DIR_NAMES = {
     "__pycache__",
     ".pytest_cache",
     "node_modules",
+    "graphify-out",
+    ".agents",
 }
-
-
-def _is_skipped(path: Path) -> bool:
-    return any(part in SKIP_DIR_NAMES or part.startswith(".venv") for part in path.parts)
 
 
 def _git_ignored(rel: str) -> bool:
@@ -123,34 +122,52 @@ def main() -> int:
         if not _git_ignored(p.name):
             errors.append(f"scratch junit present: {p.name}")
 
-    ignored_roots = {d for d in FORBIDDEN_DIRS if _git_ignored(d)}
-    for p in ROOT.rglob("*"):
+    # Retrieve all public tracked and untracked-unignored files via git ls-files
+    try:
+        proc = subprocess.run(
+            ["git", "ls-files", "-c", "-o", "--exclude-standard"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        public_files = proc.stdout.splitlines()
+    except Exception as exc:
+        print(f"Error querying git ls-files: {exc}")
+        return 1
+
+    for rel_s in public_files:
+        rel = Path(rel_s)
+        if any(part in SKIP_DIR_NAMES or part.startswith(".venv") for part in rel.parts):
+            continue
+
+        p = ROOT / rel
         if not p.is_file():
             continue
-        rel = p.relative_to(ROOT)
-        if _is_skipped(rel) or rel.parts[0] in ignored_roots:
-            continue
-        rel_s = str(rel).replace("\\", "/")
-        if _git_ignored(rel_s):
-            continue
+
+        # Model binaries must not be in public tree
         if p.suffix.lower() in {".joblib", ".pkl"}:
-            errors.append(f"model weight in public tree: {rel}")
+            errors.append(f"model weight in public tree: {rel_s}")
             continue
+
         if p.suffix.lower() not in {".py", ".md", ".toml", ".yml", ".yaml", ".json", ".txt", ".example"}:
             continue
+
         try:
             text = p.read_text(encoding="utf-8", errors="ignore")
         except OSError:
             continue
+
         # Test / benchmark fixtures intentionally contain fake sk-… strings.
         if rel.parts[0] in {"tests", "benchmarks", "examples"}:
             if GOOGLE_KEY.search(text):
-                errors.append(f"possible Google API key in {rel}")
+                errors.append(f"possible Google API key in {rel_s}")
             continue
+
         if GOOGLE_KEY.search(text):
-            errors.append(f"possible Google API key in {rel}")
+            errors.append(f"possible Google API key in {rel_s}")
         if OPENAI_LIVE.search(text):
-            errors.append(f"possible live OpenAI-style key in {rel}")
+            errors.append(f"possible live OpenAI-style key in {rel_s}")
 
     # Version pin consistency for the 0.4.2 release build
     init_v = re.search(r'__version__\s*=\s*"([^"]+)"', (ROOT / "src/asha/__init__.py").read_text(encoding="utf-8"))

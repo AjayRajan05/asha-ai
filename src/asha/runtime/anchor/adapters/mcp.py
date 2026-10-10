@@ -1,4 +1,4 @@
-"""MCP adapter for ASHA ANCHOR — production parity with CrewAI."""
+"""MCP adapter for ASHA ANCHOR: production parity with CrewAI."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ class _AnchoredMCPProxy:
     """
     Wrap MCP servers/clients so every tool call passes through ANCHOR.
 
-    Uses a non-destructive proxy — the inner server's methods are not mutated.
+    Uses a non-destructive proxy: the inner server's methods are not mutated.
     """
 
     def __init__(self, inner: Any, runtime: AnchorRuntime) -> None:
@@ -131,7 +131,11 @@ class _AnchoredMCPProxy:
             for item in tools or []:
                 if isinstance(item, dict) and str(item.get("name", "")) == name:
                     meta = item.get("_meta") or {}
-                    caps = meta.get("asha_capabilities") if isinstance(meta, dict) else None
+                    caps = (
+                        meta.get("asha_capabilities")
+                        if isinstance(meta, dict)
+                        else None
+                    )
                     if isinstance(caps, dict):
                         from ..tool_capabilities import ToolCapabilities
 
@@ -146,7 +150,9 @@ class _AnchoredMCPProxy:
                             ),
                         )
                     else:
-                        register_tool_capabilities(name, infer_capabilities_from_name(name))
+                        register_tool_capabilities(
+                            name, infer_capabilities_from_name(name)
+                        )
                     break
             else:
                 register_tool_capabilities(name, infer_capabilities_from_name(name))

@@ -11,7 +11,9 @@ from asha.runtime.anchor.sandbox import SandboxManager
 from asha.runtime.anchor.telemetry import AnchorTelemetry
 
 
-def test_telemetry_disabled_by_default(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_telemetry_disabled_by_default(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.delenv("ASHA_ANCHOR_TELEMETRY", raising=False)
     monkeypatch.delenv("ASHA_ANCHOR_TELEMETRY_PATH", raising=False)
     monkeypatch.chdir(tmp_path)
@@ -23,7 +25,9 @@ def test_telemetry_disabled_by_default(tmp_path: Path, monkeypatch: pytest.Monke
     assert not (tmp_path / "anchor_telemetry.jsonl").exists()
 
 
-def test_telemetry_enabled_via_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_telemetry_enabled_via_env(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     log = tmp_path / "t.jsonl"
     monkeypatch.setenv("ASHA_ANCHOR_TELEMETRY", "1")
     monkeypatch.setenv("ASHA_ANCHOR_TELEMETRY_PATH", str(log))

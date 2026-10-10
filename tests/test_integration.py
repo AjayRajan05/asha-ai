@@ -40,7 +40,7 @@ def test_gemini_adapter_generate(gemini_key):
     adapter = GeminiAdapter(model="gemini-1.5-flash")
     response = adapter.generate("Reply with the word OK only.")
     assert isinstance(response, str)
-    assert "ok" in response.lower() or len(response.strip()) > 0
+    assert "ok" in response.lower()
 
 
 def test_agent_live_run(gemini_key):

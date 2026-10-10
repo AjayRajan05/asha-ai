@@ -109,7 +109,9 @@ def test_prepare_kwargs_masks_file_attachment(txt_with_email: Path) -> None:
     blob = str(content)
     assert EMAIL not in blob
     assert any(
-        isinstance(p, dict) and p.get("type") == "text" and EMAIL not in str(p.get("text"))
+        isinstance(p, dict)
+        and p.get("type") == "text"
+        and EMAIL not in str(p.get("text"))
         for p in content
     )
 
@@ -125,8 +127,8 @@ def test_wrap_llm_masks_attachment(txt_with_email: Path) -> None:
                     captured.update(kwargs)
                     return {"ok": True}
 
-    wrap_llm(_Client(), mode="balanced")
-    _Client.chat.completions.create(
+    wrapped = wrap_llm(_Client(), mode="balanced")
+    wrapped.chat.completions.create(
         messages=[
             {
                 "role": "user",

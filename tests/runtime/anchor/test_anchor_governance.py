@@ -9,7 +9,10 @@ from asha.runtime.anchor.adapters.mcp import anchor_mcp, is_mcp_server
 from asha.runtime.anchor.adapters.registry import anchor_any
 from asha.runtime.anchor.chain_guard import ChainGuard
 from asha.runtime.anchor.mission import MissionCompiler
-from asha.runtime.anchor.mission_session import MissionSession, merge_mission_with_baseline
+from asha.runtime.anchor.mission_session import (
+    MissionSession,
+    merge_mission_with_baseline,
+)
 from asha.runtime.anchor.plan_guard import evaluate_plan_output
 from asha.runtime.anchor.runtime import AnchorRuntime
 from asha.runtime.anchor.sandbox import SandboxManager
@@ -64,7 +67,10 @@ def test_chain_guard_detects_read_to_exfil_sequence() -> None:
     compiler = MissionCompiler()
     mission = compiler.compile(
         "Load data and analyze locally.",
-        context={"available_tools": ["load_trend_data", "send_email"], "local_only": True},
+        context={
+            "available_tools": ["load_trend_data", "send_email"],
+            "local_only": True,
+        },
     )
     guard = ChainGuard()
     history = [_tool_action("load_trend_data"), _tool_action("send_email")]
@@ -110,7 +116,10 @@ def test_guarded_tool_call_blocks_high_risk_tool() -> None:
     runtime = AnchorRuntime(interactive=False)
     runtime.initialize_mission(
         "Analyze trends locally. Do not send externally.",
-        context={"available_tools": ["load_trend_data", "send_email"], "local_only": True},
+        context={
+            "available_tools": ["load_trend_data", "send_email"],
+            "local_only": True,
+        },
     )
 
     def send_email(**_kwargs: object) -> str:

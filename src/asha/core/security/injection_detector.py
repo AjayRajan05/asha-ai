@@ -26,7 +26,7 @@ strong windowed-perplexity *or* embedding hit while the other signal stays
 moderate; averaging alone would dilute it below the block band. Noisy-OR
 lets either independent detector drive the fused probability up, while still
 rewarding agreement. Regex contributes a discounted boost (never the sole
-gate — a lone regex hit without model support yields at most 0.5 before
+gate: a lone regex hit without model support yields at most 0.5 before
 banding).
 
 When a trained meta-logistic artifact exists at
@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 HARDENED_INJECTION_FALLBACK_MSG = (
     "Hardened injection detection unavailable "
     "(sentence-transformers/scikit-learn not installed, or detector "
-    "models could not be auto-downloaded) — using lite path. "
+    "models could not be auto-downloaded); using lite path. "
     "Install with: pip install asha[hardened]. "
     "Models download automatically on first use unless "
     "ASHA_DISABLE_MODEL_DOWNLOAD=1."
@@ -123,7 +123,7 @@ class InjectionDetector:
                 ``regex_only`` (backward-compat opt-in).
             patterns: optional injection regex bank (from SecurityLayer).
             allow_hash_fallback: test-only; production must install asha[hardened].
-                Hash vectors are not semantic — never enable silently in prod.
+                Hash vectors are not semantic; never enable silently in prod.
         """
         if mode not in ("ensemble", "regex_only", "lite"):
             raise ValueError(f"Unsupported injection mode: {mode}")
@@ -171,6 +171,11 @@ class InjectionDetector:
 
     def regex_feature(self, text: str) -> Tuple[float, Tuple[str, ...]]:
         """Return (0/1 hit, matched pattern descriptions). Not a sole gate."""
+        from asha.core.text.canonicalize import canonicalize
+
+        canon = canonicalize(text)
+        views = (text, canon) if canon != text else (text,)
+
         if not self._patterns:
             # Minimal built-in bank if caller did not supply patterns.
             bank = _builtin_regex_bank()
@@ -182,8 +187,12 @@ class InjectionDetector:
             if not isinstance(pattern, str):
                 continue
             try:
-                if re.search(pattern, text):
-                    matched.append(str(info.get("description") or pattern[:48]))
+                for v in views:
+                    if re.search(pattern, v, re.IGNORECASE):
+                        desc = str(info.get("description") or pattern[:48])
+                        if desc not in matched:
+                            matched.append(desc)
+                        break
             except re.error:
                 continue
         return (1.0 if matched else 0.0, tuple(matched))
@@ -259,7 +268,9 @@ class InjectionDetector:
                 from asha.core.ml.calibration import calibrated_predict_proba
 
                 X = np.asarray([[p_ppl, p_emb, float(regex_hit)]], dtype=np.float64)
-                return max(0.0, min(1.0, float(calibrated_predict_proba(self._meta, X)[0])))
+                return max(
+                    0.0, min(1.0, float(calibrated_predict_proba(self._meta, X)[0]))
+                )
             except Exception:
                 pass
         # Documented noisy-OR fusion (see module docstring).
@@ -279,7 +290,8 @@ def _injection_artifact_available() -> bool:
     ensure_models()
     return (
         resolve_model_file("injection", "fusion_meta.joblib", ensure=False) is not None
-        or resolve_model_file("injection", "embedding_rf.joblib", ensure=False) is not None
+        or resolve_model_file("injection", "embedding_rf.joblib", ensure=False)
+        is not None
     )
 
 
@@ -300,7 +312,7 @@ def hardened_injection_available() -> bool:
         from asha.core.ml.embeddings import minilm_loadable
 
         if not minilm_loadable():
-            # Do not permanently cache False — MiniLM may load later in-session.
+            # Do not permanently cache False: MiniLM may load later in-session.
             return False
     except Exception:
         return False
@@ -353,8 +365,10 @@ def get_injection_detector(
     """Process-wide detector; mode from :func:`resolve_injection_mode` when unset."""
     global _detector_singleton
     resolved_mode = resolve_injection_mode(mode)
-    if reset or _detector_singleton is None or (
-        _detector_singleton.mode != resolved_mode
+    if (
+        reset
+        or _detector_singleton is None
+        or (_detector_singleton.mode != resolved_mode)
     ):
         with _singleton_lock:
             _detector_singleton = InjectionDetector(

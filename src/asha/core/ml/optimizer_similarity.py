@@ -50,11 +50,7 @@ def optimizer_similarity_bands(
     Jaccard (Base) → ``optimizer_similarity_lite``;
     MiniLM embedding → ``optimizer_similarity``.
     """
-    key = (
-        "optimizer_similarity_lite"
-        if method == "jaccard"
-        else "optimizer_similarity"
-    )
+    key = "optimizer_similarity_lite" if method == "jaccard" else "optimizer_similarity"
     try:
         bands = get_bands(key, thresholds=thresholds or load_thresholds())
         if bands.higher_is_safer:
@@ -78,7 +74,7 @@ def optimizer_similarity_bands(
 
 
 def jaccard_similarity(original: str, optimized: str) -> float:
-    """Token Jaccard overlap — lite fallback when embeddings are unavailable."""
+    """Token Jaccard overlap: lite fallback when embeddings are unavailable."""
     original_tokens = set(original.lower().split())
     optimized_tokens = set(optimized.lower().split())
     if not original_tokens and not optimized_tokens:

@@ -37,9 +37,7 @@ def test_middleware_skips_non_configured_endpoints():
 def test_middleware_processes_chat_completions_json_body():
     app = _make_app(debug_mode=True)
     client = TestClient(app)
-    body = {
-        "messages": [{"role": "user", "content": "Email john@company.com please"}]
-    }
+    body = {"messages": [{"role": "user", "content": "Email john@company.com please"}]}
     response = client.post("/chat/completions", json=body)
     assert response.status_code == 200
     assert response.headers.get("X-ASHA-Processed") == "true"

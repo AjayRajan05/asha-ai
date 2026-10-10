@@ -53,7 +53,7 @@ def recommend_local_model(
     Recommend local LLM models for your compiled workload and hardware.
 
     .. warning::
-        Experimental in 0.4.2 — emits ``ASHAExperimentalWarning``.
+        Experimental in 0.4.2; emits ``ASHAExperimentalWarning``.
 
     Args:
         prompts: Sample prompts representing your application workload.

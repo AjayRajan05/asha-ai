@@ -1,4 +1,4 @@
-"""AutoGen adapter for ASHA ANCHOR — production parity with CrewAI."""
+"""AutoGen adapter for ASHA ANCHOR: production parity with CrewAI."""
 
 from __future__ import annotations
 
@@ -73,7 +73,9 @@ class _AnchoredAutoGenAgentProxy:
 
     def _patch_register_hooks(self) -> None:
         original_register = getattr(self._inner, "register_for_execution", None)
-        if not callable(original_register) or getattr(original_register, "_anchor_patched", False):
+        if not callable(original_register) or getattr(
+            original_register, "_anchor_patched", False
+        ):
             return
 
         runtime = self._runtime
@@ -100,11 +102,15 @@ class _AnchoredAutoGenAgentProxy:
     def generate_reply(self, *args: Any, **kwargs: Any) -> Any:
         messages = kwargs.get("messages") or (args[0] if args else [])
         prompt = _message_content(messages) or "AutoGen agent workflow."
-        self._bind_mission(prompt, phase=self._runtime.state.baseline_mission is not None)
+        self._bind_mission(
+            prompt, phase=self._runtime.state.baseline_mission is not None
+        )
         try:
             with bind_runtime(self._runtime):
                 result = self._inner.generate_reply(*args, **kwargs)
-            output = result.get("content", result) if isinstance(result, dict) else result
+            output = (
+                result.get("content", result) if isinstance(result, dict) else result
+            )
             return finalize_step_output(
                 self._runtime,
                 output,
@@ -117,7 +123,9 @@ class _AnchoredAutoGenAgentProxy:
     def initiate_chat(self, recipient: Any, message: str = "", **kwargs: Any) -> Any:
         if not is_wrapped(recipient):
             recipient = anchor_autogen(recipient, runtime=self._runtime)
-        self._bind_mission(message or extract_prompt_from_input(kwargs.get("message", "")))
+        self._bind_mission(
+            message or extract_prompt_from_input(kwargs.get("message", ""))
+        )
         try:
             with bind_runtime(self._runtime):
                 return self._inner.initiate_chat(recipient, message=message, **kwargs)
@@ -129,7 +137,7 @@ class _AnchoredAutoGenAgentProxy:
 
 
 class _AnchoredAutoGenGroupProxy:
-    """Wrap AutoGen GroupChat / GroupChatManager — governs all member agents."""
+    """Wrap AutoGen GroupChat / GroupChatManager: governs all member agents."""
 
     def __init__(self, inner: Any, runtime: AnchorRuntime) -> None:
         self._inner = inner
@@ -151,7 +159,9 @@ class _AnchoredAutoGenGroupProxy:
     def initiate_chat(self, *args: Any, **kwargs: Any) -> Any:
         message = kwargs.get("message") or (args[1] if len(args) > 1 else "")
         names = [tool_name(a) for a in discover_tools(self._inner)]
-        initialize_mission(self._runtime, str(message or "AutoGen group workflow."), names)
+        initialize_mission(
+            self._runtime, str(message or "AutoGen group workflow."), names
+        )
         try:
             with bind_runtime(self._runtime):
                 return self._inner.initiate_chat(*args, **kwargs)

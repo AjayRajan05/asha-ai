@@ -65,7 +65,10 @@ class AdapterFactory:
             from .grok_adapter import GrokAdapter
 
             return GrokAdapter(model_name)
-        elif model_name.lower().startswith("gemini"):
+        elif (
+            model_name.lower().startswith("gemini")
+            or "gemini" in model_name.lower()
+        ):
             from .gemini_adapter import GeminiAdapter
 
             return GeminiAdapter(model_name)
@@ -73,6 +76,15 @@ class AdapterFactory:
             from .hf_adapter import HuggingFaceAdapter
 
             return HuggingFaceAdapter(model_name)
+        elif (
+            model_name.lower().startswith("llama.cpp")
+            or model_name.lower().startswith("llama-cpp")
+            or model_name.lower().startswith("llamacpp")
+        ):
+            from .openai_adapter import OpenAIAdapter
+
+            base_url = os.getenv("LLAMA_CPP_BASE_URL", "http://localhost:8080/v1")
+            return OpenAIAdapter(model=model_name, base_url=base_url)
         elif model_name.lower().startswith("llama") or model_name.lower().startswith(
             "codellama"
         ):
@@ -81,7 +93,7 @@ class AdapterFactory:
             return OllamaAdapter(model_name)
         else:
             raise ValueError(
-                f"Unsupported provider/model: {model_name}. Supported providers: mock, gpt, claude, grok, gemini, mistralai, llama, codellama"
+                f"Unsupported provider/model: {model_name}. Supported providers: mock, gpt, claude, grok, gemini, mistralai, llama, llama.cpp, codellama"
             )
 
     # Enhanced v2 methods (consolidated from enhanced_factory.py)
@@ -131,8 +143,7 @@ class AdapterFactory:
         Returns:
             UniversalModelAdapter with fallback adapters
         """
-        primary = AdapterFactory.create_universal(
-            primary_provider, primary_model)
+        primary = AdapterFactory.create_universal(primary_provider, primary_model)
 
         if fallback_providers:
             fallback_adapters = []
@@ -191,7 +202,7 @@ class SmartRoutingAdapter:
     Smart routing adapter that automatically selects the best model
     based on task type, cost, latency, and complexity.
 
-    Experimental in 0.4.2 — emits ``ASHAExperimentalWarning``.
+    Experimental in 0.4.2; emits ``ASHAExperimentalWarning``.
     """
 
     def __init__(self, routing_config: Dict[str, str]) -> None:

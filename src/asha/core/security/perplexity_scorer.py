@@ -198,8 +198,8 @@ class PerplexityScorer:
         """Return (calibrated P(injection), features).
 
         When no trained classifier is present, use a heuristic mapped into
-        ``[0, 1]`` from windowed perplexity — never a hardcoded decision
-        threshold; callers bucket via ``config/thresholds.yaml``.
+        ``[0, 1]`` from windowed perplexity. Callers bucket the score via
+        ``config/thresholds.yaml`` rather than hardcoded decision thresholds.
         """
         feats = self.extract_features(text)
         self._ensure_classifier()

@@ -112,7 +112,10 @@ def test_resource_scope_hard_override():
         _contract(allowed_tools=["read_file"], allowed_read_paths=["data/"]),
     )
     assert verdict.verdict is Verdict.BLOCK
-    assert any("scope" in t.lower() for t in verdict.risk_triggers) or "scope" in verdict.reason.lower()
+    assert (
+        any("scope" in t.lower() for t in verdict.risk_triggers)
+        or "scope" in verdict.reason.lower()
+    )
 
 
 def test_forbidden_action_hard_override():
@@ -123,14 +126,12 @@ def test_forbidden_action_hard_override():
         payload={},
         timestamp=0.0,
     )
-    verdict = guard.evaluate_action(
-        action, _contract(forbidden_actions=["shell"])
-    )
+    verdict = guard.evaluate_action(action, _contract(forbidden_actions=["shell"]))
     assert verdict.verdict is Verdict.BLOCK
 
 
 def test_hard_override_cannot_be_outvoted_by_perfect_band():
-    """Override replaces verdict outright — medium/perfect scores cannot rescue."""
+    """Override replaces verdict outright; medium/perfect scores cannot rescue."""
     from unittest.mock import patch
 
     guard = ActionGuard(AlignmentEvaluator())
@@ -170,6 +171,6 @@ def test_medium_penalties_cannot_rescue_hard_block():
         _contract(local_only=True, allowed_tools=["send_email"]),
     )
     # send_email under local_only is hard-blocked even if allowlisted name-wise
-    # when not mission-local — score must be 0.
+    # when not mission-local: score must be 0.
     assert score == 0.0
     assert has_hard_block_trigger(triggers, expl)

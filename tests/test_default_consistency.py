@@ -32,9 +32,7 @@ from asha.runtime.run_context import RunContext
 
 def test_injection_mode_constructor_default_is_lite() -> None:
     assert (
-        inspect.signature(InjectionDetector.__init__)
-        .parameters["mode"]
-        .default
+        inspect.signature(InjectionDetector.__init__).parameters["mode"].default
         == "lite"
     )
     assert InjectionDetector().mode == "lite"
@@ -52,18 +50,14 @@ def test_pii_mode_defaults_agree_on_hybrid() -> None:
     assert PolicyConfig().pii_mode == "hybrid"
     assert RunContext.__dataclass_fields__["pii_mode"].default == "hybrid"
     assert (
-        inspect.signature(HybridPIIDetector.__init__)
-        .parameters["pii_mode"]
-        .default
+        inspect.signature(HybridPIIDetector.__init__).parameters["pii_mode"].default
         == "hybrid"
     )
     assert (
-        inspect.signature(MLLoader.__init__).parameters["pii_mode"].default
-        == "hybrid"
+        inspect.signature(MLLoader.__init__).parameters["pii_mode"].default == "hybrid"
     )
     assert (
-        inspect.signature(run_security_only).parameters["pii_mode"].default
-        == "hybrid"
+        inspect.signature(run_security_only).parameters["pii_mode"].default == "hybrid"
     )
 
 
@@ -73,16 +67,16 @@ def test_security_level_defaults_agree_on_medium() -> None:
     assert RunContext.__dataclass_fields__["security_level"].default == "medium"
     assert SecurityLayer().security_level is SecurityLevel.MEDIUM
     assert (
-        inspect.signature(run_security_only)
-        .parameters["security_level"]
-        .default
+        inspect.signature(run_security_only).parameters["security_level"].default
         is SecurityLevel.MEDIUM
     )
 
 
 def test_run_security_config_default_security_level_is_medium() -> None:
     # Empty config must not silently pick HIGH.
-    result = run_security("hello world, no pii here", {"enable_injection_detection": False})
+    result = run_security(
+        "hello world, no pii here", {"enable_injection_detection": False}
+    )
     # SecurityLayer path used MEDIUM; we only assert the call did not explode
     # and that the wrapper default matches MEDIUM (signature pin above).
     assert result.sanitized_content is not None

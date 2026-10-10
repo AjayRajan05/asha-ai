@@ -19,8 +19,18 @@ def test_mock_adapter_generate():
     "model_name,adapter_class,env,required_pkg",
     [
         ("gpt-4", "OpenAIAdapter", {"OPENAI_API_KEY": "test-key"}, "openai"),
-        ("claude-3-sonnet", "ClaudeAdapter", {"ANTHROPIC_API_KEY": "test-key"}, "anthropic"),
-        ("gemini-pro", "GeminiAdapter", {"GOOGLE_API_KEY": "test-key"}, "google.generativeai"),
+        (
+            "claude-3-sonnet",
+            "ClaudeAdapter",
+            {"ANTHROPIC_API_KEY": "test-key"},
+            "anthropic",
+        ),
+        (
+            "gemini-pro",
+            "GeminiAdapter",
+            {"GOOGLE_API_KEY": "test-key"},
+            "google.generativeai",
+        ),
         ("llama2", "OllamaAdapter", {}, None),
         ("grok-beta", "GrokAdapter", {"GROK_API_KEY": "test-key"}, "openai"),
     ],
@@ -82,7 +92,13 @@ def test_grok_generate_mocked():
         mock_msg.content = "Grok mock response"
         mock_choice = MagicMock(message=mock_msg)
         mock_response = MagicMock(choices=[mock_choice])
-        adapter.client.chat.completions.create = MagicMock(
-            return_value=mock_response
-        )
+        adapter.client.chat.completions.create = MagicMock(return_value=mock_response)
         assert adapter.generate("hello") == "Grok mock response"
+
+
+def test_llamacpp_adapter_endpoint():
+    pytest.importorskip("openai")
+    with patch.dict("os.environ", {"LLAMA_CPP_BASE_URL": "http://localhost:8080/v1"}, clear=False):
+        adapter = AdapterFactory.create("llama.cpp-mistral-7b")
+        assert adapter.__class__.__name__ == "OpenAIAdapter"
+        assert adapter.base_url == "http://localhost:8080/v1"

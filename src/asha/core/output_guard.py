@@ -345,9 +345,7 @@ class OutputGuard:
         """
         self.auto_detect = auto_detect
 
-    def guard_output(
-        self, output: Any, expected_format: Optional[str] = None
-    ) -> Any:
+    def guard_output(self, output: Any, expected_format: Optional[str] = None) -> Any:
         """
         Guard output with validation and repair.
 

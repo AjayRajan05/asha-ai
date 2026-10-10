@@ -329,7 +329,9 @@ class IntentClassifier:
                     classes = [str(c) for c in list(raw_classes)]
                 else:
                     step = getattr(self._calibrator, "named_steps", {}).get("clf")
-                    raw_classes = getattr(step, "classes_", None) if step is not None else None
+                    raw_classes = (
+                        getattr(step, "classes_", None) if step is not None else None
+                    )
                     if raw_classes is not None:
                         classes = [str(c) for c in list(raw_classes)]
             label = str(classes[idx]) if idx < len(classes) else "abstain"

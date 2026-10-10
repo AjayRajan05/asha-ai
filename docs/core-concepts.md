@@ -1,6 +1,6 @@
 # Core concepts
 
-**ASHA v0.4.2** — how the pieces fit together.
+**ASHA v0.4.2**: how the pieces fit together.
 
 ASHA preprocesses prompts (detect PII, check threats, compile structure, compress tokens) and can govern autonomous agents via ANCHOR. You call one function; engines run inside `PromptProcessor`. ANCHOR is a separate runtime path.
 
@@ -109,7 +109,7 @@ str(result)            # same as result.output
 
 ### SanitizeResult / OptimizeResult
 
-Same pattern — `.output`, `.security` (sanitize), `.metrics` (optimize).
+Same pattern: `.output`, `.security` (sanitize), `.metrics` (optimize).
 
 Legacy dict: `result.to_dict()` or `asha.compat.legacy_results.to_legacy_pipeline_dict(result)`.
 
@@ -150,8 +150,8 @@ restored = unmask(safe, result.security.masking_map)
 | Wrap existing SDK | `wrap_llm(client)` |
 | Preprocess + LLM call | `Agent(model=...)` |
 | Govern autonomous agents | `anchor(agent)` / framework adapters |
-| Task-based model pick | `Agent(routing_config=...)` — **experimental** |
-| Local model advice | `recommend_local_model()` — **experimental** |
+| Task-based model pick | `Agent(routing_config=...)` (**experimental**) |
+| Local model advice | `recommend_local_model()` (**experimental**) |
 
 `Agent(privacy=True)` enables preprocessing with strict internal mode. `privacy=False` disables it.
 

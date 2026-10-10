@@ -12,7 +12,7 @@ A Python library for mission-aware agent governance (`anchor`) and drop-in promp
 
 ### Is it production-ready?
 
-**Developer preview.** Install with `pip install asha-ai` for everyday use. For production pilots, pin the version you tested (e.g. `asha==0.4.2`) and monitor. A semver-stable **1.0** API guarantee is not claimed yet. Read [status.md](status.md).
+**Developer preview.** Install with `pip install asha-si` for everyday use. For production pilots, pin the version you tested (e.g. `asha-si==0.4.2`) and monitor. A semver-stable **1.0** API guarantee is not claimed yet. Read [status.md](status.md).
 
 ### Python version?
 
@@ -28,7 +28,7 @@ A Python library for mission-aware agent governance (`anchor`) and drop-in promp
 from asha import process, sanitize, optimize, Agent, anchor
 ```
 
-Nothing else — no `wrap_llm`, `Pipeline`, or `Processor` at root.
+Nothing else: no `wrap_llm`, `Pipeline`, or `Processor` at root.
 
 ### Where is wrap_llm?
 
@@ -42,7 +42,7 @@ A **`ProcessResult`** dataclass. `str(result)` returns `result.output`.
 
 ### Does process() raise?
 
-- **`mode="balanced"`** (default): fail-open — degraded fallback, `result.degraded=True`
+- **`mode="balanced"`** (default): fail-open with degraded fallback (`result.degraded=True`)
 - **`mode="strict"`**: raises `ASHAProcessingError` on total failure
 
 ### How do I get metrics?
@@ -53,7 +53,7 @@ print(result.metrics.token_reduction_pct)
 print(result.security.pii_detected)
 ```
 
-No `return_metrics=True` — use typed fields.
+No `return_metrics=True`; use typed fields.
 
 ### How do I set pii_mode or reversible?
 
@@ -70,7 +70,7 @@ Top-level `pii_mode=` on `process()` raises `TypeError`. Default `pii_mode` is `
 
 | Mode | Description |
 |------|-------------|
-| `balanced` | Default — security + optimization |
+| `balanced` | Default: security + optimization |
 | `strict` | Fail-closed |
 | `lite` | Minimal policy features |
 | `off` | Passthrough |
@@ -93,7 +93,7 @@ Rule-based installs are typically tens of milliseconds on ordinary prompts; ML p
 
 ### Does process() mask PII in attached documents?
 
-Yes when ASHA can read the file: pass a path/bytes to `sanitize` / `process`, or use `wrap_llm` so local attachments are extracted and masked before the LLM call. Scanned/image-only PDFs need OCR (not included). Provider-only `file_id` uploads without local bytes are not readable — see [security.md](security.md).
+Yes when ASHA can read the file: pass a path/bytes to `sanitize` / `process`, or use `wrap_llm` so local attachments are extracted and masked before the LLM call. Scanned/image-only PDFs need OCR (not included). Provider-only `file_id` uploads without local bytes are not readable (see [security.md](security.md)).
 
 ### What PII is detected?
 
@@ -131,12 +131,12 @@ No. `isolation="auto"` uses in-process hooks; `isolation="hard"` uses a subproce
 
 ### Where do I ask questions?
 
-[GitHub Discussions](https://github.com/AjayRajan05/ASHA/discussions) (primary) or [ASHA Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw) for optional chat.
+[GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions) (primary) or [ASHA Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw) for optional chat.
 
 ### How do hardened models download?
 
-`pip install asha-ai[hardened]` auto-fetches  
-`https://github.com/AjayRajan05/ASHA/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`  
+`pip install asha-si[hardened]` auto-fetches  
+`https://github.com/AjayRajan05/asha-si/releases/download/asha-models-0.4.2/asha-models-0.4.2.zip`  
 on first use. Override with `ASHA_MODELS_DIR` / `ASHA_MODELS_ZIP` / `ASHA_DISABLE_MODEL_DOWNLOAD=1`.
 
 ---

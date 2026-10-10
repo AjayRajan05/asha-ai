@@ -26,6 +26,31 @@ class ASHAAnchorBlocked(ASHAError):
     """Raised when ANCHOR blocks an agent action or tool call."""
 
 
+from typing import Union
+
+
+class AgentBudgetExceeded(ASHAError):
+    """Raised when an agent workflow exceeds its token, step, cycle, or drift budget.
+
+    Attributes:
+        budget_type: The type of budget exceeded ('tokens', 'steps', 'cycles', or 'drift').
+        current: The current budget value when the limit was hit.
+        limit: The configured budget limit.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        budget_type: str = "steps",
+        current: Union[int, float] = 0,
+        limit: Union[int, float] = 0,
+    ) -> None:
+        super().__init__(message)
+        self.budget_type = budget_type
+        self.current = current
+        self.limit = limit
+
+
 class ASHAExperimentalWarning(UserWarning):
     """API is experimental and may change without a deprecation cycle."""
 

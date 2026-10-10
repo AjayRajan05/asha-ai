@@ -15,7 +15,7 @@
 """
 LangChain Integration for ASHA
 
-This module provides seamless integration with LangChain components,
+This module provides direct integration with LangChain components,
 allowing ASHA to secure and optimize prompts within LangChain pipelines.
 """
 
@@ -37,6 +37,7 @@ try:
     try:
         from langchain.chains import LLMChain  # type: ignore
     except Exception:  # pragma: no cover - optional legacy helper
+
         class LLMChain:  # type: ignore[no-redef]
             llm: Any
             prompt: Any
@@ -65,7 +66,9 @@ except Exception as _core_exc:
             pass
 
         class Runnable:
-            def invoke(self, input: Any, config: Optional[Dict[str, Any]] = None) -> Any:
+            def invoke(
+                self, input: Any, config: Optional[Dict[str, Any]] = None
+            ) -> Any:
                 return input
 
         class BaseMessage:
@@ -94,6 +97,7 @@ except Exception as _core_exc:
 
         class BaseChatModel:
             pass
+
 
 if TYPE_CHECKING:
     LANGCHAIN_AVAILABLE = True

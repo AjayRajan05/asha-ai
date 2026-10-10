@@ -25,7 +25,9 @@ def enforcement_hooks(policy: SandboxPolicy) -> Iterator[None]:
         if writing and not policy.allow_file_write:
             raise SandboxViolation(f"File write blocked by sandbox: {file}")
         if writing and policy.allowed_write_paths:
-            if not any(path.startswith(prefix) for prefix in policy.allowed_write_paths):
+            if not any(
+                path.startswith(prefix) for prefix in policy.allowed_write_paths
+            ):
                 raise SandboxViolation(f"Write outside allowed paths blocked: {file}")
         return original_open(file, mode, *args, **kwargs)
 

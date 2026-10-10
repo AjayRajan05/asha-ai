@@ -63,11 +63,13 @@ class AnchoredTool(CrewAIBaseTool):
         init_kwargs = {
             "name": getattr(inner, "name", "tool"),
             "description": getattr(inner, "description", ""),
-            "args_schema": getattr(inner, "args_schema", None),
             "env_vars": getattr(inner, "env_vars", []),
             "result_as_answer": getattr(inner, "result_as_answer", False),
-            "max_usage_count": getattr(inner, "max_usage_count", None),
         }
+        if getattr(inner, "args_schema", None) is not None:
+            init_kwargs["args_schema"] = inner.args_schema
+        if getattr(inner, "max_usage_count", None) is not None:
+            init_kwargs["max_usage_count"] = inner.max_usage_count
         if CrewAIBaseTool is object:
             for key, value in init_kwargs.items():
                 setattr(self, key, value)
@@ -96,7 +98,9 @@ class AnchoredTool(CrewAIBaseTool):
                 return asyncio.run(result)
             return result
 
-        return self._runtime.sandbox.execute(_runner, tool_name=tool_name, args=args, kwargs=kwargs)
+        return self._runtime.sandbox.execute(
+            _runner, tool_name=tool_name, args=args, kwargs=kwargs
+        )
 
 
 class _AnchoredLLMProxy:
@@ -172,7 +176,10 @@ class _AnchoredLLMProxy:
             try:
                 import litellm
 
-                if "original_completion" in locals() and original_completion is not None:
+                if (
+                    "original_completion" in locals()
+                    and original_completion is not None
+                ):
                     litellm.completion = original_completion
             except ImportError:
                 pass
@@ -204,7 +211,9 @@ class _AnchoredTaskProxy:
         tools: Optional[List[Any]] = None,
     ) -> Any:
         inputs = self._inputs_getter()
-        description = resolve_templates(getattr(self._task, "description", "") or "", inputs)
+        description = resolve_templates(
+            getattr(self._task, "description", "") or "", inputs
+        )
         agent_tools = tools or getattr(agent, "tools", None) or []
 
         self._runtime.refresh_mission_phase(
@@ -284,16 +293,26 @@ class _AnchoredCrewProxy:
     def _wrap_components(self) -> None:
         crew_llm = getattr(self._crew, "llm", None)
         if crew_llm is not None and not isinstance(crew_llm, _AnchoredLLMProxy):
-            safe_setattr(self._crew, "llm", _AnchoredLLMProxy(crew_llm, self._anchor_runtime))
+            safe_setattr(
+                self._crew, "llm", _AnchoredLLMProxy(crew_llm, self._anchor_runtime)
+            )
 
         wrapped_agents = [
-            a if isinstance(a, _AnchoredAgentProxy) else _AnchoredAgentProxy(a, self._anchor_runtime)
+            (
+                a
+                if isinstance(a, _AnchoredAgentProxy)
+                else _AnchoredAgentProxy(a, self._anchor_runtime)
+            )
             for a in getattr(self._crew, "agents", None) or []
         ]
         safe_setattr(self._crew, "agents", wrapped_agents)
 
         wrapped_tasks = [
-            t if isinstance(t, _AnchoredTaskProxy) else _AnchoredTaskProxy(t, self._anchor_runtime, self._inputs_getter)
+            (
+                t
+                if isinstance(t, _AnchoredTaskProxy)
+                else _AnchoredTaskProxy(t, self._anchor_runtime, self._inputs_getter)
+            )
             for t in getattr(self._crew, "tasks", None) or []
         ]
         safe_setattr(self._crew, "tasks", wrapped_tasks)
@@ -311,7 +330,9 @@ class _AnchoredCrewProxy:
             context={
                 **mission_context(
                     self._anchor_runtime,
-                    _collect_tools_from_agents(getattr(self._crew, "agents", None) or []),
+                    _collect_tools_from_agents(
+                        getattr(self._crew, "agents", None) or []
+                    ),
                 ),
                 "available_tools": list(dict.fromkeys(available_tools)),
             },

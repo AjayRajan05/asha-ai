@@ -24,24 +24,41 @@ class OpenAIAdapter(BaseAdapter):
     OpenAI Adapter - Backward compatible wrapper using UniversalModelAdapter.
     """
 
-    def __init__(self, model: str = "gpt-4o-mini") -> None:
+    def __init__(
+        self,
+        model: str = "gpt-4o-mini",
+        *,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        timeout: int = 10,
+    ) -> None:
         """Initialize OpenAI adapter with specified model.
 
         Args:
             model: OpenAI model name (default: 'gpt-4o-mini')
-
-        Note:
-            Uses UniversalModelAdapter for enhanced functionality
+            api_key: Optional API key. Defaults to OPENAI_API_KEY env var.
+            base_url: Optional base URL for OpenAI-compatible endpoints (e.g. llama.cpp server).
+            timeout: Request timeout in seconds.
         """
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
+        key = (
+            api_key
+            or os.getenv("OPENAI_API_KEY")
+            or ("llama-cpp" if base_url else None)
+        )
+        if not key:
             raise ValueError(
                 "OPENAI_API_KEY environment variable is not set. "
                 "Set it with: export OPENAI_API_KEY='your-key'"
             )
 
+        self.model = model
+        self.base_url = base_url
         self._adapter = UniversalModelAdapter(
-            provider="openai", model=model, api_key=api_key
+            provider="openai",
+            model=model,
+            api_key=key,
+            base_url=base_url,
+            timeout=timeout,
         )
         self.model = model
 

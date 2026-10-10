@@ -133,6 +133,7 @@ def _candidate_matrix_paths() -> List[Path]:
     ensure_models()
     return candidate_model_paths("chain_guard", "transition_matrix.json")
 
+
 _model_singleton: Optional[TransitionModel] = None
 _model_lock = threading.Lock()
 

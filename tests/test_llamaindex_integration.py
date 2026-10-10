@@ -73,11 +73,13 @@ def test_wrap_query_engine_returns_wrapped():
 
 def _make_query_bundle(query_str: str):
     """Create a minimal QueryBundle-compatible object (works with or without llama_index)."""
+
     class _QueryBundle:
         def __init__(self, qs):
             self.query_str = qs
             self.custom_embedding_strs = None
             self.embedding_strs = None
+
     return _QueryBundle(query_str)
 
 
@@ -114,8 +116,8 @@ def test_wrap_query_engine_masks_pii():
             return f"result:{bundle.query_str}"
 
     qe = _MockQueryEngine()
-    # Use a non-placeholder address — user@example.com is intentionally left
-    # unmasked as a known teaching/placeholder local+domain pair.
+    # Use a non-placeholder address (user@example.com is intentionally left
+    # unmasked as a known teaching/placeholder local+domain pair).
     pii_email = "alice.chen@acme-corp.com"
     wrapped = wrap_query_engine(qe, privacy=True)
     wrapped.query(QueryBundle(query_str=f"Find documents about {pii_email}"))

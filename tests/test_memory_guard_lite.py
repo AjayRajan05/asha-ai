@@ -76,9 +76,10 @@ def test_obfuscated_poison_not_allowed(guard: MemoryGuard, contract: MissionCont
     )
     event = guard.normalize_memory_event("write", obfuscated, "session")
     result = guard.evaluate_memory(event, contract, obfuscated)
-    assert result.verdict in (Verdict.BLOCK, Verdict.REVIEW), (
-        f"expected BLOCK/REVIEW, got {result.verdict}"
-    )
+    assert result.verdict in (
+        Verdict.BLOCK,
+        Verdict.REVIEW,
+    ), f"expected BLOCK/REVIEW, got {result.verdict}"
 
 
 def test_benign_preference_write_allowed(guard: MemoryGuard, contract: MissionContract):

@@ -81,7 +81,7 @@ CONFUSABLES: dict[str, str] = {
     "χ": "x",  # U+03C7
     "ι": "i",  # U+03B9
     "κ": "k",  # U+03BA
-    # --- Fullwidth Latin / digits (FF01–FF5E range core) ---
+    # --- Fullwidth Latin / digits (FF01-FF5E range core) ---
     "Ａ": "A",
     "Ｂ": "B",
     "Ｃ": "C",
@@ -169,7 +169,7 @@ CONFUSABLES: dict[str, str] = {
 
 
 # Leetspeak / keyboard-substitution folds. Applied only as an *additional*
-# view — lossy, so callers keep the non-leet canonical form too.
+# view (lossy, so callers keep the non-leet canonical form too).
 LEETSPEAK: dict[str, str] = {
     "0": "o",
     "1": "i",

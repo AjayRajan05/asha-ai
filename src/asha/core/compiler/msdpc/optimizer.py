@@ -5,7 +5,7 @@ This is the main entry point that coordinates all MSDPC components.
 """
 
 import time
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Optional
 from dataclasses import dataclass
 
 from .intent_extractor import IntentExtractor, IntentType, IntentExtractionResult
@@ -87,12 +87,15 @@ class MSDPCOptimizer:
             }
         )
 
-    def optimize(self, prompt: str) -> Tuple[str, OptimizationMetrics]:
+    def optimize(
+        self, prompt: str, token_budget: Optional[int] = None
+    ) -> Tuple[str, OptimizationMetrics]:
         """
         Optimize prompt through MSDPC pipeline.
 
         Args:
             prompt: Original prompt to optimize
+            token_budget: Optional token limit to enforce
 
         Returns:
             Tuple of (optimized_prompt, optimization_metrics)
@@ -137,26 +140,37 @@ class MSDPCOptimizer:
 
         # Stage 6: Template Engine (if enabled)
         if self.config["enable_templates"]:
-            components = self._build_template_components(
-                intent_result, current_prompt)
+            components = self._build_template_components(intent_result, current_prompt)
             template_result = self.template_engine.apply_template(
                 intent_result.intent, components
             )
             current_prompt = template_result.templated_prompt
             stages_applied.append("template_engine")
 
+        # Stage 7: Token Budget Enforcement (if token_budget specified)
+        if token_budget is not None and token_budget > 0:
+            current_tokens = self._count_tokens(current_prompt)
+            if current_tokens > token_budget:
+                budget_prune = self.token_pruner.prune(current_prompt, aggressive=True)
+                current_prompt = budget_prune.pruned_text
+                stages_applied.append("budget_pruning")
+                words = current_prompt.split()
+                if len(words) > token_budget:
+                    current_prompt = " ".join(words[:token_budget])
+                    stages_applied.append("budget_truncation")
+
         # Calculate final metrics
         processing_time = (time.time() - start_time) * 1000
         optimized_tokens = self._count_tokens(current_prompt)
+        tokens_saved = original_tokens - optimized_tokens
         token_reduction_percentage = (
-            ((original_tokens - optimized_tokens) / original_tokens * 100)
-            if original_tokens > 0
-            else 0
+            ((tokens_saved) / original_tokens * 100)
+            if original_tokens > 0 and tokens_saved > 0
+            else 0.0
         )
 
         # Calculate quality scores
-        quality_metrics = self.metrics_engine.calculate_metrics(
-            prompt, current_prompt)
+        quality_metrics = self.metrics_engine.calculate_metrics(prompt, current_prompt)
 
         # Check if intent was preserved
         intent_preserved = self._check_intent_preservation(
@@ -201,8 +215,7 @@ class MSDPCOptimizer:
 
         # Add intent-specific components
         if intent_result.intent == IntentType.ANALYZE:
-            components["focus"] = components.get(
-                "focus", "patterns and insights")
+            components["focus"] = components.get("focus", "patterns and insights")
         elif intent_result.intent == IntentType.SUMMARIZE:
             components["style"] = "concise"
         elif intent_result.intent == IntentType.GENERATE:
@@ -275,16 +288,22 @@ class MSDPCOptimizer:
             )
             / total_prompts
         )
-        avg_time = sum(
-            r["metrics"].processing_time_ms
-            for r in results
-            if isinstance(r["metrics"], OptimizationMetrics)
-        ) / total_prompts
-        avg_clarity = sum(
-            r["metrics"].clarity_score
-            for r in results
-            if isinstance(r["metrics"], OptimizationMetrics)
-        ) / total_prompts
+        avg_time = (
+            sum(
+                r["metrics"].processing_time_ms
+                for r in results
+                if isinstance(r["metrics"], OptimizationMetrics)
+            )
+            / total_prompts
+        )
+        avg_clarity = (
+            sum(
+                r["metrics"].clarity_score
+                for r in results
+                if isinstance(r["metrics"], OptimizationMetrics)
+            )
+            / total_prompts
+        )
         avg_structure = (
             sum(
                 r["metrics"].structure_score

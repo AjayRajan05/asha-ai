@@ -7,7 +7,10 @@ import pytest
 from asha.runtime.anchor.adapters.autogen import anchor_autogen, is_autogen_agent
 from asha.runtime.anchor.adapters.generic import anchor_generic
 from asha.runtime.anchor.adapters.langchain import anchor_langchain, is_langchain_agent
-from asha.runtime.anchor.adapters.llamaindex import anchor_llamaindex, is_llamaindex_agent
+from asha.runtime.anchor.adapters.llamaindex import (
+    anchor_llamaindex,
+    is_llamaindex_agent,
+)
 from asha.runtime.anchor.adapters.mcp import anchor_mcp
 from asha.runtime.anchor.adapters.registry import anchor_any
 from asha.runtime.anchor.runtime import AnchorRuntime
@@ -214,7 +217,9 @@ def test_autogen_detection_and_wrapping() -> None:
     assert is_autogen_agent(agent)
     runtime = AnchorRuntime(interactive=False)
     wrapped = anchor_autogen(agent, runtime=runtime)
-    result = wrapped.generate_reply(messages=[{"role": "user", "content": "Analyze locally."}])
+    result = wrapped.generate_reply(
+        messages=[{"role": "user", "content": "Analyze locally."}]
+    )
     assert "data loaded" in str(result)
 
 

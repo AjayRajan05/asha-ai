@@ -35,7 +35,7 @@ EMBEDDING_DIM = 384
 
 TextInput = Union[str, Sequence[str]]
 
-# Process-wide shared SentenceTransformer — reloading MiniLM mid-process can
+# Process-wide shared SentenceTransformer: reloading MiniLM mid-process can
 # native-crash on Windows (ACCESS_VIOLATION); never unload once loaded.
 _shared_st_model: Optional[Any] = None
 _shared_st_name: Optional[str] = None
@@ -66,7 +66,7 @@ class EmbeddingEncoder:
     ) -> None:
         if allow_hash_fallback:
             logger.warning(
-                "allow_hash_fallback is ignored — MiniLM is required. "
+                "allow_hash_fallback is ignored: MiniLM is required. "
                 "Install with: pip install asha[hardened]"
             )
         self.model_name = model_name
@@ -80,11 +80,12 @@ class EmbeddingEncoder:
 
     @property
     def using_fallback(self) -> bool:
-        """Always False — hash fallback removed."""
+        """Always False (hash fallback removed)."""
         return False
 
     def _load_model(self) -> None:
         try:
+            import numpy as np  # noqa: F401 (preload to prevent native thread crashes on Windows)
             self._model = _get_shared_sentence_transformer(self.model_name)
         except Exception as exc:
             raise ImportError(

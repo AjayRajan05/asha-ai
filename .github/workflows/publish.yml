@@ -27,7 +27,7 @@ jobs:
       - name: Install build tools
         run: |
           python -m pip install --upgrade pip
-          pip install build twine pytest
+          pip install build "twine<7.0.0" pytest
           pip install -e ".[dev]"
 
       - name: Pre-flight public surface and contract tests

@@ -63,7 +63,7 @@ class SecurityResult:
 
 class SecurityLayer:
     """
-    Comprehensive Security Layer for ASHA.
+    Core Security Layer for ASHA.
 
     Implements:
     - Prompt injection detection and prevention
@@ -97,7 +97,9 @@ class SecurityLayer:
         self.malicious_patterns = self._init_malicious_patterns()
         self.pii_patterns = self._init_pii_patterns()
         self.privacy_rules = self._init_privacy_rules()
-        self.pii_detector: Optional["PIIDetector"] = None  # lazy init avoids circular import
+        self.pii_detector: Optional["PIIDetector"] = (
+            None  # lazy init avoids circular import
+        )
         self.security_weights = self._init_security_weights()
         self._last_injection_result: Optional[Any] = None
 
@@ -118,10 +120,16 @@ class SecurityLayer:
                 "description": "Jailbreak attempt",
             },
             {
-                "pattern": r"(?i)(system|developer|admin|root)\s+(prompt|instruction|command)",
+                "pattern": r"(?i)(?:(?:^|[\n;:\]])\s*(?:new\s+)?|(?:override|disregard|ignore|bypass|modify|alter)\s+(?:the\s+)?)(system|developer|admin|root)\s+(prompt|instruction|command)\b",
                 "threat": ThreatType.SYSTEM_MANIPULATION,
                 "severity": 0.8,
                 "description": "System role manipulation",
+            },
+            {
+                "pattern": r"(?i)(?:^|[\n;:])\s*(?:new|override|system)\s+(?:instruction|directive|rule|command)s?\s*:",
+                "threat": ThreatType.INJECTION,
+                "severity": 0.9,
+                "description": "Instruction injection marker",
             },
             # Context manipulation
             {
@@ -144,10 +152,10 @@ class SecurityLayer:
                 "description": "Information disclosure attempt",
             },
             {
-                "pattern": r"(?i)(reveal|show|display)\s+(system\s+prompt|initial\s+prompt|original\s+instructions)",
+                "pattern": r"(?i)(reveal|show|display|disclose|dump)\s+(?:all\s+)?(confidential|secret|private|internal|sensitive|system\s+prompt|initial\s+prompt|original\s+instructions)",
                 "threat": ThreatType.DATA_EXFILTRATION,
                 "severity": 0.85,
-                "description": "System prompt disclosure attempt",
+                "description": "System prompt or confidential disclosure attempt",
             },
             # Encoding-based attacks
             {
@@ -399,9 +407,9 @@ class SecurityLayer:
             injection_score, len(pii_entities), malicious_score, context_score
         )
 
-        # Elevate security score if PII is detected
+        # Raise security score if PII is detected
         if len(pii_entities) > 0:
-            # More aggressive PII risk elevation
+            # More aggressive PII risk scaling
             if len(pii_entities) >= 3:
                 security_score = max(
                     security_score, 0.7
@@ -415,8 +423,7 @@ class SecurityLayer:
                 security_score = max(security_score, 0.4)
 
         # Step 6: Determine threat level
-        threat_level = self._determine_threat_level(
-            security_score, detected_threats)
+        threat_level = self._determine_threat_level(security_score, detected_threats)
 
         # Step 7: Generate recommendations
         recommendations = self._generate_recommendations(
@@ -460,7 +467,9 @@ class SecurityLayer:
         detected_threats: List[ThreatType] = []
         if result.verdict is Verdict.BLOCK:
             detected_threats.append(ThreatType.INJECTION)
-            # Preserve legacy threat subtypes when regex also fired.
+            from asha.core.text.canonicalize import canonicalize
+            canon = canonicalize(content)
+            views = (content, canon) if canon != content else (content,)
             for pattern_info in self.injection_patterns:
                 pattern = pattern_info.get("pattern")
                 threat = pattern_info.get("threat")
@@ -468,16 +477,18 @@ class SecurityLayer:
                     isinstance(pattern, str)
                     and isinstance(threat, ThreatType)
                     and threat is not ThreatType.INJECTION
-                    and re.search(pattern, content)
                 ):
-                    if threat not in detected_threats:
-                        detected_threats.append(threat)
+                    for v in views:
+                        if re.search(pattern, v, re.IGNORECASE):
+                            if threat not in detected_threats:
+                                detected_threats.append(threat)
+                            break
             return float(result.probability), detected_threats
 
         if result.verdict is Verdict.REVIEW:
             # Fail-closed for BLOCK; REVIEW adds a threat only with corroboration
             # (regex hit or probability at/above block_min), not solely because
-            # security_level is HIGH — that broke preserve_intent on benign text.
+            # security_level is HIGH (that broke preserve_intent on benign text).
             try:
                 from asha.core.ml.calibration import get_bands, load_thresholds
 
@@ -492,10 +503,7 @@ class SecurityLayer:
             block_min = bands.block_min if bands is not None else 0.85
             # Near-block REVIEW scores or regex corroboration become threats;
             # mid-band REVIEW alone stays non-blocking (preserve_intent-safe).
-            escalate = (
-                result.regex_hit
-                or result.probability >= block_min * 0.95
-            )
+            escalate = result.regex_hit or result.probability >= block_min * 0.95
             if escalate:
                 detected_threats.append(ThreatType.INJECTION)
             return float(result.probability), detected_threats
@@ -512,16 +520,14 @@ class SecurityLayer:
 
     def _mask_pii(self, content: str) -> Tuple[str, Dict[str, Any]]:
         """Detect and mask PII in content based on security level."""
-        # Use the enhanced PII detector for comprehensive detection
+        # Use the enhanced PII detector for detailed detection
         pii_detector = self._get_pii_detector()
         sanitized, detected_entities = pii_detector.mask_with_details(content)
 
         # Apply context filtering only in LOW security mode.
         # Privacy-first default: always mask detected PII at MEDIUM and above.
         if self.security_level == SecurityLevel.LOW:
-            filtered_entities = self._filter_pii_by_context(
-                content, detected_entities
-            )
+            filtered_entities = self._filter_pii_by_context(content, detected_entities)
         else:
             filtered_entities = detected_entities
 
@@ -611,10 +617,8 @@ class SecurityLayer:
 
         # Check content context
         content_lower = content.lower()
-        is_business_context = any(
-            ctx in content_lower for ctx in business_contexts)
-        has_risk_indicators = any(
-            risk in content_lower for risk in risk_indicators)
+        is_business_context = any(ctx in content_lower for ctx in business_contexts)
+        has_risk_indicators = any(risk in content_lower for risk in risk_indicators)
 
         filtered_entities: Dict[str, List[str]] = {}
         for pii_type, entities in detected_entities.items():
@@ -653,6 +657,10 @@ class SecurityLayer:
         max_severity = 0.0
         detected_threats = []
 
+        from asha.core.text.canonicalize import canonicalize
+        canon = canonicalize(content)
+        views = (content, canon) if canon != content else (content,)
+
         for pattern_info in self.malicious_patterns:
             pattern = pattern_info.get("pattern")
             severity = float(pattern_info.get("severity", 0.5))
@@ -661,9 +669,12 @@ class SecurityLayer:
             if not isinstance(pattern, str) or not isinstance(threat, ThreatType):
                 continue
 
-            if re.search(pattern, content):
-                max_severity = max(max_severity, severity)
-                detected_threats.append(threat)
+            for v in views:
+                if re.search(pattern, v, re.IGNORECASE):
+                    max_severity = max(max_severity, severity)
+                    if threat not in detected_threats:
+                        detected_threats.append(threat)
+                    break
 
         return max_severity, detected_threats
 
@@ -692,8 +703,7 @@ class SecurityLayer:
 
         # Check for system manipulation attempts
         system_patterns = [
-            r"(?i)system\s+prompt",
-            r"(?i)initial\s+instructions",
+            r"(?i)(?:override|reveal|show|ignore|bypass|leak|dump)\s+.*?(?:system\s+prompt|initial\s+instructions)",
             r"(?i)developer\s+mode",
         ]
 
@@ -750,8 +760,7 @@ class SecurityLayer:
             recommendations.append(
                 "Prompt injection detected - review and revise input"
             )
-            recommendations.append(
-                "Consider implementing stricter input validation")
+            recommendations.append("Consider implementing stricter input validation")
 
         if ThreatType.PII_LEAKAGE in detected_threats:
             recommendations.append(
@@ -760,8 +769,7 @@ class SecurityLayer:
             recommendations.append("Consider additional privacy controls")
 
         if ThreatType.MALICIOUS_CONTENT in detected_threats:
-            recommendations.append(
-                "Malicious content detected - content blocked")
+            recommendations.append("Malicious content detected - content blocked")
             recommendations.append("Review content policy and user guidelines")
 
         if ThreatType.SYSTEM_MANIPULATION in detected_threats:
@@ -770,16 +778,13 @@ class SecurityLayer:
 
         # Score-based recommendations
         if security_score >= 0.7:
-            recommendations.append(
-                "High security risk - immediate attention required")
+            recommendations.append("High security risk - immediate attention required")
         elif security_score >= 0.4:
-            recommendations.append(
-                "Moderate security risk - review recommended")
+            recommendations.append("Moderate security risk - review recommended")
 
         # General recommendations
         if not recommendations:
-            recommendations.append(
-                "Content appears safe - continue processing")
+            recommendations.append("Content appears safe - continue processing")
 
         return recommendations
 
@@ -796,6 +801,7 @@ class SecurityLayer:
             ThreatType.INJECTION,
             ThreatType.MALICIOUS_CONTENT,
             ThreatType.SYSTEM_MANIPULATION,
+            ThreatType.DATA_EXFILTRATION,
         ]
 
         for threat in blocking_threats:
@@ -831,14 +837,13 @@ class SecurityLayer:
             (r"(?i)(alter\s+table)", "[SQL_COMMAND_REMOVED]"),
             (r"(?i)(union\s+select)", "[SQL_COMMAND_REMOVED]"),
             (r"(?i)(select\s+.*\s+from)", "[SQL_COMMAND_REMOVED]"),
-            # Prompt injection — keep aligned with injection_detector patterns
-            # and tolerate multi-space obfuscation ("ignore   all   previous…").
+            # Prompt injection: keep aligned with injection_detector patterns
+            # and tolerate multi-space obfuscation ("ignore   all   previous...").
             (
                 r"(?i)(ignore|forget|disregard)\s+((?:all|any|the)\s+)?(previous|all|above|earlier|prior)\s+(instructions|prompts|commands|directives)",
                 "[INSTRUCTION_IGNORED]",
             ),
-            (r"(?i)(forget\s+(everything|all|previous))",
-             "[INSTRUCTION_IGNORED]"),
+            (r"(?i)(forget\s+(everything|all|previous))", "[INSTRUCTION_IGNORED]"),
             (
                 r"(?i)(disregard\s+(all|previous|above)\s+instructions)",
                 "[INSTRUCTION_IGNORED]",
@@ -868,8 +873,7 @@ class SecurityLayer:
             (r"(?i)(ignore\s+the\s+above)", "[INSTRUCTION_IGNORED]"),
             (r"(?i)(new\s+context)", "[CONTEXT_BLOCKED]"),
             (r"(?i)(context\s+switch)", "[CONTEXT_BLOCKED]"),
-            (r"(?i)(begin\s+new\s+conversation)",
-             "[CONVERSATION_RESET_BLOCKED]"),
+            (r"(?i)(begin\s+new\s+conversation)", "[CONVERSATION_RESET_BLOCKED]"),
             (r"(?i)(start\s+over)", "[CONVERSATION_RESET_BLOCKED]"),
             (r"(?i)(reset\s+chat)", "[CONVERSATION_RESET_BLOCKED]"),
         ]
@@ -903,12 +907,10 @@ class SecurityLayer:
             "privacy": {
                 "entities_masked": len(result.masked_entities),
                 "entity_types": list(
-                    set(info["type"]
-                        for info in result.masked_entities.values())
+                    set(info["type"] for info in result.masked_entities.values())
                 ),
                 "masking_effectiveness": (
-                    "high" if len(
-                        result.masked_entities) > 0 else "none_needed"
+                    "high" if len(result.masked_entities) > 0 else "none_needed"
                 ),
             },
             "recommendations": result.recommendations,
@@ -926,8 +928,7 @@ class SecurityLayer:
         # Adjust sensitivity based on level
         if new_level == SecurityLevel.LOW:
             # Reduce sensitivity for non-critical applications
-            self.pii_patterns = [
-                p for p in self.pii_patterns if p["severity"] >= 0.7]
+            self.pii_patterns = [p for p in self.pii_patterns if p["severity"] >= 0.7]
         elif new_level == SecurityLevel.CRITICAL:
             # Increase sensitivity for critical applications
             # Add more strict patterns (would implement in production)

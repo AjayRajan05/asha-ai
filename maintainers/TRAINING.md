@@ -1,4 +1,4 @@
-# Training hardened detection models (`asha-ai[hardened]`)
+# Training hardened detection models (`asha-si[hardened]`)
 
 This is the **real** training path for versioned classical ML/DL detectors.
 It is **not** the same as `scripts/bootstrap_models.py`, which only writes synthetic
@@ -56,7 +56,7 @@ python chain_guard/build_transition_model.py
 Then **supplement** with public jailbreaks / scrubbed agent logs / red-team paraphrases
 under repo-root `data/` (same layout). Do not replace the synthetic set entirely.
 
-### Recommended quality loop (local `data/` — never commit)
+### Recommended quality loop (local `data/`, never commit)
 
 ```bash
 pip install faker
@@ -84,9 +84,9 @@ python training/train_hardened.py --pack --install-cache
 
 Useful flags:
 
-- `--skip-embedding` — skip MiniLM steps (injection/memory full trainers); still trains lite/chain/mission/intent/alignment
-- `--pack` — write `dist/asha-models-0.4.2.zip`
-- `--install-cache` — replace user cache so runtime loaders pick up new weights without download
+- `--skip-embedding`: skip MiniLM steps (injection/memory full trainers); still trains lite/chain/mission/intent/alignment
+- `--pack`: write `dist/asha-models-0.4.2.zip`
+- `--install-cache`: replace user cache so runtime loaders pick up new weights without download
 
 Single-module:
 

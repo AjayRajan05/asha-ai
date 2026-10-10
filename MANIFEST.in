@@ -4,8 +4,31 @@ include CHANGELOG.md
 include pyproject.toml
 recursive-include src/asha *.py
 recursive-include src/asha *.pyi
+recursive-include src/asha *.typed
 global-exclude *.pyc
 global-exclude __pycache__
 global-exclude .git*
 global-exclude .coverage
 global-exclude .pytest_cache
+global-exclude *.joblib
+
+# Never ship training corpora, raw datasets, or model weights
+prune data/
+prune models/
+prune training/
+prune asha_training_data_generators/
+prune jailbreak_llms/
+prune dist/asha-models-*
+
+# Never ship secrets or dev scratch files
+exclude .env
+exclude .env.*
+exclude .pypi_token
+exclude .pypi_token.*
+exclude .pypi_token.README.txt
+exclude mypy_failures.txt
+exclude pytest_failures.txt
+exclude build_asha_dataset.py
+exclude build_best_dataset.py
+exclude improve_data_quality.py
+exclude llm_augment.py

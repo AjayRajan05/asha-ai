@@ -38,7 +38,9 @@ def cache_path(name: str = "models.json") -> Path:
     return path / name
 
 
-def load_cache(name: str = "models.json", ttl: int = CACHE_TTL_SECONDS) -> Optional[list[dict[str, Any]]]:
+def load_cache(
+    name: str = "models.json", ttl: int = CACHE_TTL_SECONDS
+) -> Optional[list[dict[str, Any]]]:
     path = cache_path(name)
     if not path.exists():
         return None

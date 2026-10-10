@@ -27,7 +27,7 @@ from views import architecture, benchmarks, documents, live_llm  # noqa: E402
 from views import overview, playground, rogue, security, story  # noqa: E402
 
 st.set_page_config(
-    page_title="ASHA — AI Security Layer",
+    page_title="ASHA: AI Security Layer",
     page_icon="A",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -101,7 +101,7 @@ def _sidebar() -> str:
         st.markdown("---")
         st.caption("Developer preview v0.4.2")
         st.caption("Backend: process · sanitize · Agent · ANCHOR · wrap_llm")
-        st.caption("Keys stay in `.env` — never paste into chat.")
+        st.caption("Keys stay in `.env` (never paste into chat).")
     return st.session_state["nav"]
 
 

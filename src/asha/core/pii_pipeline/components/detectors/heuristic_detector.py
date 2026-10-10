@@ -28,14 +28,10 @@ class HeuristicDetector:
                 re.compile(r"\b[A-Z][a-z]+\s+[A-Z][a-z]+\b"),  # First Last
                 # First M. Last
                 re.compile(r"\b[A-Z][a-z]+\s+[A-Z]\.\s+[A-Z][a-z]+\b"),
-                re.compile(r"\bMr\.?\s+[A-Z][a-z]+\b",
-                           re.IGNORECASE),  # Mr. First
-                re.compile(r"\bMs\.?\s+[A-Z][a-z]+\b",
-                           re.IGNORECASE),  # Ms. First
-                re.compile(r"\bDr\.?\s+[A-Z][a-z]+\b",
-                           re.IGNORECASE),  # Dr. First
-                re.compile(r"\bProf\.?\s+[A-Z][a-z]+\b",
-                           re.IGNORECASE),  # Prof. First
+                re.compile(r"\bMr\.?\s+[A-Z][a-z]+\b", re.IGNORECASE),  # Mr. First
+                re.compile(r"\bMs\.?\s+[A-Z][a-z]+\b", re.IGNORECASE),  # Ms. First
+                re.compile(r"\bDr\.?\s+[A-Z][a-z]+\b", re.IGNORECASE),  # Dr. First
+                re.compile(r"\bProf\.?\s+[A-Z][a-z]+\b", re.IGNORECASE),  # Prof. First
             ],
             "address": [
                 # Address patterns
@@ -160,8 +156,7 @@ class HeuristicDetector:
                         end=match.end(),
                         pii_type=pii_type,
                         confidence=self.confidence_weights.get(pii_type, 0.6),
-                        context=self._get_context(
-                            text, match.start(), match.end()),
+                        context=self._get_context(text, match.start(), match.end()),
                         metadata={
                             "detector": "heuristic",
                             "pattern": pattern.pattern,
@@ -213,8 +208,7 @@ class HeuristicDetector:
 
             # Check surrounding context for name indicators
             context = self._get_context(full_text, start, end, 30).lower()
-            name_indicators = ["name", "called",
-                               "known as", "my name is", "i am"]
+            name_indicators = ["name", "called", "known as", "my name is", "i am"]
 
             # Higher confidence if name indicators are nearby
             if any(indicator in context for indicator in name_indicators):
@@ -257,8 +251,7 @@ class HeuristicDetector:
         # Check if it's likely a birth date (not just any date)
         context = self._get_context(full_text, start, end, 30).lower()
 
-        birth_indicators = ["born", "birth",
-                            "birthday", "age", "dob", "date of birth"]
+        birth_indicators = ["born", "birth", "birthday", "age", "dob", "date of birth"]
         if any(indicator in context for indicator in birth_indicators):
             return True
 

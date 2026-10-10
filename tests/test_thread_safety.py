@@ -57,8 +57,7 @@ def test_security_layer_instances_thread_local():
         results.append(email not in out.sanitized_content)
 
     threads = [
-        threading.Thread(target=worker, args=(f"user{i}@test.com",))
-        for i in range(5)
+        threading.Thread(target=worker, args=(f"user{i}@test.com",)) for i in range(5)
     ]
     for t in threads:
         t.start()
