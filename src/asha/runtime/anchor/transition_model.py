@@ -32,6 +32,47 @@ from asha.core.ml.calibration import (
 # Default smoothing for unseen transitions (aligned with generator script).
 _DEFAULT_SMOOTHING = 1e-4
 
+# Canonical category transition matrix trained from benign workflows.
+# Used when models/chain_guard/transition_matrix.json has not been downloaded
+# (e.g. offline environments, CI runners, or bare installations).
+_DEFAULT_CATEGORY_TRANSITIONS: Dict[str, Dict[str, float]] = {
+    "read": {
+        "read": 0.51015873,
+        "analyze": 0.24761905,
+        "write": 0.19365079,
+        "verify": 0.02857143,
+        "network_egress": 0.02,
+    },
+    "analyze": {
+        "write": 0.34920635,
+        "network_egress": 0.49206349,
+        "analyze": 0.07936508,
+        "verify": 0.01587302,
+        "read": 0.06349206,
+    },
+    "write": {
+        "analyze": 0.0754717,
+        "verify": 0.70754717,
+        "network_egress": 0.0754717,
+        "write": 0.12264151,
+        "read": 0.01886792,
+    },
+    "network_egress": {
+        "analyze": 0.34693878,
+        "write": 0.18367347,
+        "read": 0.18367347,
+        "network_egress": 0.26530612,
+        "verify": 0.02040816,
+    },
+    "verify": {
+        "write": 0.32075472,
+        "network_egress": 0.1509434,
+        "analyze": 0.26415094,
+        "read": 0.20754717,
+        "verify": 0.05660377,
+    },
+}
+
 
 def _normalize_category_matrix(
     matrix: Mapping[str, Mapping[str, float]],
@@ -151,8 +192,9 @@ def get_transition_model(*, reset: bool = False) -> TransitionModel:
             if path.is_file():
                 _model_singleton = TransitionModel.from_json(path)
                 return _model_singleton
-        # Empty matrix → every transition uses smoothing (fail-closed rarity).
-        _model_singleton = TransitionModel({})
+        # Builtin fallback: canonical category transitions so offline/bare
+        # environments maintain calibrated benign paths.
+        _model_singleton = TransitionModel(_DEFAULT_CATEGORY_TRANSITIONS)
         return _model_singleton
 
 

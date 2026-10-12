@@ -197,21 +197,16 @@ class PoisoningClassifier:
         # stubs like "done" / "loaded"). Blend with the lite hashed model so
         # BLOCK requires agreement; keyword fast-path above still wins.
         stripped = (text or "").strip()
-        # Include typical str(dict) agent step payloads (~100-200 chars).
         if len(stripped) < 256:
             try:
-                from .memory_guard_lite import (
-                    LitePoisoningClassifier,
-                    lite_artifact_available,
-                )
+                from .memory_guard_lite import LitePoisoningClassifier
 
-                if lite_artifact_available():
-                    lite_p = (
-                        LitePoisoningClassifier(poison_keywords=self.poison_keywords)
-                        .score(stripped)
-                        .probability
-                    )
-                    probability = min(probability, float(lite_p))
+                lite_p = (
+                    LitePoisoningClassifier(poison_keywords=self.poison_keywords)
+                    .score(stripped)
+                    .probability
+                )
+                probability = min(probability, float(lite_p))
             except Exception:
                 pass
         bands = _poisoning_bands()

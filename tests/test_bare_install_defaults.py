@@ -116,7 +116,13 @@ def test_bare_install_process_sanitize_succeed_with_blocked_heavy_deps(
 
 def test_zero_dependency_core_pyproject_guarantee():
     """Verify core dependencies are strictly lightweight (Pydantic, Tiktoken, Requests, Click, PyPDF, python-docx)."""
-    import tomllib
+    try:
+        import tomllib
+    except ModuleNotFoundError:
+        try:
+            import tomli as tomllib  # type: ignore[no-redef]
+        except ModuleNotFoundError:
+            pytest.skip("tomllib (Python 3.11+) or tomli is required to parse pyproject.toml")
     from pathlib import Path
 
     pyproject_path = Path(__file__).resolve().parents[1] / "pyproject.toml"
