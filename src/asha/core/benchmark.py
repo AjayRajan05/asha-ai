@@ -683,14 +683,21 @@ def check_prompt_structure(original: str, optimized: str) -> bool:
     """Verify structured prompts (JSON) still parse after optimization."""
     import json
 
-    for text in (original, optimized):
-        stripped = text.strip()
-        if stripped.startswith("{") or stripped.startswith("["):
-            try:
-                json.loads(stripped)
-            except json.JSONDecodeError:
-                return False
-    return True
+    orig_stripped = (original or "").strip()
+    if not (orig_stripped.startswith("{") or orig_stripped.startswith("[")):
+        return True
+
+    try:
+        json.loads(orig_stripped)
+    except json.JSONDecodeError:
+        return True
+
+    opt_stripped = (optimized or "").strip()
+    try:
+        json.loads(opt_stripped)
+        return True
+    except json.JSONDecodeError:
+        return False
 
 
 # CLI interface for easy benchmarking
