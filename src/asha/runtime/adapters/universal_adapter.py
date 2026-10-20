@@ -131,8 +131,9 @@ class UniversalModelAdapter(BaseAdapter):
         if not key:
             raise ValueError("Google API key not found")
         try:
-            from google import genai
+            import importlib
 
+            genai = importlib.import_module("google.genai")
             return genai.Client(api_key=key)
         except ImportError:
             pass

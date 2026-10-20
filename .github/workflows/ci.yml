@@ -60,7 +60,7 @@ jobs:
 
     - name: Run slow tests
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-      run: pytest tests/test_performance.py -m slow -v
+      run: pytest tests/performance/test_scalability.py -m slow -v
 
     - name: Run benchmark smoke test
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
@@ -173,14 +173,7 @@ jobs:
 
     - name: Framework integration smoke tests
       run: |
-        pytest \
-          tests/test_framework_smoke.py \
-          tests/test_fastapi_integration.py \
-          tests/test_django_integration.py \
-          tests/test_langchain_integration.py \
-          tests/test_llamaindex_integration.py \
-          tests/test_instructor_integration.py \
-          -q --tb=short
+        pytest tests/integration/test_framework_integrations.py -q --tb=short
       env:
         ASHA_DISABLE_ML: "1"
         ASHA_ANCHOR_INTERACTIVE: "0"

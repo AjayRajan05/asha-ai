@@ -457,6 +457,21 @@ class ContentSafetyAnalyzer:
                 "confidence": 0.9,
                 "description": "Code execution patterns",
             },
+            {
+                "pattern": r"(?i)(ignore|forget|disregard)\s+((?:all|any|the)\s+)?(previous|all|above|earlier|prior)\s+(instructions|prompts|commands|directives)",
+                "confidence": 0.95,
+                "description": "Direct instruction override attempt",
+            },
+            {
+                "pattern": r"(?i)\bsystem\s+override\b",
+                "confidence": 0.95,
+                "description": "System override attempt",
+            },
+            {
+                "pattern": r"(?i)(disable|bypass|override)\s+(safety|security|filters|guardrails)\b",
+                "confidence": 0.95,
+                "description": "Safety disable attempt",
+            },
         ]
 
     def analyze_content_safety(self, text: str) -> List[SafetyThreat]:

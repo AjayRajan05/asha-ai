@@ -89,8 +89,9 @@ class GeminiAdapter(BaseAdapter):
     def _init_client(self) -> Any:
         """Initialize modern google-genai client or fallback to google.generativeai."""
         try:
-            from google import genai
+            import importlib
 
+            genai = importlib.import_module("google.genai")
             client = genai.Client(api_key=self.api_key)
             self._is_genai_sdk = True
             return client

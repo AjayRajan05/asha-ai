@@ -408,8 +408,12 @@ def _builtin_regex_bank() -> List[Dict[str, Any]]:
             "description": "Jailbreak attempt",
         },
         {
-            "pattern": r"(?i)(bypass|override|circumvent)\s+(security|restrictions|limitations|filters)",
+            "pattern": r"(?i)(bypass|override|circumvent|disable)\s+(security|restrictions|limitations|filters|safety)",
             "description": "Security bypass attempt",
+        },
+        {
+            "pattern": r"(?i)\bsystem\s+override\b",
+            "description": "System override attempt",
         },
         {
             "pattern": r"(?i)(drop\s+table|union\s+select|;\s*delete)",

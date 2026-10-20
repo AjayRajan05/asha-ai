@@ -137,6 +137,18 @@ class SecurityLayer:
                 "severity": 0.9,
                 "description": "Instruction injection marker",
             },
+            {
+                "pattern": r"(?i)\bsystem\s+override\b",
+                "threat": ThreatType.INJECTION,
+                "severity": 0.95,
+                "description": "System override attempt",
+            },
+            {
+                "pattern": r"(?i)(disable|bypass|override)\s+(safety|security|filters|guardrails)\b",
+                "threat": ThreatType.INJECTION,
+                "severity": 0.95,
+                "description": "Safety disable attempt",
+            },
             # Context manipulation
             {
                 "pattern": r"(?i)(new\s+context|context\s+switch|change\s+context)",

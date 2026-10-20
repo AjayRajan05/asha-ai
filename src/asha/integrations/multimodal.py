@@ -128,7 +128,7 @@ def _ocr_base64_image(b64_data: str) -> Optional[str]:
     """Perform OCR on base64 image data if Pillow and pytesseract are available."""
     try:
         from PIL import Image
-        import pytesseract  # type: ignore
+        import pytesseract
 
         image_bytes = base64.b64decode(b64_data)
         img = Image.open(io.BytesIO(image_bytes))
