@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "privysha"
+version = "0.4.2"
+description = "Transitional package: privysha has been renamed to asha-si."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Ajay Rajan A", email = "ajayrajan727@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 7 - Inactive",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+dependencies = [
+    "asha-si>=0.4.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/AjayRajan05/asha-si"
+Repository = "https://github.com/AjayRajan05/asha-si"
+Documentation = "https://ajayrajan05.github.io/asha-si/"
+
+[tool.setuptools.packages.find]
+where = ["src"]
