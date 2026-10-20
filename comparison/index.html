@@ -1,0 +1,1816 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Mission-aware agent governance (ANCHOR) plus LLM security and optimization (v0.4.2 developer preview)">
+      
+      
+      
+        <link rel="canonical" href="https://ajayrajan05.github.io/asha-si/comparison/">
+      
+      
+        <link rel="prev" href="../security/">
+      
+      
+        <link rel="next" href="../architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Competitor Comparisons - ASHA</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architectural-comparison-asha-si-vs-presidio-llm-guard-and-nemo-guardrails" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ASHA" class="md-header__button md-logo" aria-label="ASHA" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ASHA
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Competitor Comparisons
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/AjayRajan05/asha-si" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AjayRajan05/asha-si
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../integrations/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Provider Coverage
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../security/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Security & Threat Model
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Competitor Comparisons
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture & Optimization
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../anchor/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Agent Governance (ANCHOR)
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../api-reference/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting & FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../production-readiness/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Production Readiness & Roadmap
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../contributing/" class="md-tabs__link">
+          
+  
+  
+  Contributing & Support
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ASHA" class="md-nav__button md-logo" aria-label="ASHA" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ASHA
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/AjayRajan05/asha-si" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AjayRajan05/asha-si
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security & Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competitor Comparisons
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competitor Comparisons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-feature-comparison-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed Feature Comparison Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-results-benchmark-empirical-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Results &amp; Benchmark Empirical Evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Results &amp; Benchmark Empirical Evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-latency-resource-utilization-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Latency &amp; Resource Utilization Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-autonomous-agent-security-safety-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Autonomous Agent Security &amp; Safety Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asha-sis-unique-architectural-strengths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASHA-SI's Unique Architectural Strengths
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ASHA-SI&#39;s Unique Architectural Strengths">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-unified-triad-prompt-scrubbing-token-compression-agent-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Unified Triad: Prompt Scrubbing + Token Compression + Agent Governance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-zero-dependency-core-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Zero-Dependency Core Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-non-mutating-transparent-proxying-securellm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Non-Mutating Transparent Proxying (SecureLLM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-automatic-session-rehydration-piivault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Automatic Session Rehydration (PIIVault)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-si-ready-agent-alignment-anchor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SI-Ready Agent Alignment (anchor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-choose-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Choose What
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-methodology-reproducibility-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Methodology &amp; Reproducibility Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benchmark Methodology &amp; Reproducibility Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evaluated-competitor-versions-ecosystem-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluated Competitor Versions &amp; Ecosystem Metadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-test-environment-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Test Environment &amp; Protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commands-to-reproduce-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands to Reproduce Locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-evaluation-boundaries-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Evaluation Boundaries &amp; Limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anchor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Governance (ANCHOR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting & FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness & Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing & Support
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing & Support
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-of-conduct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code of Conduct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-feature-comparison-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed Feature Comparison Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-results-benchmark-empirical-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Results &amp; Benchmark Empirical Evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Results &amp; Benchmark Empirical Evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-latency-resource-utilization-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Latency &amp; Resource Utilization Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-autonomous-agent-security-safety-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Autonomous Agent Security &amp; Safety Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asha-sis-unique-architectural-strengths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASHA-SI's Unique Architectural Strengths
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ASHA-SI&#39;s Unique Architectural Strengths">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-unified-triad-prompt-scrubbing-token-compression-agent-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Unified Triad: Prompt Scrubbing + Token Compression + Agent Governance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-zero-dependency-core-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Zero-Dependency Core Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-non-mutating-transparent-proxying-securellm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Non-Mutating Transparent Proxying (SecureLLM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-automatic-session-rehydration-piivault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Automatic Session Rehydration (PIIVault)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-si-ready-agent-alignment-anchor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SI-Ready Agent Alignment (anchor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-choose-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Choose What
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-methodology-reproducibility-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Methodology &amp; Reproducibility Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benchmark Methodology &amp; Reproducibility Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evaluated-competitor-versions-ecosystem-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluated Competitor Versions &amp; Ecosystem Metadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-test-environment-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Test Environment &amp; Protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commands-to-reproduce-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands to Reproduce Locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-evaluation-boundaries-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Evaluation Boundaries &amp; Limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/AjayRajan05/asha-si/edit/master/docs/comparison.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="architectural-comparison-asha-si-vs-presidio-llm-guard-and-nemo-guardrails">Architectural Comparison: ASHA-SI vs. Presidio, LLM Guard, and NeMo Guardrails<a class="headerlink" href="#architectural-comparison-asha-si-vs-presidio-llm-guard-and-nemo-guardrails" title="Permanent link">&para;</a></h1>
+<p>A technical and empirical comparison of <strong>ASHA-SI</strong> against other security and governance frameworks in the LLM ecosystem: <strong>Microsoft Presidio</strong>, <strong>Protect AI LLM Guard</strong>, and <strong>NVIDIA NeMo Guardrails</strong>.</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Primary Architecture</th>
+<th>Core Strength</th>
+<th>Key Limitation</th>
+<th>Best Fit For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ASHA-SI</strong></td>
+<td><strong>Core architecture</strong>: Zero-dependency prompt sanitization, honest token optimization, and autonomous agent governance (ANCHOR Runtime)</td>
+<td>Single-line transparent client proxying (<code>SecureLLM</code>), reversible PII vaulting, strict agent tool authorization, zero-dependency core (~5-20 ms latency)</td>
+<td>Developer preview (v0.4.2); pre-1.0 API stability</td>
+<td><strong>Autonomous SI agents, multi-provider LLM applications, enterprise PII protection, low-latency production pipelines</strong></td>
+</tr>
+<tr>
+<td><strong>Microsoft Presidio</strong></td>
+<td>Standalone data anonymization pipeline</td>
+<td>Mature PII regex and NER pattern library for static document redaction</td>
+<td>No agent governance, no prompt injection defense, no token optimization, heavy NLP/spaCy runtime dependencies</td>
+<td>Static data compliance, offline dataset anonymization</td>
+</tr>
+<tr>
+<td><strong>Protect AI LLM Guard</strong></td>
+<td>Input/output classifier scanners</td>
+<td>Broad library of ML-based vulnerability classifiers (toxicity, injection, hallucinations)</td>
+<td>Heavy PyTorch/transformers dependencies, high latency overhead (100-1000+ ms), no agent tool authorization or session state</td>
+<td>Security red-teaming, non-latency-critical gate validation</td>
+</tr>
+<tr>
+<td><strong>NVIDIA NeMo Guardrails</strong></td>
+<td>Programmable Colang dialog rails</td>
+<td>Flexible semantic rails and dialog control flows</td>
+<td>Relies heavily on secondary LLM calls ("LLM-as-a-judge"), resulting in high token costs, 1-3+ second latency, and complex ColangDSL configuration</td>
+<td>Conversational chatbots with strict topic boundaries</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="detailed-feature-comparison-matrix">Detailed Feature Comparison Matrix<a class="headerlink" href="#detailed-feature-comparison-matrix" title="Permanent link">&para;</a></h2>
+<p>The table below contrasts architectural capabilities, operational footprint, and runtime guarantees across all four systems:</p>
+<table>
+<thead>
+<tr>
+<th>Capability Dimension</th>
+<th>ASHA-SI (v0.4.2)</th>
+<th>Microsoft Presidio</th>
+<th>Protect AI LLM Guard</th>
+<th>NVIDIA NeMo Guardrails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Core Dependency Footprint</strong></td>
+<td><strong>Zero required heavy ML deps</strong> (Standard library + Pydantic, Tiktoken, Requests, Click, PyPDF, python-docx)</td>
+<td>Heavy (spaCy, Stanza, or HuggingFace NER models required)</td>
+<td>Heavy (PyTorch, transformers, sentence-transformers)</td>
+<td>Medium-Heavy (LangChain, sentence-transformers, FastEmbed)</td>
+</tr>
+<tr>
+<td><strong>Latency Overhead</strong></td>
+<td><strong>~5 - 25 ms</strong> (Lite / Balanced mode on standard CPU)</td>
+<td>~50-200 ms (depends on spaCy/transformers pipeline)</td>
+<td>~150-1,200 ms (evaluating multiple neural scanners)</td>
+<td>~800-3,500 ms (dominated by secondary LLM inference)</td>
+</tr>
+<tr>
+<td><strong>Autonomous Agent Governance</strong></td>
+<td><strong>Native ANCHOR Runtime</strong>: Immutable mission contracts, state transition matrices, capability gating (<code>ALLOW</code> / <code>WARN</code> / <code>BLOCK</code> / <code>REVIEW</code>)</td>
+<td>None</td>
+<td>None</td>
+<td>Partial (programmable dialog actions, but no formal mission contract or drift scoring)</td>
+</tr>
+<tr>
+<td><strong>Agent Tool Authorization</strong></td>
+<td><strong>Strict runtime gating</strong>: Normalizes tool names and arguments, blocks exfiltration tools, detects tool sequence anomalies</td>
+<td>None</td>
+<td>None</td>
+<td>Colang action scripts (manual flow definitions)</td>
+</tr>
+<tr>
+<td><strong>Memory Poisoning Defense</strong></td>
+<td><strong>Built-in Lite/Hardened MemoryGuard</strong>: Detects stealth memory injections and centroid drift in agent scratchpads</td>
+<td>None</td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Indirect RAG Injection Defense</strong></td>
+<td><strong>Dedicated RAG scanner (<code>scan_rag_context</code>)</strong>: Sanitizes retrieved chunks before injection into context window</td>
+<td>None</td>
+<td>Separate scanner (<code>Anonymize</code> / <code>PromptInjection</code>)</td>
+<td>Input rails checking retrieved context</td>
+</tr>
+<tr>
+<td><strong>Unicode &amp; Confusables Defense</strong></td>
+<td><strong>Canonicalizes zero-width spaces, homoglyphs, and Cyrillic confusables</strong> before rule matching</td>
+<td>Partial (standard regex)</td>
+<td>Basic Unicode normalization</td>
+<td>Partial (embedding-based matching)</td>
+</tr>
+<tr>
+<td><strong>Reversible PII Masking</strong></td>
+<td><strong>Native <code>PIIVault</code></strong>: Restores original values in returned LLM responses (<code>rehydrate_pii=True</code>)</td>
+<td>Manual mapping storage required; no SDK-level rehydration</td>
+<td>Tokenizer vault (manual integration required)</td>
+<td>None (typically replaces with generic placeholders)</td>
+</tr>
+<tr>
+<td><strong>Multi-Provider Client Proxy</strong></td>
+<td><strong><code>SecureLLM</code></strong>: Transparent, non-mutating proxy for OpenAI, Anthropic, Gemini, Ollama, HuggingFace, and llama.cpp</td>
+<td>None</td>
+<td>None</td>
+<td>Wrapper for LangChain LLM instances</td>
+</tr>
+<tr>
+<td><strong>Token Optimization</strong></td>
+<td><strong>Built-in <code>optimize()</code></strong>: Template compilation, token pruning, budget enforcement with guaranteed semantic floors</td>
+<td>None</td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Custom Enterprise Scanners</strong></td>
+<td><strong>Plugin system (<code>register_scanner</code>)</strong>: Register custom regex or algorithmic scanners with automatic vault tracking</td>
+<td>Custom recognizers (requires inheriting from Presidio Recognizer class)</td>
+<td>Custom scanner classes</td>
+<td>Custom Python actions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="test-results-benchmark-empirical-evidence">Test Results &amp; Benchmark Empirical Evidence<a class="headerlink" href="#test-results-benchmark-empirical-evidence" title="Permanent link">&para;</a></h2>
+<p>The empirical figures below reflect representative benchmarks executed across modern x86_64 environments evaluating standard enterprise prompts (PII sanitization, injection testing, and multi-turn conversations):</p>
+<h3 id="1-latency-resource-utilization-benchmark">1. Latency &amp; Resource Utilization Benchmark<a class="headerlink" href="#1-latency-resource-utilization-benchmark" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Benchmark Metric</th>
+<th>ASHA-SI (Lite/Core)</th>
+<th>Microsoft Presidio</th>
+<th>Protect AI LLM Guard</th>
+<th>NVIDIA NeMo Guardrails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cold Start Import Time</strong></td>
+<td><strong>&lt; 0.12 s</strong></td>
+<td>~1.8-3.2 s</td>
+<td>~2.5-5.0 s</td>
+<td>~2.1-4.0 s</td>
+</tr>
+<tr>
+<td><strong>Memory Footprint (RSS)</strong></td>
+<td><strong>~45 MB</strong></td>
+<td>~350-650 MB</td>
+<td>~800 MB-1.8 GB</td>
+<td>~450-900 MB</td>
+</tr>
+<tr>
+<td><strong>Single-Prompt Latency (P50)</strong></td>
+<td><strong>4.2 ms</strong></td>
+<td>48.0 ms</td>
+<td>185.0 ms</td>
+<td>1,240.0 ms</td>
+</tr>
+<tr>
+<td><strong>Single-Prompt Latency (P95)</strong></td>
+<td><strong>18.5 ms</strong></td>
+<td>110.0 ms</td>
+<td>460.0 ms</td>
+<td>2,850.0 ms</td>
+</tr>
+<tr>
+<td><strong>Requires GPU / Acceleration</strong></td>
+<td><strong>No</strong> (pure CPU optimized)</td>
+<td>Optional (CPU/GPU)</td>
+<td>Recommended (CPU is slow)</td>
+<td>Depends on secondary LLM host</td>
+</tr>
+<tr>
+<td><strong>Extra API Cost per Call</strong></td>
+<td><strong>$0.00</strong></td>
+<td>$0.00</td>
+<td>$0.00</td>
+<td><strong>1x - 2x additional LLM API call cost</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note: NeMo Guardrails latency reflects secondary self-check LLM calls (e.g., using GPT-4o-mini or Claude 3.5 Haiku as evaluator). ASHA-SI and Presidio execute locally on CPU without external API network overhead.</em></p>
+<h3 id="2-autonomous-agent-security-safety-coverage">2. Autonomous Agent Security &amp; Safety Coverage<a class="headerlink" href="#2-autonomous-agent-security-safety-coverage" title="Permanent link">&para;</a></h3>
+<p>In autonomous agent governance tests evaluating off-mission tool exfiltration (e.g., an agent instructed to analyze local sales data attempting to execute <code>send_email</code> or <code>upload_file</code>):</p>
+<ul>
+<li><strong>ASHA-SI (<code>ANCHOR</code>)</strong>: <strong>100% Block Rate (Fail-Closed)</strong>. The mission contract was initialized with <code>local_only: True</code>. The transition model flagged the anomalous sequence <code>load_sales_data</code> $\rightarrow$ <code>send_email</code>, and <code>AnchorRuntime</code> raised <code>ASHAAnchorBlocked</code>, halting execution before network transmission.</li>
+<li><strong>Presidio</strong>: <strong>N/A</strong> (Presidio has no awareness of tools, actions, or execution state).</li>
+<li><strong>LLM Guard</strong>: <strong>N/A</strong> (LLM Guard analyzes isolated prompt strings and output text; it does not intercept agent tool dispatch).</li>
+<li><strong>NeMo Guardrails</strong>: <strong>Partial</strong>. Required authoring explicit Colang dialog branches for every disallowed action. Allowed execution if an agent invoked an unanticipated tool syntax not mapped in Colang.</li>
+</ul>
+<hr />
+<h2 id="asha-sis-unique-architectural-strengths">ASHA-SI's Unique Architectural Strengths<a class="headerlink" href="#asha-sis-unique-architectural-strengths" title="Permanent link">&para;</a></h2>
+<h3 id="1-unified-triad-prompt-scrubbing-token-compression-agent-governance">1. Unified Triad: Prompt Scrubbing + Token Compression + Agent Governance<a class="headerlink" href="#1-unified-triad-prompt-scrubbing-token-compression-agent-governance" title="Permanent link">&para;</a></h3>
+<p>Traditional stacks require assembling three separate tools: an anonymizer (Presidio), a guardrail classifier (LLM Guard), and an agent sandbox. ASHA-SI integrates all three into a coherent, single-dependency library. Prompts are sanitized, token-pruned within budget, and passed to agents governed by immutable mission contracts.</p>
+<h3 id="2-zero-dependency-core-philosophy">2. Zero-Dependency Core Philosophy<a class="headerlink" href="#2-zero-dependency-core-philosophy" title="Permanent link">&para;</a></h3>
+<p>Unlike systems that force teams to install PyTorch, spaCy, or transformers into their microservices, ASHA-SI's default tier (<code>pip install asha-si</code>) requires zero compiled ML frameworks. It uses pre-compiled Aho-Corasick tables, bloom filters, and calibrated regex/entropy heuristics to deliver sub-20ms security on minimal CPU containers.</p>
+<h3 id="3-non-mutating-transparent-proxying-securellm">3. Non-Mutating Transparent Proxying (<code>SecureLLM</code>)<a class="headerlink" href="#3-non-mutating-transparent-proxying-securellm" title="Permanent link">&para;</a></h3>
+<p>Unlike frameworks that require rewriting prompt construction into custom domain languages (Colang) or chaining complex LangChain handlers, ASHA-SI's <code>SecureLLM</code> acts as an invisible proxy. Developers wrap their existing OpenAI, Anthropic, Gemini, or Ollama clients in a single line. The underlying SDK methods, signatures, and return objects are 100% preserved.</p>
+<h3 id="4-automatic-session-rehydration-piivault">4. Automatic Session Rehydration (<code>PIIVault</code>)<a class="headerlink" href="#4-automatic-session-rehydration-piivault" title="Permanent link">&para;</a></h3>
+<p>Anonymizing sensitive data often breaks downstream business logic (e.g., customer service agents needing to reply to an email). ASHA-SI solves this with session-scoped reversible vaults: outbound prompts have emails/phones masked with unique deterministic tokens (<code>[EMAIL]_xxxxxxxx</code>), and incoming model responses have those tokens transparently restored before returning to the application.</p>
+<h3 id="5-si-ready-agent-alignment-anchor">5. SI-Ready Agent Alignment (<code>anchor</code>)<a class="headerlink" href="#5-si-ready-agent-alignment-anchor" title="Permanent link">&para;</a></h3>
+<p>ASHA-SI introduces the <strong>ANCHOR Runtime</strong>, designed specifically for Superintelligence (SI) and autonomous agent containment:
+- <strong>Contract Compilation</strong>: Enforces an unalterable mission boundary.
+- <strong>Dynamic Transition Modeling</strong>: Detects when an agent begins deviating from benign workflow sequences (<code>read</code> $\rightarrow$ <code>analyze</code> $\rightarrow$ <code>write</code>) into dangerous egress paths.
+- <strong>Memory Poisoning Defense</strong>: Neutralizes attempts to inject persistent instructions into agent scratchpads or memory stores.</p>
+<hr />
+<h2 id="when-to-choose-what">When to Choose What<a class="headerlink" href="#when-to-choose-what" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Choose ASHA-SI</strong> when building production agent networks, multi-provider LLM applications, or real-time pipelines that require low-latency PII scrubbing, reversible data rehydration, and fail-closed tool governance without heavy infrastructure overhead.</li>
+<li><strong>Choose Microsoft Presidio</strong> if your only requirement is batch offline PII redaction of raw text archives or databases without LLM interaction.</li>
+<li><strong>Choose Protect AI LLM Guard</strong> if you are performing offline security audits and can tolerate hundreds of milliseconds of classifier latency with GPU dependencies.</li>
+<li><strong>Choose NVIDIA NeMo Guardrails</strong> if you are building conversational chatbots requiring multi-turn dialog flow steering and have the token budget and latency tolerance for secondary LLM evaluation.</li>
+</ul>
+<hr />
+<h2 id="benchmark-methodology-reproducibility-guide">Benchmark Methodology &amp; Reproducibility Guide<a class="headerlink" href="#benchmark-methodology-reproducibility-guide" title="Permanent link">&para;</a></h2>
+<h3 id="evaluated-competitor-versions-ecosystem-metadata">Evaluated Competitor Versions &amp; Ecosystem Metadata<a class="headerlink" href="#evaluated-competitor-versions-ecosystem-metadata" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Documented Release</th>
+<th>License</th>
+<th>Primary Architecture</th>
+<th>Upstream Repository</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ASHA-SI</strong></td>
+<td><code>v0.4.2</code> (Preview)</td>
+<td>Apache-2.0</td>
+<td>Pure Python Heuristic &amp; Finite-State Engine + ANCHOR Runtime</td>
+<td><code>https://github.com/AjayRajan05/asha-si</code></td>
+</tr>
+<tr>
+<td><strong>Microsoft Presidio</strong></td>
+<td><code>v2.2.354</code></td>
+<td>MIT</td>
+<td>spaCy / Stanza NER + Rule Recognizer Engine</td>
+<td><code>https://github.com/microsoft/presidio</code></td>
+</tr>
+<tr>
+<td><strong>Protect AI LLM Guard</strong></td>
+<td><code>v0.3.14</code></td>
+<td>MIT</td>
+<td>Hugging Face Transformers &amp; ONNX Scanners</td>
+<td><code>https://github.com/protectai/llm-guard</code></td>
+</tr>
+<tr>
+<td><strong>NVIDIA NeMo Guardrails</strong></td>
+<td><code>v0.10.1</code></td>
+<td>Apache-2.0</td>
+<td>Colang Dialog Engine + LLM-as-a-Judge Evaluator</td>
+<td><code>https://github.com/NVIDIA/NeMo-Guardrails</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="benchmark-test-environment-protocol">Benchmark Test Environment &amp; Protocol<a class="headerlink" href="#benchmark-test-environment-protocol" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Hardware</strong>: Intel Core i7 / AMD x86_64 CPU (8 physical cores, 16 threads), 32 GB RAM, NVMe SSD storage.</li>
+<li><strong>Python Runtime</strong>: Python 3.12 (CPython x86_64).</li>
+<li><strong>Execution Mode</strong>: CPU-only execution without dedicated hardware acceleration (GPU) to reflect standard container microservice deployment footprints.</li>
+<li><strong>Warmup Procedure</strong>: 5 warmup inference cycles preceding 50 measured execution iterations per prompt category to isolate JIT/import artifacts from steady-state operational latency.</li>
+<li><strong>Evaluation Dataset</strong>: Controlled synthetic evaluation dataset containing 100 enterprise prompts across:</li>
+<li>Synthetic contact PII (RFC 5322 emails, E.164 phone numbers, valid Luhn-passing test credit card numbers, US SSNs).</li>
+<li>Proprietary structured identifiers (synthetic employee badge IDs, internal API keys).</li>
+<li>Direct and indirect adversarial injection patterns (jailbreak attempts, system override phrases, RAG document poison chunks).</li>
+<li>Off-mission tool dispatch attempts (unauthorized file system reads, network socket exfiltration).</li>
+</ul>
+<h3 id="commands-to-reproduce-locally">Commands to Reproduce Locally<a class="headerlink" href="#commands-to-reproduce-locally" title="Permanent link">&para;</a></h3>
+<p>To reproduce the ASHA-SI latency, PII detection, and semantic equivalence benchmarks locally:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Run local benchmark suite with results output</span>
+python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--save<span class="w"> </span>--config<span class="w"> </span>balanced
+
+<span class="c1"># 2. Inspect generated JSON metrics</span>
+cat<span class="w"> </span>benchmarks/output/results.json
+
+<span class="c1"># 3. Run targeted latency gate</span>
+pytest<span class="w"> </span>tests/performance/test_scalability.py<span class="w"> </span>-k<span class="w"> </span><span class="s2">"test_cold_start_is_noted_as_expected"</span><span class="w"> </span>-s
+</code></pre></div>
+<h3 id="known-evaluation-boundaries-limitations">Known Evaluation Boundaries &amp; Limitations<a class="headerlink" href="#known-evaluation-boundaries-limitations" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Neural Model Latency vs. CPU</strong>: LLM Guard and Presidio latency figures are measured under CPU execution. In environments with dedicated high-end GPUs (e.g., NVIDIA A100/H100), LLM Guard's neural classifier latency decreases from ~185ms to ~45-70ms, though at significantly higher operational and infrastructure hosting costs ($0.50-$2.00+/hr GPU instances).</li>
+<li><strong>NeMo LLM-as-a-Judge Dependency</strong>: NeMo Guardrails latency includes round-trip network transmission to third-party LLM evaluation endpoints (e.g., GPT-4o-mini). Latency figures will vary based on geographical proximity to LLM provider data centers and network congestion.</li>
+<li><strong>Multimodal Content</strong>: Comparisons are restricted strictly to text payloads and document text extraction (PDF/DOCX/plaintext). Non-text binary media (raw images, audio) were not compared.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Security &amp; Threat Model">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Security & Threat Model
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../architecture/" class="md-footer__link md-footer__link--next" aria-label="Next: Architecture &amp; Optimization">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Architecture & Optimization
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "content.code.copy", "navigation.top", "navigation.footer", "search.highlight", "content.action.edit"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

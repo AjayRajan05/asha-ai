@@ -1,0 +1,2291 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Mission-aware agent governance (ANCHOR) plus LLM security and optimization (v0.4.2 developer preview)">
+      
+      
+      
+        <link rel="canonical" href="https://ajayrajan05.github.io/asha-si/changelog/">
+      
+      
+        <link rel="prev" href="../security-policy/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Changelog - ASHA</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ASHA" class="md-header__button md-logo" aria-label="ASHA" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ASHA
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/AjayRajan05/asha-si" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AjayRajan05/asha-si
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../integrations/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Provider Coverage
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../security/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Security & Threat Model
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../comparison/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Competitor Comparisons
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture & Optimization
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../anchor/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Agent Governance (ANCHOR)
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../api-reference/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting & FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../production-readiness/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Production Readiness & Roadmap
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../contributing/" class="md-tabs__link">
+          
+  
+  
+  Contributing & Support
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ASHA" class="md-nav__button md-logo" aria-label="ASHA" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ASHA
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/AjayRajan05/asha-si" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AjayRajan05/asha-si
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security & Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competitor Comparisons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anchor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Governance (ANCHOR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting & FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness & Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing & Support
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing & Support
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-of-conduct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code of Conduct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#042-2026-07-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.4.2] - 2026-07-10
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.4.2] - 2026-07-10">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acknowledgments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acknowledgments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#041-2026-06-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.4.1] - 2026-06-15
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.4.1] - 2026-06-15">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture-completion-breaking-within-04x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture completion (breaking within 0.4.x)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#030-2026-06-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.3.0] - 2026-06-05
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.3.0] - 2026-06-05">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#developer-preview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer Preview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101-2026-05-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [1.0.1] - 2026-05-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[1.0.1] - 2026-05-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-2026-05-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [1.0.0] - 2026-05-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[1.0.0] - 2026-05-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stable-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stable Release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-checklist-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release checklist (manual)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#020-2026-05-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.2.0] - 2026-05-23
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.2.0] - 2026-05-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#production-stable-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production-Stable Release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-checklist-manual_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release checklist (manual)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#017-2026-04-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.1.7] - 2026-04-28
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.1.7] - 2026-04-28">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#progressive-enhancement-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROGRESSIVE ENHANCEMENT RELEASE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#012-2026-04-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.1.2] - 2026-04-23
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.1.2] - 2026-04-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhanced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#010-2026-03-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.1.0] - 2026-03-13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.1.0] - 2026-03-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#042-2026-07-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.4.2] - 2026-07-10
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.4.2] - 2026-07-10">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acknowledgments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acknowledgments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#041-2026-06-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.4.1] - 2026-06-15
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.4.1] - 2026-06-15">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture-completion-breaking-within-04x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture completion (breaking within 0.4.x)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#030-2026-06-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.3.0] - 2026-06-05
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.3.0] - 2026-06-05">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#developer-preview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer Preview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101-2026-05-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [1.0.1] - 2026-05-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[1.0.1] - 2026-05-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-2026-05-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [1.0.0] - 2026-05-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[1.0.0] - 2026-05-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stable-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stable Release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-checklist-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release checklist (manual)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#020-2026-05-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.2.0] - 2026-05-23
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.2.0] - 2026-05-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#production-stable-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production-Stable Release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-checklist-manual_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release checklist (manual)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#017-2026-04-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.1.7] - 2026-04-28
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.1.7] - 2026-04-28">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#progressive-enhancement-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROGRESSIVE ENHANCEMENT RELEASE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#012-2026-04-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.1.2] - 2026-04-23
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.1.2] - 2026-04-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhanced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#010-2026-03-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.1.0] - 2026-03-13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.1.0] - 2026-03-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/AjayRajan05/asha-si/edit/master/docs/changelog.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>All notable changes to this project will be documented in this format.</p>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<hr />
+<hr />
+<h2 id="042-2026-07-10">[0.4.2] - 2026-07-10<a class="headerlink" href="#042-2026-07-10" title="Permanent link">&para;</a></h2>
+<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Package rename</strong>: <code>privysha</code> → <code>asha</code> on PyPI and in imports (<code>from asha import ...</code>).</li>
+<li><strong>ANCHOR runtime</strong>: mission-aware agent governance: action, memory, chain, and plan guards; human approval; OS sandbox (<code>auto</code> hooks or <code>subprocess</code>).</li>
+<li><strong>Framework adapters</strong>: CrewAI, LangChain, AutoGen, LlamaIndex, MCP, LangGraph, <code>asha.Agent</code>, and generic duck-typed agents via <code>anchor()</code> / <code>anchor_any()</code>.</li>
+<li><strong>ANCHOR extras</strong>: <code>asha-si[crewai]</code>, <code>asha-si[langchain]</code>, <code>asha-si[langgraph]</code>, <code>asha-si[llamaindex]</code>, <code>asha-si[mcp]</code>, and meta <code>asha-si[anchor]</code>.</li>
+<li><strong>Mission-drift gate</strong>: <code>tests/fixtures/anchor/mission_drift.jsonl</code> with CI coverage.</li>
+<li><strong>CLI</strong>: <code>asha</code> entry point (replaces <code>privysha</code>).</li>
+</ul>
+<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Environment variables use <code>ASHA_*</code> prefix (<code>ASHA_DISABLE_ML</code>, <code>ASHA_ANCHOR_INTERACTIVE</code>, …).</li>
+<li>ANCHOR telemetry is <strong>opt-in</strong> (<code>ASHA_ANCHOR_TELEMETRY=1</code> / explicit path); isolation <code>docker</code>/<code>bwrap</code> deferred with clear errors.</li>
+<li>CI optional-dep job installs <code>asha-si[anchor]</code> and runs golden-path adapter + mission-drift tests headless.</li>
+<li>Memory poisoning bands floored for short benign agent outputs; mission/intent loaders accept trained <code>pipeline</code> dumps.</li>
+<li>README and docs include adapter support matrix (no unimplemented <code>docker</code>/kernel claims).</li>
+<li>Productization: <code>SUPPORT.md</code>, issue/PR templates, docs support policy (Phase 4).</li>
+<li>Pilot checklist for 0.4.2: <a href="https://ajayrajan05.github.io/asha-si/production-readiness/">docs/production-readiness.md</a> (1.0 remains deferred).</li>
+<li>Document PII masking: <code>process</code> / <code>sanitize</code> / <code>optimize</code> accept file paths/bytes; <code>wrap_llm</code> masks local attachments before send (pypdf + python-docx on base install).</li>
+</ul>
+<h3 id="migration">Migration<a class="headerlink" href="#migration" title="Permanent link">&para;</a></h3>
+<p>See <a href="https://ajayrajan05.github.io/asha-si/migration-v0.4/">docs/migration-v0.4.md</a> (includes package rename). Pin <code>asha==0.4.2</code> for pilots.</p>
+<h3 id="acknowledgments">Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ANCHOR</strong> was designed and led by <strong>Ajay Rajan A</strong>.</li>
+<li>The initial module scaffold and partial implementation were contributed by <strong>Yeshwanth Raj C</strong>.</li>
+</ul>
+<hr />
+<h2 id="041-2026-06-15">[0.4.1] - 2026-06-15<a class="headerlink" href="#041-2026-06-15" title="Permanent link">&para;</a></h2>
+<h3 id="architecture-completion-breaking-within-04x">Architecture completion (breaking within 0.4.x)<a class="headerlink" href="#architecture-completion-breaking-within-04x" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Root API frozen</strong> - only <code>process</code>, <code>sanitize</code>, <code>optimize</code>, <code>Agent</code>, <code>__version__</code>; all lazy root exports removed.</li>
+<li><strong><code>Pipeline</code>, <code>AsyncPipeline</code>, <code>Processor</code> removed</strong> - use <code>PromptProcessor</code> and <code>process()</code>.</li>
+<li><strong><code>runtime/resolve.py</code></strong> - hot-path argument resolution (no <code>compat/</code> on <code>process()</code> calls).</li>
+<li><strong><code>PolicyConfig</code> fields</strong> - <code>pii_mode</code>, <code>reversible</code>, <code>preserve_intent</code>, <code>security_level</code> via <code>policy=</code> only.</li>
+<li><strong><code>security_fail_closed</code> removed</strong> - use <code>mode="strict"</code> / <code>mode="balanced"</code>.</li>
+<li><strong>Integration safety unified</strong> - <code>wrap_llm(mode=...)</code>; <code>auto_patch(mode="strict")</code> configurable.</li>
+<li><strong><code>routing_decision</code></strong> - only in <code>compat/legacy_results</code> dicts, not runtime hot path.</li>
+<li><strong>Architecture tests</strong> - <code>types/</code> and <code>utils/</code> must not import <code>compat/</code>.</li>
+</ul>
+<hr />
+<h2 id="030-2026-06-05">[0.3.0] - 2026-06-05<a class="headerlink" href="#030-2026-06-05" title="Permanent link">&para;</a></h2>
+<h3 id="developer-preview">Developer Preview<a class="headerlink" href="#developer-preview" title="Permanent link">&para;</a></h3>
+<p>Re-release track as <strong>0.x developer preview</strong>. APIs may change before 1.0.0. See <a href="https://ajayrajan05.github.io/asha-si/status/">docs/status.md</a>.</p>
+<h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>AshaFit</strong> - project-aware local LLM advisor (<code>recommend_local_model</code>, <code>asha recommend</code>)</li>
+<li>Workload fingerprinting from compiled prompts + IR</li>
+<li>HuggingFace catalog with offline fallback; VRAM fit ranking</li>
+<li>Router integration: <code>RoutingStrategy.LOCAL_PRIVACY</code></li>
+<li><code>Agent(local_model="auto")</code>, <code>wrap_llm(..., auto_select_local_model=True)</code></li>
+<li>Interactive demos via Streamlit: <code>streamlit run examples/showcase/streamlit_app.py</code></li>
+</ul>
+<h3 id="changed_1">Changed<a class="headerlink" href="#changed_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Version <strong>1.0.1 → 0.3.0</strong> (semantic versioning: preview until stable 1.0)</li>
+<li>PyPI classifier: Alpha / developer preview</li>
+<li>README status banner, scope table, and feedback links</li>
+</ul>
+<hr />
+<h2 id="101-2026-05-24">[1.0.1] - 2026-05-24<a class="headerlink" href="#101-2026-05-24" title="Permanent link">&para;</a></h2>
+<h3 id="added_2">Added<a class="headerlink" href="#added_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>security_fail_closed</code></strong> opt-in on <code>process()</code> / <code>sanitize()</code> for regulated workloads</li>
+<li><strong>OTEL pipeline wiring</strong> - <code>stage_span()</code> in all pipeline stages via <code>StageBase</code></li>
+<li><strong>Benchmark P95/P99</strong> latency percentiles in harness and CI output</li>
+<li><strong>~60 new tests</strong> - optimize, wrap_llm negatives, phone/address PII, FastAPI, fail-closed, edge matrix, framework smoke, hybrid PII</li>
+<li><strong>Expanded extras</strong> - <code>integrations</code>, <code>all</code>, <code>[llamaindex]</code> in pyproject.toml</li>
+<li><strong>Publish workflow gates</strong> - benchmark compare, twine check, fresh wheel smoke</li>
+</ul>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>process_async</code></strong> input validation parity with sync <code>process()</code></li>
+<li><strong>Docs</strong> - fail-open/fail-closed in security.md; Flask/Django/LlamaIndex/OTEL in integrations.md; Python 3.10+ in troubleshooting</li>
+<li><strong>Debug transparency</strong> - <code>fallback_reason</code> and <code>original_error</code> in <code>debug=True</code> responses</li>
+</ul>
+<h3 id="changed_2">Changed<a class="headerlink" href="#changed_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>CI coverage gate documented at <strong>40%</strong> (matches <code>--cov-fail-under=40</code>)</li>
+</ul>
+<hr />
+<h2 id="100-2026-05-24">[1.0.0] - 2026-05-24<a class="headerlink" href="#100-2026-05-24" title="Permanent link">&para;</a></h2>
+<h3 id="stable-release">Stable Release<a class="headerlink" href="#stable-release" title="Permanent link">&para;</a></h3>
+<p>First stable release. Policy modes, PII detection, and drop-in wrappers behave
+consistently; benchmarks and CI enforce quality gates.</p>
+<h3 id="added_3">Added<a class="headerlink" href="#added_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Policy gate</strong>: <code>mode="off"</code> and disabled security/optimization flags bypass
+  pipeline stages via passthrough (<code>pipeline/policy_gate.py</code>)</li>
+<li><strong>Canonical PII patterns</strong>: <code>security/patterns.py</code> shared across detectors,
+  verification, and masking</li>
+<li><strong>Benchmark harness</strong>: tiktoken metrics, expanded <code>sample_prompts.json</code> (10 cases),
+  false-positive and fail-safe rate gates</li>
+<li><strong>OpenTelemetry extra</strong>: <code>pip install asha-si[otel]</code> with <code>enable_otel()</code> for
+  optional stage span export</li>
+<li><strong>Docs site</strong>: full MkDocs Material config, GitHub Pages deploy workflow</li>
+<li><strong>CI hardening</strong>: coverage gate (55%), docs build, benchmark quality gates,
+  dependabot, publish workflow test gate</li>
+<li><strong>Tests</strong>: policy modes, auto_patch mocks, PII secrets/FP, threat scoring,
+  async streaming, agent helpers, backward compat, otel</li>
+</ul>
+<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>mode="off"</code> still masked PII</strong>: early passthrough + post-pipeline scrub skip</li>
+<li><strong><code>Agent</code> token metrics</strong>: use <code>prompts.compiled</code> structure and tiktoken counts</li>
+<li><strong><code>wrap_llm</code></strong>: forwards <code>privacy</code> and <code>token_budget</code>; nested OpenAI streaming</li>
+<li><strong><code>auto_patch</code></strong>: replaces last user message only; Anthropic v1 <code>Messages.create</code>;
+  proper unpatch via <code>_restore_original()</code></li>
+<li><strong>PII false positives</strong>: <code>test@example.com</code> and teaching placeholders skipped</li>
+<li><strong>Secrets</strong>: API keys/JWT/bearer patterns verified and masked with <code>[REDACTED]</code></li>
+<li><strong><code>run_security</code></strong>: honors <code>enable_pii_detection</code> / <code>enable_injection_detection</code></li>
+</ul>
+<h3 id="changed_3">Changed<a class="headerlink" href="#changed_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Version unified to 1.0.0</strong> across <code>pyproject.toml</code>, <code>__init__.py</code>, README, docs</li>
+<li><strong>Publish trigger</strong>: GitHub Release (published) or manual dispatch - not tag-only</li>
+</ul>
+<h3 id="release-checklist-manual">Release checklist (manual)<a class="headerlink" href="#release-checklist-manual" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Configure GitHub <code>pypi</code> environment for trusted publishing</li>
+<li>Create GitHub Release <code>v1.0.0</code> after CI is green to trigger PyPI publish</li>
+</ul>
+<hr />
+<h2 id="020-2026-05-23">[0.2.0] - 2026-05-23<a class="headerlink" href="#020-2026-05-23" title="Permanent link">&para;</a></h2>
+<h3 id="production-stable-release">Production-Stable Release<a class="headerlink" href="#production-stable-release" title="Permanent link">&para;</a></h3>
+<p>This release completes the modular pipeline refactor and stabilizes the public
+drop-in API (<code>process</code>, <code>wrap_llm</code>, <code>optimize</code>, <code>sanitize</code>) for general use.</p>
+<h3 id="added_4">Added<a class="headerlink" href="#added_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Opt-in reversible masking</strong>: <code>reversible=True</code> on <code>process()</code>/<code>sanitize()</code>, <code>unmask()</code> helper, <code>MaskingVault</code></li>
+<li><strong>Observability</strong>: <code>TraceContext.log_warn()</code>, <code>LatencyBudgetEnforcer</code> wired in pipeline, <code>DebugTracer</code> deprecated</li>
+<li><strong>CI hardening</strong>: mypy, wheel build + twine check, regression benchmark baseline, slow test job</li>
+<li><strong>Docs site</strong>: <code>mkdocs.yml</code> with navigation to existing docs</li>
+<li><strong>Test suite expansion</strong>: reversible masking, scoring, logging security, masking collision, performance, adapter mocks</li>
+<li><strong>Domain-owned PII detector</strong>: <code>security/pii_detector.py</code> (compatibility shim at <code>utils/pii_detector.py</code>)</li>
+<li><strong>Pipeline contracts</strong>: <code>pipeline/contracts.py</code> for shared types</li>
+<li><strong>Privacy helpers</strong>: <code>utils/dropin_privacy.py</code> (<code>build_security_summary</code>, <code>extract_pii_types</code>)</li>
+<li><strong>Reproducible benchmarks</strong>: <code>benchmarks/run_benchmarks.py</code> and <code>benchmarks/sample_prompts.json</code></li>
+<li><strong>Lazy public API</strong>: Advanced symbols load on first access (PEP 562) for faster imports</li>
+<li><strong>CI lint step</strong>: flake8 F401/F824 checks in GitHub Actions</li>
+<li><strong>Integration test marker</strong>: API-key tests skipped by default in CI</li>
+</ul>
+<h3 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Unified <code>StageContext</code></strong>: Single canonical class in <code>pipeline/components/stage_context.py</code></li>
+<li><strong><code>process()</code> metrics</strong>: <code>pii_detected</code> populated correctly; <code>debug_trace</code> no longer breaks result assembly</li>
+<li><strong><code>SecurityResult</code> handling</strong>: Dict and dataclass representations supported across drop-in utilities</li>
+<li><strong>Integration adapters</strong>: Delegate to <code>process()</code> instead of composing core services directly</li>
+<li><strong>Async paths</strong>: <code>process_async</code>, <code>optimize_async</code>, <code>sanitize_async</code> use shared security helpers</li>
+<li><strong>Duplicate <code>ThreatType</code></strong> in <code>__all__</code></li>
+<li><strong>~109 unused import</strong> lint issues across the codebase</li>
+<li><strong><code>comprehensive_test.py</code></strong>: No longer checks for deleted <code>pipeline.py</code> / <code>stages/</code> paths</li>
+<li><strong>Integration tests</strong>: No longer call <code>sys.exit(1)</code> when API keys are missing</li>
+</ul>
+<h3 id="changed_4">Changed<a class="headerlink" href="#changed_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>PyPI classifier</strong>: <code>Development Status :: 5 - Production/Stable</code></li>
+<li><strong>Version unified to 0.2.0</strong> across <code>pyproject.toml</code>, <code>__init__.py</code>, README, and docs</li>
+<li><strong>README architecture</strong>: Updated to reflect <code>pipeline/</code> modular layout</li>
+<li><strong>Public API</strong>: Core surface limited to <code>process</code>, <code>wrap_llm</code>, <code>optimize</code>, <code>sanitize</code>, <code>Agent</code>, <code>Pipeline</code>, <code>AdapterFactory</code></li>
+<li><strong>Test suite</strong>: <code>tests_v2/</code> included in default test paths</li>
+<li><strong>Performance claims</strong>: Benchmark docs reference reproducible harness output</li>
+</ul>
+<h3 id="release-checklist-manual_1">Release checklist (manual)<a class="headerlink" href="#release-checklist-manual_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Configure GitHub <code>pypi</code> environment for trusted publishing (see <code>.github/workflows/publish.yml</code>)</li>
+<li>Tag <code>v0.2.0</code> and run publish workflow after CI is green</li>
+</ul>
+<hr />
+<h2 id="017-2026-04-28">[0.1.7] - 2026-04-28<a class="headerlink" href="#017-2026-04-28" title="Permanent link">&para;</a></h2>
+<h3 id="progressive-enhancement-release">PROGRESSIVE ENHANCEMENT RELEASE<a class="headerlink" href="#progressive-enhancement-release" title="Permanent link">&para;</a></h3>
+<h3 id="added_5">Added<a class="headerlink" href="#added_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Progressive Enhancement Architecture</strong>: ML features now opt-in with <code>pii_mode</code> parameter</li>
+<li><strong>Lightweight Default</strong>: No automatic model downloads, instant startup</li>
+<li><strong>Multi-stage PII Pipeline</strong>: Advanced detection in <code>core/pii_pipeline/</code></li>
+<li><strong>Hybrid PII Detector</strong>: Optional ML-enhanced detection via <code>asha-si[ml]</code></li>
+</ul>
+<h3 id="changed_5">Changed<a class="headerlink" href="#changed_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Modular pipeline layout</strong>: <code>pipeline/</code> package replaces monolithic <code>pipeline.py</code></li>
+<li><strong>Drop-in API</strong>: <code>process</code>, <code>wrap_llm</code>, <code>optimize</code>, <code>sanitize</code> as primary entry points</li>
+</ul>
+<hr />
+<h2 id="012-2026-04-23">[0.1.2] - 2026-04-23<a class="headerlink" href="#012-2026-04-23" title="Permanent link">&para;</a></h2>
+<h3 id="added_6">Added<a class="headerlink" href="#added_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Universal Adapter System</strong>: Support for OpenAI, Anthropic, Grok, HuggingFace, and Ollama providers</li>
+<li><strong>Smart Routing</strong>: Task-based intelligent model selection with fallback logic</li>
+<li><strong>Security Layer</strong>: Advanced injection detection and threat analysis</li>
+<li><strong>Prompt IR (Intermediate Representation)</strong>: Structured prompt compilation</li>
+<li><strong>Model Router</strong>: Automatic provider selection based on task complexity</li>
+<li><strong>Debug Tracing</strong>: Complete pipeline visibility and performance metrics</li>
+<li><strong>Documentation</strong>: Full ReadTheDocs integration</li>
+<li><strong>PyPI Publishing</strong>: Ready for production distribution</li>
+</ul>
+<h3 id="enhanced">Enhanced<a class="headerlink" href="#enhanced" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Agent Class</strong>: Complete v2 functionality with v1 compatibility</li>
+<li><strong>Pipeline Architecture</strong>: Full 7-stage processing pipeline</li>
+<li><strong>Optimizer Engine</strong>: Advanced token reduction (30-70% cost savings)</li>
+<li><strong>Universal Model Adapter</strong>: Retry logic and automatic failover</li>
+<li><strong>Factory Pattern</strong>: Enhanced adapter creation with fallback support</li>
+</ul>
+<h3 id="fixed_3">Fixed<a class="headerlink" href="#fixed_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Missing Dependencies</strong>: Added accelerate&gt;=0.20.0 for HuggingFace compatibility</li>
+<li><strong>Test Framework</strong>: Fixed test functions to use proper assertions</li>
+<li><strong>HuggingFace Adapter</strong>: Resolved device_map compatibility issues</li>
+<li><strong>IR Builder</strong>: Enhanced to handle both object and dict formats</li>
+<li><strong>Package Metadata</strong>: Complete README.md with all required sections</li>
+</ul>
+<h3 id="infrastructure">Infrastructure<a class="headerlink" href="#infrastructure" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Build System</strong>: Proper setuptools configuration with src layout</li>
+<li><strong>Testing</strong>: 51 passing tests (excluding HF adapter tests requiring API keys)</li>
+<li><strong>Documentation</strong>: Complete README with installation, quick start, and API reference</li>
+<li><strong>Distribution</strong>: Both wheel and source distribution passing Twine checks</li>
+</ul>
+<hr />
+<h2 id="010-2026-03-13">[0.1.0] - 2026-03-13<a class="headerlink" href="#010-2026-03-13" title="Permanent link">&para;</a></h2>
+<h3 id="added_7">Added<a class="headerlink" href="#added_7" title="Permanent link">&para;</a></h3>
+<p>Initial development release of <strong>ASHA</strong>.</p>
+<p>Core features:</p>
+<ul>
+<li>Prompt sanitization</li>
+<li>PII masking</li>
+<li>Prompt AST parsing</li>
+<li>Token optimization</li>
+<li>Context injection</li>
+<li>Prompt compilation pipeline</li>
+</ul>
+<p>Adapters:</p>
+<ul>
+<li>OpenAI adapter</li>
+<li>Ollama adapter</li>
+<li>HuggingFace adapter</li>
+</ul>
+<p>Developer features:</p>
+<ul>
+<li>Pipeline trace debugging</li>
+<li>Modular stage architecture</li>
+<li>Python package distribution</li>
+<li>PyPI installation support</li>
+</ul>
+<p>Testing:</p>
+<ul>
+<li>Sanitizer tests</li>
+<li>Optimizer tests</li>
+<li>Pipeline tests</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../security-policy/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Security Policy">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Security Policy
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "content.code.copy", "navigation.top", "navigation.footer", "search.highlight", "content.action.edit"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
