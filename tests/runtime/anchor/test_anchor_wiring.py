@@ -1,6 +1,6 @@
+from __future__ import annotations
 """Tests for fully wired ANCHOR governance internals."""
 
-from __future__ import annotations
 
 import pytest
 
@@ -101,3 +101,98 @@ def test_mission_session_refresh_preserves_baseline_id() -> None:
         "Phase two.", context={"available_tools": ["load_data"]}
     )
     assert merged.mission_id == baseline.mission_id
+
+
+# --- Consolidated from test_anchor_settings.py ---
+"""Tests for ANCHOR runtime settings resolution."""
+
+
+from unittest.mock import patch
+
+from asha.runtime.anchor.settings import resolve_interactive, resolve_warn_policy
+
+
+def test_resolve_interactive_explicit_override() -> None:
+    assert resolve_interactive(True) is True
+    assert resolve_interactive(False) is False
+
+
+def test_resolve_interactive_from_env(monkeypatch) -> None:
+    monkeypatch.setenv("ASHA_ANCHOR_INTERACTIVE", "1")
+    with patch("sys.stdin.isatty", return_value=False):
+        assert resolve_interactive() is True
+
+
+def test_resolve_interactive_from_tty(monkeypatch) -> None:
+    monkeypatch.delenv("ASHA_ANCHOR_INTERACTIVE", raising=False)
+    with patch("sys.stdin.isatty", return_value=True):
+        assert resolve_interactive() is True
+    with patch("sys.stdin.isatty", return_value=False):
+        assert resolve_interactive() is False
+
+
+def test_resolve_warn_policy_strict_when_interactive(monkeypatch) -> None:
+    monkeypatch.delenv("ASHA_ANCHOR_WARN_POLICY", raising=False)
+    assert resolve_warn_policy(interactive=True) == "strict"
+    assert resolve_warn_policy(interactive=False) == "permissive"
+
+
+# --- Consolidated from tests/runtime/anchor/test_anchor_interactive.py ---
+"""Tests for interactive ANCHOR approval."""
+
+
+from unittest.mock import patch
+
+import pytest
+
+from asha.exceptions import ASHAAnchorBlocked
+from asha.runtime.anchor.runtime import AnchorRuntime
+
+
+def test_interactive_block_can_be_overridden_by_human() -> None:
+    runtime = AnchorRuntime(warn_policy="strict", interactive=True)
+    runtime.initialize_mission(
+        "Analyze trends locally. Do not send data externally.",
+        context={"available_tools": ["load_trend_data"], "local_only": True},
+    )
+
+    with patch("builtins.input", return_value="y"):
+        allowed = runtime.evaluate_action_request(
+            "tool_call",
+            {"tool_name": "network_exfil", "arguments": "{}"},
+        )
+
+    assert allowed is True
+
+
+def test_interactive_block_rejects_when_human_denies() -> None:
+    runtime = AnchorRuntime(warn_policy="strict", interactive=True)
+    runtime.initialize_mission(
+        "Analyze trends locally. Do not send data externally.",
+        context={"available_tools": ["load_trend_data"], "local_only": True},
+    )
+
+    with patch("builtins.input", return_value="n"):
+        allowed = runtime.evaluate_action_request(
+            "tool_call",
+            {"tool_name": "network_exfil", "arguments": "{}"},
+        )
+
+    assert allowed is False
+
+
+def test_raise_on_block_after_human_denies() -> None:
+    runtime = AnchorRuntime(warn_policy="strict", interactive=True)
+    runtime.initialize_mission(
+        "Analyze trends locally.",
+        context={"available_tools": ["load_trend_data"], "local_only": True},
+    )
+
+    with patch("builtins.input", return_value="n"):
+        with pytest.raises(ASHAAnchorBlocked):
+            runtime.evaluate_action_request(
+                "tool_call",
+                {"tool_name": "network_exfil", "arguments": "{}"},
+                raise_on_block=True,
+            )
+

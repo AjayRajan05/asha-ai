@@ -55,11 +55,8 @@ pytest --cov=asha --cov-report=term -m "not slow"
 ```bash
 pip install -e ".[dev,integrations,flask,django,anchor]"
 ASHA_ANCHOR_INTERACTIVE=0 ASHA_ANCHOR_WARN_POLICY=strict \
-  pytest tests/test_framework_smoke.py tests/test_fastapi_integration.py \
-  tests/test_django_integration.py tests/test_langchain_integration.py \
-  tests/test_llamaindex_integration.py tests/test_instructor_integration.py \
-  tests/runtime/anchor/test_anchor_*_integration.py \
-  tests/runtime/anchor/test_mission_drift_gate.py -q
+  pytest tests/integration/test_framework_integrations.py \
+  tests/runtime/anchor/ -q
 ```
 
 ---
@@ -140,4 +137,4 @@ Maintainer release checklist: repository `maintainers/RELEASE_0.4.2.md`. Private
 5. Open PR with clear description
 6. No secrets, `training/`, `models/`, or `*.joblib` in the public tree
 
-See [status.md](status.md) for preview scope.
+See [status.md](production-readiness.md) for preview scope.

@@ -1,6 +1,6 @@
+from __future__ import annotations
 """Contract: experimental APIs warn; core APIs do not."""
 
-from __future__ import annotations
 
 import warnings
 

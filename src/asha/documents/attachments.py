@@ -17,6 +17,7 @@ from .extractors.base import KNOWN_EXTENSIONS
 
 def _mask_text(text: str, mode: str, *, token_budget: int = 1200) -> str:
     from ..utils.dropin import process, _coerce_process_output
+    from ..exceptions import ASHAProcessingError
 
     if mode == "off":
         # Still extract/coerce only; no PII pipeline.
@@ -26,6 +27,10 @@ def _mask_text(text: str, mode: str, *, token_budget: int = 1200) -> str:
         mode=mode,
         token_budget=token_budget if mode != "strict" else min(token_budget, 800),
     )
+    if mode == "strict" and ((processed.security and not processed.security.safe) or not processed.is_safe):
+        raise ASHAProcessingError(
+            f"Prompt blocked by strict mode security policy: {processed.security.threats if processed.security else 'threat detected'}"
+        )
     return _coerce_process_output(processed, text)
 
 
@@ -43,8 +48,12 @@ def _extract_and_mask(
     filename: Optional[str],
     mode: str,
     token_budget: int,
+    vault: Optional[Any] = None,
 ) -> str:
     text = coerce_prompt_input(source, filename=filename)
+    if vault is not None:
+        masked = vault.mask(text)
+        return _mask_text(masked, mode, token_budget=token_budget)
     # Attachments: security-first (PII) via sanitize; keep process for wrap string prompts.
     return _sanitize_only(text, mode)
 
@@ -159,6 +168,7 @@ def prepare_llm_request_kwargs(
     *,
     mode: str = "balanced",
     token_budget: int = 1200,
+    vault: Optional[Any] = None,
 ) -> Dict[str, Any]:
     """
     Return a copy of LLM call kwargs with prompts and file attachments PII-masked.
@@ -180,7 +190,11 @@ def prepare_llm_request_kwargs(
                 name = Path(item).name if isinstance(item, (str, Path)) else None
                 masked_texts.append(
                     _extract_and_mask(
-                        item, filename=name, mode=mode, token_budget=token_budget
+                        item,
+                        filename=name,
+                        mode=mode,
+                        token_budget=token_budget,
+                        vault=vault,
                     )
                 )
             elif isinstance(item, dict):
@@ -193,6 +207,7 @@ def prepare_llm_request_kwargs(
                             filename=Path(path).name,
                             mode=mode,
                             token_budget=token_budget,
+                            vault=vault,
                         )
                     )
                 elif isinstance(data, (bytes, bytearray)):
@@ -203,6 +218,7 @@ def prepare_llm_request_kwargs(
                             or None,
                             mode=mode,
                             token_budget=token_budget,
+                            vault=vault,
                         )
                     )
         if masked_texts:
@@ -223,23 +239,36 @@ def prepare_llm_request_kwargs(
         for msg in new_kwargs["messages"]:
             if isinstance(msg, dict) and "content" in msg:
                 msg = dict(msg)
-                msg["content"] = _mask_content_value(
-                    msg["content"], mode=mode, token_budget=token_budget
-                )
+                if vault is not None:
+                    # In vault mode, message is already vault-masked; check strict policy if needed
+                    if mode == "strict" and isinstance(msg["content"], str):
+                        _mask_text(msg["content"], mode="strict", token_budget=token_budget)
+                else:
+                    msg["content"] = _mask_content_value(
+                        msg["content"], mode=mode, token_budget=token_budget
+                    )
             messages.append(msg)
         new_kwargs["messages"] = messages
 
-    for key in ("prompt", "input", "text", "query", "content"):
+    for key in ("prompt", "input", "text", "query", "content", "contents"):
         if key in new_kwargs and isinstance(
             new_kwargs[key], (str, Path, bytes, bytearray)
         ):
             val = new_kwargs[key]
             if isinstance(val, str) and not _is_path_string(val):
-                new_kwargs[key] = _mask_text(val, mode, token_budget=token_budget)
+                if vault is not None:
+                    if mode == "strict":
+                        _mask_text(val, mode="strict", token_budget=token_budget)
+                else:
+                    new_kwargs[key] = _mask_text(val, mode, token_budget=token_budget)
             else:
                 name = Path(val).name if isinstance(val, (str, Path)) else None
                 new_kwargs[key] = _extract_and_mask(
-                    val, filename=name, mode=mode, token_budget=token_budget
+                    val,
+                    filename=name,
+                    mode=mode,
+                    token_budget=token_budget,
+                    vault=vault,
                 )
 
     return new_kwargs

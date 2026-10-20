@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Security regression suite: memory poisoning tests.
 
 Tests that ANCHOR's memory guard catches all categories of memory poisoning
@@ -6,7 +7,6 @@ attacks. Every discovered vulnerability becomes a permanent regression test.
 Phase 7 + Phase 19 regression.
 """
 
-from __future__ import annotations
 
 import time
 

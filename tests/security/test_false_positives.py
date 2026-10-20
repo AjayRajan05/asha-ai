@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Security regression suite: false positive tests.
 
 Tests that legitimate, real-world developer prompts are NOT incorrectly
@@ -6,7 +7,6 @@ flagged as security threats. A high false-positive rate destroys adoption.
 Phase 19: false positive regression suite.
 """
 
-from __future__ import annotations
 
 import pytest
 from asha import sanitize, process

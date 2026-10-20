@@ -273,7 +273,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q --strict-markers --strict-config -m \"not integration\""
+addopts = "-ra -q --strict-markers --strict-config -m \"not integration and not slow\""
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]

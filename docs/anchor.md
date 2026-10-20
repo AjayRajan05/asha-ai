@@ -5,7 +5,7 @@
 Governance runs at **runtime**: agents and prompts do not need to mention ANCHOR.
 
 !!! note "Developer preview"
-    ANCHOR is preview in v0.4.2. Pin `asha==0.4.2` and validate on your agent stack. See [status.md](status.md).
+    ANCHOR is preview in v0.4.2. Pin `asha==0.4.2` and validate on your agent stack. See [status.md](production-readiness.md).
 
 ---
 
@@ -283,7 +283,7 @@ Public docs describe the governance shape, not internal detector scores or calib
 
 ## Related
 
-- [Tutorial](tutorial.md)
+- [Tutorial](index.md)
 - [Architecture](architecture.md)
-- [Status](status.md)
+- [Status](production-readiness.md)
 - [Security](security.md)

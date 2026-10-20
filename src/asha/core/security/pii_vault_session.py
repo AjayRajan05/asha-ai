@@ -306,6 +306,19 @@ class PIIVault:
             text = text.replace(token, original)
         return text
 
+    def create_stream_rehydrator(self, max_token_len: int = 40) -> StreamRehydrator:
+        """
+        Create a sliding-window stream rehydrator bound to this vault.
+
+        Args:
+            max_token_len: Maximum token character length to buffer across
+                chunk boundaries (default 40).
+
+        Returns:
+            StreamRehydrator: Active sliding-window stream rehydrator.
+        """
+        return StreamRehydrator(self, max_token_len=max_token_len)
+
     def _maybe_cleanup(self) -> None:
         """Lazily remove expired vault entries based on TTL."""
         now = time.monotonic()
@@ -317,3 +330,62 @@ class PIIVault:
             ]
             for tok in expired:
                 del self._vault[tok]
+
+
+class StreamRehydrator:
+    """
+    Sliding-window buffer for stream chunk rehydration across token boundaries.
+
+    Ensures that placeholder tokens split across streaming chunk boundaries
+    (e.g., '<EMA' in chunk 1 and 'IL_1>' in chunk 2) are correctly rehydrated into
+    the original PII value (e.g., 'alice@example.com') without leaking raw
+    placeholders or prematurely emitting partial placeholders.
+    """
+
+    def __init__(self, vault: PIIVault, max_token_len: int = 40) -> None:
+        self.vault = vault
+        self.max_token_len = max_token_len
+        self._buffer: str = ""
+
+    def feed(self, chunk_text: str) -> str:
+        """
+        Feed a new chunk of text from the stream and return rehydrated text.
+
+        If the end of the accumulated text contains a potential incomplete
+        placeholder (e.g. '<EMAIL_'), it is held in the buffer until the next chunk.
+        """
+        if not chunk_text:
+            return ""
+
+        self._buffer += chunk_text
+
+        # 1. Unmask any complete placeholder tokens known in the vault
+        self._buffer = self.vault.unmask(self._buffer)
+
+        # 2. Check if there is an unclosed '<' near the end of the buffer
+        last_open = self._buffer.rfind("<")
+        last_close = self._buffer.rfind(">")
+
+        if last_open > last_close:
+            potential_token = self._buffer[last_open:]
+            # Only hold back if potential_token looks like a token prefix: '<[A-Za-z0-9_]*'
+            if len(potential_token) <= self.max_token_len and re.match(
+                r"^<[A-Za-z0-9_]*$", potential_token
+            ):
+                emit_text = self._buffer[:last_open]
+                self._buffer = potential_token
+                return emit_text
+
+        # If no unclosed token, emit everything
+        emit_text = self._buffer
+        self._buffer = ""
+        return emit_text
+
+    def flush(self) -> str:
+        """Flush any remaining text held in the buffer at the end of the stream."""
+        if not self._buffer:
+            return ""
+        flushed = self.vault.unmask(self._buffer)
+        self._buffer = ""
+        return flushed
+

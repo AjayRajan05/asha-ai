@@ -249,7 +249,7 @@ report = recommend_local_model(
 ```
 
 !!! warning "Experimental: API may change"
-    See [experimental-features.md](experimental-features.md).
+    See [experimental-features.md](production-readiness.md).
 
 ---
 
@@ -265,7 +265,7 @@ adapter = AdapterFactory.create_smart_routing({"chat": "gpt-4o-mini"})
 
 Providers: `openai`, `anthropic`, `gemini`, `ollama`, `huggingface`, `grok`, `mock`.
 
-Smart routing and factory helpers may change (see [experimental-features.md](experimental-features.md)).
+Smart routing and factory helpers may change (see [experimental-features.md](production-readiness.md)).
 
 ---
 
@@ -329,7 +329,7 @@ legacy = to_legacy_pipeline_dict(
 | `AttributeError` | Removed root exports (`wrap_llm`, `Pipeline`, etc.) |
 | `AgentBudgetExceeded` | Agent exceeded step, token, or cycle budget (v0.4.2) |
 
-See [migration-v0.4.md](migration-v0.4.md) and [deprecations.md](deprecations.md).
+See [migration-v0.4.md](production-readiness.md) and [deprecations.md](production-readiness.md).
 
 ---
 

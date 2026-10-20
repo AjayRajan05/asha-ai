@@ -1,6 +1,6 @@
+from __future__ import annotations
 """Tests for automatic detector model store (Phase 2)."""
 
-from __future__ import annotations
 
 import zipfile
 from pathlib import Path

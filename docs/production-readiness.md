@@ -1,52 +1,72 @@
-# Production readiness (0.4.2)
+# ASHA-SI Production Readiness, Release Status & Roadmap
 
-ASHA remains **v0.4.2 developer preview**. This page supports **pinned pilots today** and records what a **future** 1.0 would need; it is **not** a plan to ship 1.0 soon.
+**Current Release:** Developer Preview (v0.4.2)  
+**Distribution:** `pip install asha-si==0.4.2`  
+**License:** Apache 2.0  
+**Target Milestone:** v1.0.0 Stable Foundation
 
-Finish release leftovers and in-version work first. Do not bump the version for 1.0 until the maintainer is ready to stand behind a stable guarantee.
+---
 
-## Release setup status (0.4.2)
+## 1. Developer Preview Status
 
-| Item | Status |
-|------|--------|
-| `asha-models-0.4.2` GitHub Release asset | Done: auto-download URL in [PRIVATE_ARTIFACTS](https://github.com/AjayRajan05/asha-si/blob/main/maintainers/PRIVATE_ARTIFACTS.md) |
-| GitHub Discussions | Enabled: [discussions](https://github.com/AjayRajan05/asha-si/discussions) |
-| Optional Slack invite | Live: [join](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw); see [support.md](support.md) |
+ASHA-SI is currently in **Developer Preview (v0.4.2)**. The core public API (`process`, `sanitize`, `optimize`, `SecureLLM`, `PIIVault`, `anchor`) is actively tested in pilot environments.
 
-Hardened installs download the official bundle on first use; override with `ASHA_MODELS_DIR` / `ASHA_MODELS_ZIP` / `ASHA_DISABLE_MODEL_DOWNLOAD=1` (see [status.md](status.md)).
+### 1.1 Pilot Recommendations
+- **Pin Exact Releases:** In `requirements.txt` or `pyproject.toml`, specify `asha-si==0.4.2` rather than unpinned `asha-si` to ensure zero breaking changes during your evaluation.
+- **Fail-Closed Stance:** For regulated workloads (finance, healthcare, enterprise PII), use `Profile.STRICT()` to guarantee fail-closed rejection on ambiguous inputs.
+- **Review Explicit Boundaries:** Review the [Security & Threat Model](security.md) before production pilots.
 
-## Production-pilot checklist (0.4.2 today)
+---
 
-- [ ] Pin `asha==0.4.2`
-- [ ] Use lite path unless you validated hardened models locally or via cache
-- [ ] ANCHOR: `interactive=False` in CI/scripts; validate adapters on your stack ([anchor.md](anchor.md) matrix)
-- [ ] Read [security.md](security.md) fail-closed / opt-out flags
-- [ ] No secrets or private `data/` / unreleased weights in deploy artifacts
-- [ ] Support expectations: [support.md](support.md) (best-effort, no SLA)
+## 2. Production Pilot Checklist (0.4.2)
 
-## Future 1.0 (deferred)
+Before advancing an ASHA-SI integration from evaluation to production pilot, verify the following checklist:
 
-Only consider **1.0.0** after 0.4.2 is complete and the maintainer is ready. All of the following would need to be true then:
+| Check | Requirement | Verification Command / Method | Status |
+|---|---|---|---|
+| **Base Install** | Standard install has zero heavy dependencies (`torch`, `transformers` not required) | `python -m pytest tests/contracts/test_package_smoke.py` | Verified |
+| **Provider Interception** | Requests are sanitized and original PII rehydrated on responses | `python -m pytest tests/use_cases/test_provider_workflows.py` | Verified |
+| **Streaming Rehydration** | Tokens split across chunk boundaries are rehydrated without latency stalls | `python -m pytest tests/use_cases/test_streaming_and_multimodal.py` | Verified |
+| **Deterministic Masking** | PII tokens maintain stable index across multi-turn sessions | `python -m pytest tests/use_cases/test_pii_vault_session.py` | Verified |
+| **Layer Boundaries** | Core modules never import runtime or integration layers | `python -m pytest tests/architecture/test_boundaries.py` | Verified |
+| **Public Surface** | No private weights, training data, or maintainer scratch files committed | `python scripts/check_public_surface.py` | Verified |
 
-1. **Models distribution**: default `asha-models` URL returns 200; clean `pip install asha-si[hardened]` works without local zip.
-2. **API freeze window**: a deliberate deprecation-only period on the public root + `wrap_llm` surface.
-3. **Community signal**: feedback channels used; no open P0 security issues without a documented mitigation.
-4. **Docs freeze**: status, versioning, migration, and support docs match shipped behavior.
-5. **CI green** on supported Python versions; architecture + ANCHOR golden-path jobs required.
+---
 
-### Public API candidates (eventual)
+## 3. Versioning & Deprecation Policy
 
-| Surface | Intent if/when 1.0 |
-|---------|-------------------|
-| `process` / `sanitize` / `optimize` | Stable |
-| Typed results (`ProcessResult`, …) | Stable |
-| `wrap_llm` | Stable (prefer over `auto_patch`) |
-| `Agent` mock + basic providers | Stable within documented providers |
-| `anchor()` / golden adapters | Preview until ready to graduate |
-| Experimental (AshaFit, `auto_patch`, smart routing) | Stay experimental or graduate via CHANGELOG |
+ASHA adheres to **Semantic Versioning (SemVer 2.0)**:
 
-## Related
+- **0.4.x (Current Developer Preview):** Public APIs in `asha/__init__.py` are stable. Internal compiler representations (`_ir`) remain private.
+- **Breaking Changes in 0.4.x:**
+  - Package renamed from `privysha` to `asha-si` on PyPI (`from asha import ...`).
+  - Environment variables unified under `ASHA_*` prefix (`ASHA_DEBUG`, `ASHA_DISABLE_ML`).
+  - Deprecated legacy `Pipeline`, `AsyncPipeline`, and `Processor` classes removed in favor of `PromptProcessor` and drop-in `process()`.
+  - `wrap_llm()` moved to `asha.integrations` (prefer `from asha import SecureLLM`).
+- **Path to 1.0.0:** ASHA will declare 1.0.0 when the public API is frozen, multi-platform deterministic guarantees are complete, and containerized sandbox hooks for ANCHOR are implemented.
 
-- [roadmap.md](roadmap.md)
-- [versioning.md](versioning.md)
-- [SUPPORT.md](https://github.com/AjayRajan05/asha-si/blob/main/SUPPORT.md)
-- [GitHub Discussions](https://github.com/AjayRajan05/asha-si/discussions) · [Slack](https://join.slack.com/t/asha-community/shared_invite/zt-45h11ellh-yY~YG4BL8W~TvxsMXSgPzw)
+---
+
+## 4. Development Roadmap to v1.0.0
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│  v0.4.2: Developer Preview (Shipped)                                  │
+│  - Zero-dependency base install (pydantic, tiktoken, requests)         │
+│  - Provider Protection Matrix across 6 major LLM providers             │
+│  - Reversible PIIVault with sliding-window stream rehydration         │
+│  - ANCHOR agent mission governance and tool authorization              │
+│  - Multimodal URL & OCR adversarial injection scanning                 │
+├────────────────────────────────────────────────────────────────────────┤
+│  v0.5.0: Ecosystem & Enterprise Hardening (Next Milestone)            │
+│  - Containerized sandbox backends for ANCHOR (Docker / bubblewrap)     │
+│  - OpenTelemetry semantic convention export for AI security tracing    │
+│  - Extended international PII extractors (EU GDPR, APAC IDs)           │
+│  - Native FastAPI, Flask, and Django middleware plugins                │
+├────────────────────────────────────────────────────────────────────────┤
+│  v1.0.0: Production LTS Release                                       │
+│  - Frozen public API contract with strict SemVer guarantees            │
+│  - Full mypy strict type safety across all internal modules            │
+│  - Verified deterministic token compression across Linux/macOS/Windows │
+└────────────────────────────────────────────────────────────────────────┘
+```

@@ -682,7 +682,9 @@ class SecureLLM:
             async def _async_call() -> Any:
                 response = await original(*args, **kwargs)
                 if kwargs.get("stream", False) and is_streaming_response(response):
-                    return handle_async_streaming_response(response)
+                    return handle_async_streaming_response(
+                        response, vault=self._vault if self._rehydrate_pii else None
+                    )
                 return self._postprocess(response, kwargs)
 
             return _async_call()
@@ -690,7 +692,9 @@ class SecureLLM:
         response = original(*args, **kwargs)
 
         if kwargs.get("stream", False) and is_streaming_response(response):
-            return handle_streaming_response(response)
+            return handle_streaming_response(
+                response, vault=self._vault if self._rehydrate_pii else None
+            )
 
         # Post-process: guard output, re-hydrate PII
         return self._postprocess(response, kwargs)
@@ -721,9 +725,34 @@ class SecureLLM:
                 self._mask_message(m) for m in kwargs["messages"]
             ]
 
+        # Also vault-mask keyword prompt/contents if present and mode != off
+        for p_key in ("prompt", "contents", "content"):
+            if (
+                self._mode != "off"
+                and self._rehydrate_pii
+                and p_key in kwargs
+                and isinstance(kwargs[p_key], str)
+            ):
+                kwargs[p_key] = self._vault.mask(kwargs[p_key])
+
+        # Also sanitize system prompt if present
+        if (
+            self._mode != "off"
+            and "system" in kwargs
+            and isinstance(kwargs["system"], str)
+        ):
+            if self._rehydrate_pii:
+                kwargs["system"] = self._vault.mask(kwargs["system"])
+            kwargs["system"] = _process_prompt_for_wrap(
+                kwargs["system"], self._mode, token_budget=self._token_budget
+            )
+
         # Mask kwargs (messages / prompt fields)
         kwargs = prepare_llm_request_kwargs(
-            kwargs, mode=self._mode, token_budget=self._token_budget
+            kwargs,
+            mode=self._mode,
+            token_budget=self._token_budget,
+            vault=self._vault if self._rehydrate_pii else None,
         )
 
         return args, kwargs
@@ -734,7 +763,33 @@ class SecureLLM:
             return message
         content = message.get("content", "")
         if isinstance(content, str):
-            return {**message, "content": self._vault.mask(content)}
+            masked_content = self._vault.mask(content) if self._rehydrate_pii else content
+            return {**message, "content": masked_content}
+        if isinstance(content, list):
+            new_parts = []
+            for part in content:
+                if (
+                    isinstance(part, dict)
+                    and part.get("type") == "text"
+                    and isinstance(part.get("text"), str)
+                ):
+                    text_val = (
+                        self._vault.mask(part["text"])
+                        if self._rehydrate_pii
+                        else part["text"]
+                    )
+                    new_parts.append({**part, "text": text_val})
+                else:
+                    # Multimodal part (image_url, image, input_audio, etc.)
+                    from .multimodal import inspect_and_sanitize_multimodal_part
+
+                    inspected = inspect_and_sanitize_multimodal_part(
+                        part,
+                        mode=self._mode,
+                        vault=self._vault if self._rehydrate_pii else None,
+                    )
+                    new_parts.append(inspected)
+            return {**message, "content": new_parts}
         return message
 
     def _postprocess(self, response: Any, kwargs: dict) -> Any:
@@ -774,6 +829,12 @@ class _SecureNestedProxy:
             return _SecureNestedProxy(attr, wrapper=self._wrapper)
         return attr
 
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        if callable(self._nested):
+            interceptor = self._make_interceptor(self._nested)
+            return interceptor(*args, **kwargs)
+        raise TypeError(f"'{type(self._nested).__name__}' object is not callable")
+
     def _make_interceptor(self, original: Any) -> Any:
         """Return a wrapper function that applies ASHA processing."""
         w = self._wrapper
@@ -792,7 +853,9 @@ class _SecureNestedProxy:
                         ) from exc
                 response = await original(*args, **kwargs)
                 if kwargs.get("stream", False) and is_streaming_response(response):
-                    return handle_async_streaming_response(response)
+                    return handle_async_streaming_response(
+                        response, vault=w._vault if w._rehydrate_pii else None
+                    )
                 guarded = w._output_guard.guard_output(response, None)
                 if w._rehydrate_pii:
                     guarded = _rehydrate_response(guarded, w._vault)
@@ -816,7 +879,9 @@ class _SecureNestedProxy:
 
             # Handle streaming
             if kwargs.get("stream", False) and is_streaming_response(response):
-                return handle_streaming_response(response)
+                return handle_streaming_response(
+                    response, vault=w._vault if w._rehydrate_pii else None
+                )
 
             # Guard + re-hydrate
             guarded = w._output_guard.guard_output(response, None)
@@ -831,6 +896,26 @@ def _rehydrate_response(response: Any, vault: Any) -> Any:
     """Walk common LLM response shapes and unmask PII placeholders."""
     if isinstance(response, str):
         return vault.unmask(response)
+
+    # Dictionary response (Ollama, raw JSON, custom APIs)
+    if isinstance(response, dict):
+        if "message" in response and isinstance(response["message"], dict):
+            msg_content = response["message"].get("content")
+            if isinstance(msg_content, str):
+                response["message"]["content"] = vault.unmask(msg_content)
+        for key in ("response", "text", "content"):
+            if key in response and isinstance(response[key], str):
+                response[key] = vault.unmask(response[key])
+        if "choices" in response and isinstance(response["choices"], list):
+            for choice in response["choices"]:
+                if isinstance(choice, dict):
+                    if "message" in choice and isinstance(choice["message"], dict):
+                        m_content = choice["message"].get("content")
+                        if isinstance(m_content, str):
+                            choice["message"]["content"] = vault.unmask(m_content)
+                    if "text" in choice and isinstance(choice["text"], str):
+                        choice["text"] = vault.unmask(choice["text"])
+        return response
 
     # OpenAI ChatCompletion / Completion response
     choices = getattr(response, "choices", None)
@@ -849,6 +934,37 @@ def _rehydrate_response(response: Any, vault: Any) -> Any:
         for block in content:
             if hasattr(block, "text") and isinstance(block.text, str):
                 block.text = vault.unmask(block.text)
+
+    # Ollama message attribute (e.g. response.message.content)
+    message_attr = getattr(response, "message", None)
+    if message_attr and hasattr(message_attr, "content") and isinstance(message_attr.content, str):
+        try:
+            message_attr.content = vault.unmask(message_attr.content)
+        except (AttributeError, TypeError):
+            pass
+
+    # Gemini candidates response
+    candidates = getattr(response, "candidates", None)
+    if candidates and isinstance(candidates, list):
+        for candidate in candidates:
+            cand_content = getattr(candidate, "content", None)
+            if cand_content and hasattr(cand_content, "parts"):
+                for part in getattr(cand_content, "parts", []):
+                    if hasattr(part, "text") and isinstance(part.text, str):
+                        try:
+                            part.text = vault.unmask(part.text)
+                        except (AttributeError, TypeError):
+                            pass
+
+    # Response with writable text or response attribute
+    for attr in ("text", "response"):
+        if hasattr(response, attr):
+            val = getattr(response, attr, None)
+            if isinstance(val, str):
+                try:
+                    setattr(response, attr, vault.unmask(val))
+                except (AttributeError, TypeError):
+                    pass
 
     return response
 

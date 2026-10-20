@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Security regression suite: action guard tests.
 
 Tests that the ANCHOR action guard correctly denies dangerous action types
@@ -7,7 +8,6 @@ the audit becomes a permanent regression test.
 Phase 6 + Phase 19 regression.
 """
 
-from __future__ import annotations
 
 import pytest
 from asha import ANCHOR

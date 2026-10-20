@@ -1,6 +1,6 @@
+from __future__ import annotations
 """Mission-drift quality gate: clear BLOCK fixtures must never ALLOW."""
 
-from __future__ import annotations
 
 import json
 from pathlib import Path

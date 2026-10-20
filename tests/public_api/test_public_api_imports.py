@@ -1,6 +1,6 @@
+from __future__ import annotations
 """Tests verifying all public APIs are importable directly from the root asha package."""
 
-from __future__ import annotations
 
 import asyncio
 

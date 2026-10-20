@@ -22,33 +22,80 @@ from typing import Any, AsyncGenerator, Dict, Generator, Optional, cast
 import inspect
 
 
+def _rehydrate_chunk(chunk: Any, rehydrator: Optional[Any]) -> Any:
+    """Helper to extract text from chunk, rehydrate via StreamRehydrator, and update chunk."""
+    if rehydrator is None:
+        return chunk
+
+    if isinstance(chunk, str):
+        return rehydrator.feed(chunk)
+
+    if isinstance(chunk, dict):
+        if "message" in chunk and isinstance(chunk["message"], dict) and "content" in chunk["message"]:
+            c = dict(chunk)
+            c["message"] = dict(chunk["message"])
+            c["message"]["content"] = rehydrator.feed(str(chunk["message"]["content"]))
+            return c
+        if "response" in chunk and isinstance(chunk["response"], str):
+            c = dict(chunk)
+            c["response"] = rehydrator.feed(chunk["response"])
+            return c
+        return chunk
+
+    if hasattr(chunk, "choices") and chunk.choices:
+        choice0 = chunk.choices[0]
+        if hasattr(choice0, "delta") and hasattr(choice0.delta, "content") and isinstance(choice0.delta.content, str):
+            orig_text = choice0.delta.content
+            rehydrated = rehydrator.feed(orig_text)
+            try:
+                choice0.delta.content = rehydrated
+            except Exception:
+                pass
+            return chunk
+
+    return chunk
+
+
 def handle_streaming_response(
-    response: Any, expected_format: Optional[str] = None
+    response: Any,
+    expected_format: Optional[str] = None,
+    vault: Optional[Any] = None,
 ) -> Generator[Any, None, None]:
     """
-    Handle streaming responses with pass-through behavior.
+    Handle streaming responses with pass-through and optional sliding-window vault rehydration.
 
-    Rule: NEVER block or buffer streams - just pass through safely.
+    Rule: Never block or buffer non-token stream contents.
 
     Args:
         response: Streaming response from LLM
         expected_format: Expected response format (for validation)
+        vault: Optional PIIVault instance for streaming placeholder rehydration
 
     Returns:
-        Generator yielding chunks unchanged
+        Generator yielding chunks with rehydrated token values
     """
+    rehydrator = None
+    if vault is not None and getattr(vault, "has_pii", False):
+        if hasattr(vault, "create_stream_rehydrator"):
+            rehydrator = vault.create_stream_rehydrator()
+
     try:
-        # Check if response is iterable (streaming)
         if hasattr(response, "__iter__") and not isinstance(
             response, (str, bytes, dict)
         ):
             for chunk in response:
-                yield chunk
+                yield _rehydrate_chunk(chunk, rehydrator)
+            if rehydrator:
+                remaining = rehydrator.flush()
+                if remaining:
+                    yield remaining
         else:
-            # Not actually streaming, return as single chunk
-            yield response
+            yield _rehydrate_chunk(response, rehydrator)
+            if rehydrator:
+                remaining = rehydrator.flush()
+                if remaining:
+                    yield remaining
     except Exception:
-        # Fail-safe: yield original response
         yield response
 
 
@@ -62,11 +109,9 @@ def is_streaming_response(response: Any) -> bool:
     Returns:
         True if streaming, False otherwise
     """
-    # Check for common streaming indicators
     if hasattr(response, "__iter__") and not isinstance(response, (str, bytes, dict)):
         return True
 
-    # Check for async generator
     if inspect.isasyncgen(response):
         return True
 
@@ -74,27 +119,41 @@ def is_streaming_response(response: Any) -> bool:
 
 
 async def handle_async_streaming_response(
-    response: Any, expected_format: Optional[str] = None
+    response: Any,
+    expected_format: Optional[str] = None,
+    vault: Optional[Any] = None,
 ) -> AsyncGenerator[Any, None]:
     """
-    Handle async streaming responses.
+    Handle async streaming responses with optional sliding-window vault rehydration.
 
     Args:
         response: Async streaming response from LLM
         expected_format: Expected response format
+        vault: Optional PIIVault instance for streaming placeholder rehydration
 
     Yields:
         Chunks from async stream
     """
+    rehydrator = None
+    if vault is not None and getattr(vault, "has_pii", False):
+        if hasattr(vault, "create_stream_rehydrator"):
+            rehydrator = vault.create_stream_rehydrator()
+
     try:
         if inspect.isasyncgen(response):
             async for chunk in response:
-                yield chunk
+                yield _rehydrate_chunk(chunk, rehydrator)
+            if rehydrator:
+                remaining = rehydrator.flush()
+                if remaining:
+                    yield remaining
         else:
-            # Not actually async streaming, yield as single chunk
-            yield response
+            yield _rehydrate_chunk(response, rehydrator)
+            if rehydrator:
+                remaining = rehydrator.flush()
+                if remaining:
+                    yield remaining
     except Exception:
-        # Fail-safe: yield original response
         yield response
 
 

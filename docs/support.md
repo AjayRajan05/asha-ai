@@ -19,10 +19,10 @@ Canonical short policy: [SUPPORT.md](https://github.com/AjayRajan05/asha-si/blob
 - Maintainers respond when available; response times are **not guaranteed**.
 - Pin `asha==0.4.2` for pilots so upgrades are intentional.
 - Prefer a minimal repro over large private code dumps.
-- Hardened models and ANCHOR framework extras are optional (see [status.md](status.md)).
+- Hardened models and ANCHOR framework extras are optional (see [status.md](production-readiness.md)).
 
 ## Before opening an issue
 
-1. Check [troubleshooting.md](troubleshooting.md) and [faq.md](faq.md).
+1. Check [troubleshooting.md](troubleshooting.md) and [faq.md](troubleshooting.md).
 2. Confirm your extras and env vars (`ASHA_DISABLE_ML`, `ASHA_MODELS_DIR`, …).
 3. Use an issue template when available.

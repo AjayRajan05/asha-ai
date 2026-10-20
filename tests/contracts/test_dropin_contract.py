@@ -1,6 +1,6 @@
+from __future__ import annotations
 """Contract tests for process() / sanitize() signatures and result fields."""
 
-from __future__ import annotations
 
 import inspect
 

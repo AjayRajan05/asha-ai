@@ -126,6 +126,11 @@ class DetectionStage(BaseStage):
             text, deduplicated_entities
         )
 
+        # Never re-mask existing vault tokens (<TYPE_INDEX>) or mask tokens ([TYPE]).
+        deduplicated_entities = self._drop_vault_and_mask_overlaps(
+            text, deduplicated_entities
+        )
+
         # Sort entities by position
         deduplicated_entities.sort(key=lambda e: e.start)
 
@@ -256,6 +261,28 @@ class DetectionStage(BaseStage):
         ):
             if is_example_email(match.group()):
                 protected.append(match.span())
+        if not protected:
+            return entities
+
+        kept: List[PIIEntity] = []
+        for entity in entities:
+            overlaps = any(
+                not (entity.end <= start or entity.start >= end)
+                for start, end in protected
+            )
+            if not overlaps:
+                kept.append(entity)
+        return kept
+
+    def _drop_vault_and_mask_overlaps(
+        self, text: str, entities: List[PIIEntity]
+    ) -> List[PIIEntity]:
+        """Drop spans that overlap existing vault tokens (<TYPE_INDEX>) or mask tokens ([TYPE])."""
+        protected: List[tuple[int, int]] = []
+        for match in re.finditer(
+            r"<[A-Za-z0-9_]+>|\[[A-Za-z0-9_]+\](?:_[0-9a-fA-F]+)?", text
+        ):
+            protected.append(match.span())
         if not protected:
             return entities
 

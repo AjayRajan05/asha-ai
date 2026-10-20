@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Universal Gemini Adapter compatibility tests (all Gemini models).
 
 Plan requirements (tested across all Gemini models):
@@ -13,7 +14,6 @@ All network-calling tests are guarded by @pytest.mark.skipif to avoid
 CI failures without a real API key. Unit-testable paths are always tested.
 """
 
-from __future__ import annotations
 
 import os
 from unittest.mock import MagicMock, PropertyMock, patch

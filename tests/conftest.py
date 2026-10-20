@@ -1,3 +1,4 @@
+from __future__ import annotations
 # Copyright 2026 Ajay Rajan
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +15,6 @@
 
 """Suite-wide fixtures (no forced lite/ML-off defaults: those hid real failures)."""
 
-from __future__ import annotations
 
 import pytest
 
